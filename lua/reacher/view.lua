@@ -1,3 +1,6 @@
+local windowlib = require("reacher/lib/window")
+local repository = require("reacher/lib/repository")
+
 local M = {}
 
 local View = {}
@@ -67,6 +70,7 @@ function View.open(self)
     leftcol = view.leftcol,
     skipcol = view.skipcol,
   })
+  self._window_id = window_id
 
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, lines)
   vim.api.nvim_win_set_cursor(window_id, {cursor_row - (first_row - 1), cursor_column})
@@ -93,6 +97,7 @@ function View.open(self)
     external = false,
     style = "minimal",
   })
+  vim.api.nvim_command("startinsert")
   vim.api.nvim_buf_set_option(input_bufnr, "bufhidden", "wipe")
   vim.api.nvim_buf_set_name(input_bufnr, "reacher://reacher")
   vim.api.nvim_buf_attach(input_bufnr, false, {
@@ -102,6 +107,19 @@ function View.open(self)
     end,
   })
   vim.api.nvim_win_set_option(input_window, "winhighlight", "Normal:Normal")
+  self._input_window_id = input_window
+
+  local on_leave = ("autocmd WinLeave,TabLeave,BufLeave <buffer=%s> ++once lua require 'reacher/view'.close(%s)"):format(bufnr, window_id)
+  vim.api.nvim_command(on_leave)
+  local on_input_leave = ("autocmd WinLeave,TabLeave,BufLeave <buffer=%s> ++once lua require 'reacher/view'.close(%s)"):format(input_bufnr, window_id)
+  vim.api.nvim_command(on_input_leave)
+
+  local on_close = ("autocmd WinClosed <buffer=%s> ++once lua require 'reacher/view'.close(%s)"):format(bufnr, window_id)
+  vim.api.nvim_command(on_close)
+  local on_input_close = ("autocmd WinClosed <buffer=%s> ++once lua require 'reacher/view'.close(%s)"):format(input_bufnr, window_id)
+  vim.api.nvim_command(on_input_close)
+
+  repository.set(window_id, self)
 end
 
 function View.update(self, input_line)
@@ -109,11 +127,16 @@ function View.update(self, input_line)
 end
 
 function View.close(self)
-  -- TODO
+  windowlib.close(self._window_id)
+  windowlib.close(self._input_window_id)
 end
 
 M.close = function(window_id)
-  -- TODO
+  local self = repository.get(window_id)
+  if self == nil then
+    return
+  end
+  self:close()
 end
 
 function View._set_backgroud_hl(origin_window_id)

@@ -11,7 +11,7 @@ M.main = function(...)
     if source == nil then
       return "[reacher] not found source: " .. source_name
     end
-    return View.new(source):open()
+    View.new(source):open()
   end
 
   local _, err = xpcall(f, debug.traceback)
