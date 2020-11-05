@@ -12,10 +12,13 @@ function View.new(source)
   return setmetatable(tbl, View)
 end
 
+local ns = vim.api.nvim_create_namespace("reacher")
+
 function View.open(self)
+  local source_bufnr = vim.api.nvim_get_current_buf()
   local first_row = vim.fn.line("w0")
   local last_row = vim.fn.line("w$")
-  local lines = vim.api.nvim_buf_get_lines(0, first_row - 1, last_row, true)
+  local lines = vim.api.nvim_buf_get_lines(source_bufnr, first_row - 1, last_row, true)
 
   local original = {
     list = vim.wo.list,
@@ -25,6 +28,7 @@ function View.open(self)
   }
 
   local origin_window_id = vim.api.nvim_get_current_win()
+  self._origin_window_id = origin_window_id
 
   local cursor_row, cursor_column = unpack(vim.api.nvim_win_get_cursor(origin_window_id))
   local view = vim.fn.winsaveview()
@@ -38,7 +42,7 @@ function View.open(self)
   local width = vim.api.nvim_win_get_width(origin_window_id) - number_sign_width + 1
   local height = vim.api.nvim_win_get_height(origin_window_id)
 
-  local row = 1
+  local row = 0
   local column = 0
   local first_column = view.leftcol
   if first_column >= number_sign_width then
@@ -54,13 +58,14 @@ function View.open(self)
   end
 
   local bufnr = vim.api.nvim_create_buf(false, true)
+  self._bufnr = bufnr
   local window_id = vim.api.nvim_open_win(bufnr, true, {
     width = width,
     height = height,
     relative = "win",
     row = row,
     col = column,
-    bufpos = {0, 0},
+    bufpos = {first_row - 1, 0},
     external = false,
     style = "minimal",
   })
@@ -111,7 +116,7 @@ function View.open(self)
 
   local on_leave = ("autocmd WinLeave,TabLeave,BufLeave <buffer=%s> ++once lua require 'reacher/view'.close(%s)"):format(bufnr, window_id)
   vim.api.nvim_command(on_leave)
-  local on_input_leave = ("autocmd WinLeave,TabLeave,BufLeave <buffer=%s> ++once lua require 'reacher/view'.close(%s)"):format(input_bufnr, window_id)
+  local on_input_leave = ("autocmd WinLeave,TabLeave,BufLeave,InsertLeave <buffer=%s> ++once lua require 'reacher/view'.close(%s)"):format(input_bufnr, window_id)
   vim.api.nvim_command(on_input_leave)
 
   local on_close = ("autocmd WinClosed <buffer=%s> ++once lua require 'reacher/view'.close(%s)"):format(bufnr, window_id)
@@ -120,15 +125,24 @@ function View.open(self)
   vim.api.nvim_command(on_input_close)
 
   repository.set(window_id, self)
+
+  local positions = self._source.collect(source_bufnr, first_row, last_row)
+
+  local row_offset = first_row - 1
+  for _, pos in ipairs(positions) do
+    vim.api.nvim_buf_add_highlight(bufnr, ns, "String", pos.row - row_offset - 1, pos.column, pos.column + 1)
+  end
 end
 
 function View.update(self, input_line)
+  vim.api.nvim_buf_clear_namespace(self._bufnr, ns, 0, -1)
   -- TODO
 end
 
 function View.close(self)
   windowlib.close(self._window_id)
   windowlib.close(self._input_window_id)
+  windowlib.enter(self._origin_window_id)
 end
 
 M.close = function(window_id)
