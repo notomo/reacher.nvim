@@ -82,6 +82,7 @@ function View.open(self)
   self._set_backgroud_hl(origin_window_id)
   vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
   vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
+  vim.api.nvim_buf_set_option(bufnr, "filetype", "reacher")
   vim.api.nvim_buf_set_option(bufnr, "textwidth", original.textwidth)
 
   vim.api.nvim_win_set_option(window_id, "winhighlight", "Normal:ReacherBackground")
@@ -105,12 +106,7 @@ function View.open(self)
   vim.api.nvim_command("startinsert")
   vim.api.nvim_buf_set_option(input_bufnr, "bufhidden", "wipe")
   vim.api.nvim_buf_set_name(input_bufnr, "reacher://reacher")
-  vim.api.nvim_buf_attach(input_bufnr, false, {
-    on_lines = function()
-      local input_line = vim.api.nvim_buf_get_lines(input_bufnr, 0, -1, true)[1]
-      self:update(input_line)
-    end,
-  })
+  vim.api.nvim_buf_set_option(input_bufnr, "filetype", "reacher")
   vim.api.nvim_win_set_option(input_window, "winhighlight", "Normal:Normal")
   self._input_window_id = input_window
 
@@ -129,14 +125,69 @@ function View.open(self)
   local positions = self._source.collect(source_bufnr, first_row, last_row)
 
   local row_offset = first_row - 1
-  for _, pos in ipairs(positions) do
+  local hl = function(pos)
     vim.api.nvim_buf_add_highlight(bufnr, ns, "String", pos.row - row_offset - 1, pos.column, pos.column + 1)
   end
-end
+  for _, pos in ipairs(positions) do
+    hl(pos)
+  end
 
-function View.update(self, input_line)
-  vim.api.nvim_buf_clear_namespace(self._bufnr, ns, 0, -1)
-  -- TODO
+  local update = function(input_line)
+    vim.api.nvim_buf_clear_namespace(self._bufnr, ns, 0, -1)
+    local new_positions = {}
+    for _, pos in ipairs(positions) do
+      if vim.startswith(pos.line, input_line) then
+        table.insert(new_positions, pos)
+      end
+    end
+
+    if #new_positions == 1 then
+      local pos = new_positions[1]
+      vim.api.nvim_set_current_win(self._origin_window_id)
+      vim.api.nvim_win_set_cursor(self._origin_window_id, {pos.row, pos.column + 1})
+      return true
+    elseif #new_positions == 0 then
+      return true
+    end
+
+    local cursor = vim.api.nvim_win_get_cursor(self._origin_window_id)
+    local tmp_pos = new_positions[1]
+    local hl_pos = {
+      tmp_pos.row,
+      tmp_pos.column,
+      math.abs(cursor[1] - tmp_pos.row),
+      math.abs(cursor[2] - tmp_pos.column),
+    }
+    for _, pos in ipairs(new_positions) do
+      local y_diff = math.abs(cursor[1] - pos.row)
+      local x_diff = math.abs(cursor[2] - pos.column)
+      if y_diff < hl_pos[3] then
+        hl_pos = {pos.row, pos.column, y_diff, x_diff}
+      elseif y_diff == hl_pos[3] and x_diff < hl_pos[4] then
+        hl_pos = {pos.row, pos.column, y_diff, x_diff}
+      end
+      hl(pos)
+    end
+    vim.api.nvim_buf_add_highlight(self._bufnr, ns, "Todo", hl_pos[1] - row_offset - 1, hl_pos[2], hl_pos[2] + 1)
+
+    return false
+  end
+
+  vim.api.nvim_buf_attach(input_bufnr, false, {
+    on_lines = function()
+      if not vim.api.nvim_buf_is_valid(input_bufnr) then
+        return true
+      end
+
+      local input_line = vim.api.nvim_buf_get_lines(input_bufnr, 0, -1, true)[1]
+      vim.schedule(function()
+        if update(input_line) then
+          self:close()
+          vim.api.nvim_command("stopinsert")
+        end
+      end)
+    end,
+  })
 end
 
 function View.close(self)

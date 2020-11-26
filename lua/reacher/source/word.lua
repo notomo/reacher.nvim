@@ -6,7 +6,7 @@ local matched_positions = function(line, pattern, row)
   repeat
     local s, e = line:find(pattern, index)
     if s ~= nil then
-      table.insert(positions, {row = row, column = s - 1})
+      table.insert(positions, {row = row, column = s - 1, line = line:sub(s)})
       index = e + 1
     end
   until s == nil
