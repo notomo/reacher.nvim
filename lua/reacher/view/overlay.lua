@@ -117,7 +117,6 @@ end
 function Overlay.update(self, input_line)
   if self:_update(input_line) then
     self:close()
-    vim.api.nvim_command("stopinsert")
   end
 end
 
@@ -161,11 +160,24 @@ function Overlay._update(self, input_line)
   end
   vim.api.nvim_buf_add_highlight(self._bufnr, ns, "Todo", hl_pos[1] - self._row_offset - 1, hl_pos[2], hl_pos[2] + 1)
 
+  self._hl_pos = hl_pos
+
   return false
 end
 
 function Overlay.close(self)
   windowlib.close(self.window_id)
+  windowlib.enter(self._origin_window_id)
+  vim.api.nvim_command("stopinsert")
+end
+
+function Overlay.finish(self)
+  if self._hl_pos == nil then
+    self:close()
+    return
+  end
+  vim.api.nvim_set_current_win(self._origin_window_id)
+  vim.api.nvim_win_set_cursor(self._origin_window_id, {self._hl_pos[1], self._hl_pos[2] + 1})
 end
 
 return M

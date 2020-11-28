@@ -1,4 +1,3 @@
-local repository = require("reacher/lib/repository")
 local modulelib = require("reacher/lib/module")
 local View = require("reacher/view").View
 
@@ -12,8 +11,7 @@ function Command.start()
   if source == nil then
     return "[reacher] not found source: " .. source_name
   end
-  local view = View.open(source)
-  repository.set(view.id, view)
+  View.open(source)
 end
 
 function Command.next()
@@ -25,16 +23,20 @@ function Command.prev()
 end
 
 function Command.finish()
-  -- TODO
+  local id = vim.api.nvim_get_current_win()
+  local view = View.get(id)
+  if view == nil then
+    return
+  end
+  view:finish()
 end
 
 M.close = function(id)
-  local view = repository.get(id)
+  local view = View.get(id)
   if view == nil then
     return
   end
   view:close()
-  repository.delete(id)
 end
 
 M.main = function(...)
