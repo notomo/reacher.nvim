@@ -15,11 +15,21 @@ function Command.start()
 end
 
 function Command.next()
-  -- TODO
+  local id = vim.api.nvim_get_current_win()
+  local view = View.get(id)
+  if view == nil then
+    return
+  end
+  view:next()
 end
 
 function Command.prev()
-  -- TODO
+  local id = vim.api.nvim_get_current_win()
+  local view = View.get(id)
+  if view == nil then
+    return
+  end
+  view:prev()
 end
 
 function Command.finish()

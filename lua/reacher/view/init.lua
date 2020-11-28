@@ -37,6 +37,14 @@ function View.finish(self)
   self._overlay:finish()
 end
 
+function View.next(self)
+  self._overlay:next()
+end
+
+function View.prev(self)
+  self._overlay:prev()
+end
+
 function View.get(id)
   return repository.get(id)
 end
