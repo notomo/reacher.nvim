@@ -49,4 +49,9 @@ function View.get(id)
   return repository.get(id)
 end
 
+function View.current()
+  local id = vim.api.nvim_get_current_win()
+  return View.get(id)
+end
+
 return M

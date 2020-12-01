@@ -15,8 +15,7 @@ function Command.start()
 end
 
 function Command.next()
-  local id = vim.api.nvim_get_current_win()
-  local view = View.get(id)
+  local view = View.current()
   if view == nil then
     return
   end
@@ -24,8 +23,7 @@ function Command.next()
 end
 
 function Command.prev()
-  local id = vim.api.nvim_get_current_win()
-  local view = View.get(id)
+  local view = View.current()
   if view == nil then
     return
   end
@@ -33,8 +31,7 @@ function Command.prev()
 end
 
 function Command.finish()
-  local id = vim.api.nvim_get_current_win()
-  local view = View.get(id)
+  local view = View.current()
   if view == nil then
     return
   end
