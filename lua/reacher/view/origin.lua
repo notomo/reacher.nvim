@@ -44,13 +44,13 @@ function Origin.new(bufnr)
 
   local tbl = {
     id = id,
-    row = row,
-    column = column,
-    width = width,
-    height = height,
     first_row = first_row,
     last_row = last_row,
     cursor = {row = cursor_row, column = cursor_column},
+    _row = row,
+    _column = column,
+    _width = width,
+    _height = height,
     _saved = saved,
     _lines = lines,
     _options = options,
@@ -58,7 +58,18 @@ function Origin.new(bufnr)
   return setmetatable(tbl, Origin)
 end
 
-function Origin.copy(self, bufnr, window_id)
+function Origin.copy_to_floating_win(self, bufnr)
+  local window_id = vim.api.nvim_open_win(bufnr, true, {
+    width = self._width,
+    height = self._height,
+    relative = "win",
+    row = self._row,
+    col = self._column,
+    bufpos = {self.first_row - 1, 0},
+    external = false,
+    style = "minimal",
+  })
+
   vim.fn.winrestview({
     col = self._saved.col,
     coladd = self._saved.coladd,
@@ -78,6 +89,8 @@ function Origin.copy(self, bufnr, window_id)
   local listchars = table.concat(vim.fn.split(self._options.listchars, ",precedes:."))
   listchars = table.concat(vim.split(listchars, ",extends:.", true))
   vim.api.nvim_win_set_option(window_id, "listchars", listchars)
+
+  return window_id
 end
 
 return M
