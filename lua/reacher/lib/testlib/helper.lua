@@ -25,20 +25,28 @@ M.after_each = function()
   print(" ")
 end
 
-M.input_key = function(key)
-  M.command("normal " .. key)
-end
-
-M.jump_before = function()
-  M.input_key("``")
-end
-
 M.set_lines = function(lines)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(lines, "\n"))
 end
 
-M.cursor = function()
-  return {vim.fn.line("."), vim.fn.col(".")}
+M.input = function(text)
+  vim.api.nvim_put({text}, "c", true, true)
+end
+
+M.sync_input = function(text)
+  local finished = false
+  require("reacher/view")._after = function()
+    finished = true
+  end
+
+  M.input(text)
+
+  local ok = vim.wait(1000, function()
+    return finished
+  end, 10)
+  if not ok then
+    assert(false, "wait timeout")
+  end
 end
 
 local vassert = require("vusted.assert")
@@ -52,37 +60,8 @@ asserts.create("current_line"):register_eq(function()
   return vim.fn.getline(".")
 end)
 
-asserts.create("line"):register_eq(function(number)
-  return vim.fn.getline(number)
-end)
-
-asserts.create("current_char"):register_eq(function()
-  local col = vim.fn.col(".")
-  return vim.fn.getline("."):sub(col, col)
-end)
-
-asserts.create("cursor"):register_same(function()
-  return M.cursor()
-end)
-
-asserts.create("column"):register_eq(function()
-  return vim.fn.col(".")
-end)
-
-asserts.create("window_width"):register_eq(function()
-  return vim.api.nvim_win_get_width(0)
-end)
-
-asserts.create("window_height"):register_eq(function()
-  return vim.api.nvim_win_get_height(0)
-end)
-
-asserts.create("window_relative_row"):register_eq(function()
-  return vim.fn.winline()
-end)
-
-asserts.create("window_col"):register_eq(function()
-  return vim.fn.win_screenpos(0)[2]
+asserts.create("cursor_word"):register_eq(function()
+  return vim.fn.expand("<cword>")
 end)
 
 return M

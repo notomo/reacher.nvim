@@ -1,6 +1,7 @@
 local windowlib = require("reacher/lib/window")
 local highlightlib = require("reacher/lib/highlight")
 local Origin = require("reacher/view/origin").Origin
+local Node = require("reacher/tree").Node
 
 local M = {}
 
@@ -44,17 +45,13 @@ local ns = vim.api.nvim_create_namespace("reacher")
 local current_ns = vim.api.nvim_create_namespace("reacher-current")
 
 function Overlay.update(self, input_line)
-  local next_chars = {}
   local positions = {}
-  local input_length = #input_line
+  local root = Node.new()
   for _, pos in ipairs(self._all_positions) do
     if vim.startswith(pos.line, input_line) then
       table.insert(positions, pos)
 
-      local char = pos.line:sub(input_length, input_length + 1)
-      local tbl = next_chars[char] or {}
-      table.insert(tbl, {row = pos.row, column = pos.column + input_length})
-      next_chars[char] = tbl
+      root:add(#positions, pos.line)
     end
   end
   self._positions = positions
@@ -87,12 +84,9 @@ function Overlay.update(self, input_line)
       self._index = i
     end
     vim.api.nvim_buf_add_highlight(self._bufnr, ns, "WarningMsg", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
-  end
-
-  for _, ps in pairs(next_chars) do
-    if #ps == 1 then
-      local p = ps[1]
-      vim.api.nvim_buf_add_highlight(self._bufnr, current_ns, "String", p.row - self._row_offset - 1, p.column, p.column + 1)
+    local idx = root:search(i, pos.line)
+    if idx ~= nil then
+      vim.api.nvim_buf_add_highlight(self._bufnr, ns, "String", pos.row - self._row_offset - 1, pos.column + idx - 1, pos.column + idx)
     end
   end
   vim.api.nvim_buf_add_highlight(self._bufnr, current_ns, "Todo", hl_pos.row - self._row_offset - 1, hl_pos.column, hl_pos.column + 1)
