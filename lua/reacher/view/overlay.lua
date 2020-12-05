@@ -3,6 +3,7 @@ local highlightlib = require("reacher/lib/highlight")
 local HlFactory = require("reacher/lib/highlight").HlFactory
 local Origin = require("reacher/view/origin").Origin
 local Node = require("reacher/tree").Node
+local Distance = require("reacher/distance").Distance
 
 local M = {}
 
@@ -67,32 +68,26 @@ function Overlay.update(self, input_line)
   local highlighter = self._hl_factory:reset()
   local cursor_highlighter = self._cursor_hl_factory:reset()
 
-  local cursor = self._origin.cursor
   self._index = 1
-  local tmp_pos = positions[self._index]
-  local hl_pos = {
-    row = tmp_pos.row,
-    column = tmp_pos.column,
-    y_diff = math.abs(cursor.row - tmp_pos.row),
-    x_diff = math.abs(cursor.column - tmp_pos.column),
-  }
+
+  local distance = Distance.new(self._origin.cursor, positions[self._index])
   for i, pos in ipairs(positions) do
-    local y_diff = math.abs(cursor.row - pos.row)
-    local x_diff = math.abs(cursor.column - pos.column)
-    if y_diff < hl_pos.y_diff or (y_diff == hl_pos.y_diff and x_diff < hl_pos.x_diff) then
-      hl_pos = {row = pos.row, column = pos.column, y_diff = y_diff, x_diff = x_diff}
+    local d = Distance.new(self._origin.cursor, pos)
+    if d < distance then
+      distance = d
       self._index = i
     end
 
     highlighter:add("WarningMsg", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
+
     local idx = root:search(i, pos.line)
     if idx ~= nil then
       highlighter:add("String", pos.row - self._row_offset - 1, pos.column + idx - 1, pos.column + idx)
     end
   end
-  cursor_highlighter:add("Todo", hl_pos.row - self._row_offset - 1, hl_pos.column, hl_pos.column + 1)
 
-  self._hl_pos = hl_pos
+  local pos = self._positions[self._index]
+  cursor_highlighter:add("Todo", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
 end
 
 function Overlay.close(self)
@@ -101,21 +96,21 @@ function Overlay.close(self)
 end
 
 function Overlay.finish(self, pos)
-  pos = pos or self._hl_pos
+  pos = pos or self._positions[self._index]
   vim.api.nvim_set_current_win(self._origin.id)
   vim.api.nvim_win_set_cursor(self._origin.id, {pos.row, pos.column + 1})
 end
 
 function Overlay.next(self)
   self._index = (self._index % #self._positions) + 1
-  self._hl_pos = self._positions[self._index]
-  self._cursor_hl_factory:reset():add("Todo", self._hl_pos.row - self._row_offset - 1, self._hl_pos.column, self._hl_pos.column + 1)
+  local pos = self._positions[self._index]
+  self._cursor_hl_factory:reset():add("Todo", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
 end
 
 function Overlay.prev(self)
   self._index = ((self._index - 1) % #self._positions - 1) % #self._positions + 1
-  self._hl_pos = self._positions[self._index]
-  self._cursor_hl_factory:reset():add("Todo", self._hl_pos.row - self._row_offset - 1, self._hl_pos.column, self._hl_pos.column + 1)
+  local pos = self._positions[self._index]
+  self._cursor_hl_factory:reset():add("Todo", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
 end
 
 return M
