@@ -20,7 +20,7 @@ M.collect = function(bufnr, first_row, last_row)
   local lines = vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true)
   local row = first_row
   for _, line in ipairs(lines) do
-    local matched = matched_positions(line, "\\v\\k+", row)
+    local matched = matched_positions(line, "\\v[[:alnum:]]+", row)
     positions = vim.list_extend(positions, matched)
     row = row + 1
   end

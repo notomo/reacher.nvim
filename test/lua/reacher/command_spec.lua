@@ -34,4 +34,73 @@ hogea hogeb
     assert.cursor_word("hogeb")
   end)
 
+  it("can move to next match", function()
+    helper.set_lines([[
+    hogea
+    hogeb
+    hogec
+]])
+
+    command("Reacher")
+    command("Reacher next")
+    command("Reacher finish")
+
+    assert.cursor_word("hogeb")
+  end)
+
+  it("can move to wrapped next match", function()
+    helper.set_lines([[
+    hogea
+    hogeb
+    hogec
+]])
+
+    command("Reacher")
+    command("Reacher next")
+    command("Reacher next")
+    command("Reacher finish")
+
+    assert.cursor_word("hogec")
+
+    command("Reacher")
+    command("Reacher next")
+    command("Reacher finish")
+
+    assert.cursor_word("hogea")
+  end)
+
+  it("can move to prev match", function()
+    helper.set_lines([[
+    hogea
+    hogeb
+    hogec
+]])
+
+    command("Reacher")
+    command("Reacher next")
+    command("Reacher finish")
+
+    assert.cursor_word("hogeb")
+
+    command("Reacher")
+    command("Reacher prev")
+    command("Reacher finish")
+
+    assert.cursor_word("hogea")
+  end)
+
+  it("can move to wrapped prev match", function()
+    helper.set_lines([[
+    hogea
+    hogeb
+    hogec
+]])
+
+    command("Reacher")
+    command("Reacher prev")
+    command("Reacher finish")
+
+    assert.cursor_word("hogec")
+  end)
+
 end)

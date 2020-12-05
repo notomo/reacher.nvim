@@ -39,6 +39,7 @@ end
 
 function Inputer.close(self)
   windowlib.close(self.window_id)
+  vim.api.nvim_command("stopinsert")
 end
 
 return M

@@ -1,5 +1,6 @@
 local windowlib = require("reacher/lib/window")
 local highlightlib = require("reacher/lib/highlight")
+local HlFactory = require("reacher/lib/highlight").HlFactory
 local Origin = require("reacher/view/origin").Origin
 local Node = require("reacher/tree").Node
 
@@ -27,6 +28,8 @@ function Overlay.open(source, source_bufnr)
     _bufnr = bufnr,
     _row_offset = origin.first_row - 1,
     _all_positions = positions,
+    _hl_factory = HlFactory.new("reacher", bufnr),
+    _cursor_hl_factory = HlFactory.new("reacher-cursor", bufnr),
     _positions = {},
   }
   local overlay = setmetatable(tbl, Overlay)
@@ -40,9 +43,6 @@ function Overlay.open(source, source_bufnr)
 
   return overlay
 end
-
-local ns = vim.api.nvim_create_namespace("reacher")
-local current_ns = vim.api.nvim_create_namespace("reacher-current")
 
 function Overlay.update(self, input_line)
   local positions = {}
@@ -64,8 +64,8 @@ function Overlay.update(self, input_line)
     return
   end
 
-  vim.api.nvim_buf_clear_namespace(self._bufnr, ns, 0, -1)
-  vim.api.nvim_buf_clear_namespace(self._bufnr, current_ns, 0, -1)
+  local highlighter = self._hl_factory:reset()
+  local cursor_highlighter = self._cursor_hl_factory:reset()
 
   local cursor = self._origin.cursor
   self._index = 1
@@ -83,13 +83,14 @@ function Overlay.update(self, input_line)
       hl_pos = {row = pos.row, column = pos.column, y_diff = y_diff, x_diff = x_diff}
       self._index = i
     end
-    vim.api.nvim_buf_add_highlight(self._bufnr, ns, "WarningMsg", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
+
+    highlighter:add("WarningMsg", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
     local idx = root:search(i, pos.line)
     if idx ~= nil then
-      vim.api.nvim_buf_add_highlight(self._bufnr, ns, "String", pos.row - self._row_offset - 1, pos.column + idx - 1, pos.column + idx)
+      highlighter:add("String", pos.row - self._row_offset - 1, pos.column + idx - 1, pos.column + idx)
     end
   end
-  vim.api.nvim_buf_add_highlight(self._bufnr, current_ns, "Todo", hl_pos.row - self._row_offset - 1, hl_pos.column, hl_pos.column + 1)
+  cursor_highlighter:add("Todo", hl_pos.row - self._row_offset - 1, hl_pos.column, hl_pos.column + 1)
 
   self._hl_pos = hl_pos
 end
@@ -97,7 +98,6 @@ end
 function Overlay.close(self)
   windowlib.close(self._window_id)
   windowlib.enter(self._origin.id)
-  vim.api.nvim_command("stopinsert")
 end
 
 function Overlay.finish(self, pos)
@@ -109,15 +109,13 @@ end
 function Overlay.next(self)
   self._index = (self._index % #self._positions) + 1
   self._hl_pos = self._positions[self._index]
-  vim.api.nvim_buf_clear_namespace(self._bufnr, current_ns, 0, -1)
-  vim.api.nvim_buf_add_highlight(self._bufnr, current_ns, "Todo", self._hl_pos.row - self._row_offset - 1, self._hl_pos.column, self._hl_pos.column + 1)
+  self._cursor_hl_factory:reset():add("Todo", self._hl_pos.row - self._row_offset - 1, self._hl_pos.column, self._hl_pos.column + 1)
 end
 
 function Overlay.prev(self)
   self._index = ((self._index - 1) % #self._positions - 1) % #self._positions + 1
   self._hl_pos = self._positions[self._index]
-  vim.api.nvim_buf_clear_namespace(self._bufnr, current_ns, 0, -1)
-  vim.api.nvim_buf_add_highlight(self._bufnr, current_ns, "Todo", self._hl_pos.row - self._row_offset - 1, self._hl_pos.column, self._hl_pos.column + 1)
+  self._cursor_hl_factory:reset():add("Todo", self._hl_pos.row - self._row_offset - 1, self._hl_pos.column, self._hl_pos.column + 1)
 end
 
 return M
