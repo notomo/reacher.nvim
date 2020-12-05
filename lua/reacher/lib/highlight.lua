@@ -31,7 +31,7 @@ function HlFactory.reset(self, bufnr)
   return highlighter
 end
 
-M.set_background = function(window_id, opts)
+M.set_background = function(name, window_id, opts)
   local bg_hl_group = "Normal"
   if vim.api.nvim_win_get_config(window_id).relative ~= "" then
     bg_hl_group = "NormalFloat"
@@ -46,8 +46,12 @@ M.set_background = function(window_id, opts)
     guifg = opts.fg_default
   end
 
-  local cmd = ("highlight! ReacherBackground guibg=%s guifg=%s"):format(guibg, guifg)
+  local cmd = ("highlight! %s guibg=%s guifg=%s"):format(name, guibg, guifg)
   vim.api.nvim_command(cmd)
+end
+
+M.link = function(from, to)
+  vim.api.nvim_command(("highlight default link %s %s"):format(from, to))
 end
 
 return M

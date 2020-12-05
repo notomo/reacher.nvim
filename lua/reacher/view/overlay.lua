@@ -35,7 +35,7 @@ function Overlay.open(source, source_bufnr)
   }
   local overlay = setmetatable(tbl, Overlay)
 
-  highlightlib.set_background(origin.id, {
+  highlightlib.set_background("ReacherBackground", origin.id, {
     fg_hl_group = "Comment",
     fg_default = "#8d9eb2",
     bg_default = "#334152",
@@ -74,11 +74,11 @@ function Overlay.update(self, input_line)
       index = i
     end
 
-    highlighter:add("WarningMsg", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
+    highlighter:add("ReacherMatch", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
 
     local idx = root:search(i, pos.line)
     if idx ~= nil then
-      highlighter:add("String", pos.row - self._row_offset - 1, pos.column + idx - 1, pos.column + idx)
+      highlighter:add("ReacherEnd", pos.row - self._row_offset - 1, pos.column + idx - 1, pos.column + idx)
     end
   end
 
@@ -122,7 +122,25 @@ function Overlay._update_cursor(self, index)
   self._index = index
 
   local highlighter = self._cursor_hl_factory:reset()
-  highlighter:add("Todo", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
+  highlighter:add("ReacherCurrentMatch", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
+
+  local prev_idx = ((index - 1) % #self._positions - 1) % #self._positions + 1
+  if prev_idx ~= index then
+    local prev_pos = self._positions[prev_idx]
+    highlighter:add("ReacherPrevMatch", prev_pos.row - self._row_offset - 1, prev_pos.column, prev_pos.column + 1)
+  end
+
+  local next_idx = (index % #self._positions) + 1
+  if next_idx ~= index then
+    local next_pos = self._positions[next_idx]
+    highlighter:add("ReacherNextMatch", next_pos.row - self._row_offset - 1, next_pos.column, next_pos.column + 1)
+  end
 end
+
+highlightlib.link("ReacherEnd", "String")
+highlightlib.link("ReacherMatch", "WarningMsg")
+highlightlib.link("ReacherCurrentMatch", "Todo")
+highlightlib.link("ReacherPrevMatch", "Statement")
+highlightlib.link("ReacherNextMatch", "Statement")
 
 return M
