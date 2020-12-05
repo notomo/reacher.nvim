@@ -15,11 +15,12 @@ local matched_positions = function(line, pattern, row)
   return positions
 end
 
-M.collect = function(bufnr, first_row, last_row)
+M.collect = function(bufnr, first_row, last_row, frist_column, last_column)
   local positions = {}
   local lines = vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true)
   local row = first_row
   for _, line in ipairs(lines) do
+    line = line:sub(frist_column, last_column)
     local matched = matched_positions(line, "\\v[[:alnum:]]+", row)
     positions = vim.list_extend(positions, matched)
     row = row + 1

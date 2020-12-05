@@ -46,6 +46,8 @@ function Origin.new(bufnr)
     id = id,
     first_row = first_row,
     last_row = last_row,
+    first_column = saved.leftcol + 1,
+    last_column = saved.leftcol + width,
     cursor = {row = cursor_row, column = cursor_column},
     _row = row,
     _column = column,
