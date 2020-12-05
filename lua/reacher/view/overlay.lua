@@ -26,7 +26,6 @@ function Overlay.open(source, source_bufnr)
   local tbl = {
     _window_id = window_id,
     _origin = origin,
-    _bufnr = bufnr,
     _row_offset = origin.first_row - 1,
     _all_positions = positions,
     _hl_factory = HlFactory.new("reacher", bufnr),
@@ -94,6 +93,7 @@ end
 function Overlay.finish(self, pos)
   pos = pos or self._positions[self._index]
   vim.api.nvim_set_current_win(self._origin.id)
+  vim.api.nvim_command("normal! m'")
   vim.api.nvim_win_set_cursor(self._origin.id, {pos.row, pos.column + 1})
 end
 
