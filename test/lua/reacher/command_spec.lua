@@ -34,6 +34,25 @@ hogea hogeb
     assert.cursor_word("hogeb")
   end)
 
+  it("moves to the nearest", function()
+    helper.set_lines([[
+              hogea hogeb
+
+
+
+
+hogec
+]])
+
+    command("normal! j")
+    command("Reacher")
+
+    helper.sync_input("h")
+    command("Reacher finish")
+
+    assert.cursor_word("hogea")
+  end)
+
   it("filters with ignorecase", function()
     helper.set_lines([[
 Hoge
