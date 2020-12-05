@@ -5,6 +5,7 @@ Distance.__index = Distance
 M.Distance = Distance
 
 function Distance.new(p1, p2)
+  vim.validate({p1 = {p1, "table"}, p2 = {p2, "table"}})
   local tbl = {x = math.abs(p1.row - p2.row), y = math.abs(p1.column - p2.column)}
   return setmetatable(tbl, Distance)
 end

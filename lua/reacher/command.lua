@@ -14,28 +14,32 @@ function Command.start()
   View.open(source)
 end
 
-function Command.next()
+local move = function(name)
   local view = View.current()
   if view == nil then
     return
   end
-  view:next()
+  view:move(name)
+end
+
+function Command.first()
+  move("first")
 end
 
 function Command.prev()
-  local view = View.current()
-  if view == nil then
-    return
-  end
-  view:prev()
+  move("prev")
+end
+
+function Command.next()
+  move("next")
+end
+
+function Command.last()
+  move("last")
 end
 
 function Command.finish()
-  local view = View.current()
-  if view == nil then
-    return
-  end
-  view:finish()
+  move("finish")
 end
 
 M.close = function(id)
@@ -47,10 +51,10 @@ M.close = function(id)
 end
 
 M.main = function(...)
-  local cmd_name = ({...})[1] or "start"
-  local cmd = Command[cmd_name]
+  local name = ({...})[1] or "start"
+  local cmd = Command[name]
   if cmd == nil then
-    return vim.api.nvim_err_write("[reacher] not found command: " .. cmd_name .. "\n")
+    return vim.api.nvim_err_write("[reacher] not found command: " .. name .. "\n")
   end
 
   local _, err = xpcall(cmd, debug.traceback)

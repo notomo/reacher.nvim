@@ -34,16 +34,8 @@ function View.close(self)
   repository.delete(self._inputer.window_id)
 end
 
-function View.finish(self)
-  self._overlay:finish()
-end
-
-function View.next(self)
-  self._overlay:next()
-end
-
-function View.prev(self)
-  self._overlay:prev()
+function View.move(self, name)
+  self._overlay[name](self._overlay)
 end
 
 function View.get(id)

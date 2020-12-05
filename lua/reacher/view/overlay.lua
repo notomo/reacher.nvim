@@ -51,7 +51,6 @@ function Overlay.update(self, input_line)
   for _, pos in ipairs(self._all_positions) do
     if vim.startswith(pos.line, input_line) then
       table.insert(positions, pos)
-
       root:add(#positions, pos.line)
     end
   end
@@ -65,17 +64,14 @@ function Overlay.update(self, input_line)
     return
   end
 
+  local index = 1
+  local distance = Distance.new(self._origin.cursor, positions[index])
   local highlighter = self._hl_factory:reset()
-  local cursor_highlighter = self._cursor_hl_factory:reset()
-
-  self._index = 1
-
-  local distance = Distance.new(self._origin.cursor, positions[self._index])
   for i, pos in ipairs(positions) do
     local d = Distance.new(self._origin.cursor, pos)
     if d < distance then
       distance = d
-      self._index = i
+      index = i
     end
 
     highlighter:add("WarningMsg", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
@@ -86,13 +82,12 @@ function Overlay.update(self, input_line)
     end
   end
 
-  local pos = self._positions[self._index]
-  cursor_highlighter:add("Todo", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
+  self:_update_cursor(index)
 end
 
 function Overlay.close(self)
-  windowlib.close(self._window_id)
   windowlib.enter(self._origin.id)
+  windowlib.close(self._window_id)
 end
 
 function Overlay.finish(self, pos)
@@ -101,16 +96,33 @@ function Overlay.finish(self, pos)
   vim.api.nvim_win_set_cursor(self._origin.id, {pos.row, pos.column + 1})
 end
 
+function Overlay.first(self)
+  self:_update_cursor(1)
+end
+
 function Overlay.next(self)
-  self._index = (self._index % #self._positions) + 1
-  local pos = self._positions[self._index]
-  self._cursor_hl_factory:reset():add("Todo", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
+  local index = (self._index % #self._positions) + 1
+  self:_update_cursor(index)
 end
 
 function Overlay.prev(self)
-  self._index = ((self._index - 1) % #self._positions - 1) % #self._positions + 1
-  local pos = self._positions[self._index]
-  self._cursor_hl_factory:reset():add("Todo", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
+  local index = ((self._index - 1) % #self._positions - 1) % #self._positions + 1
+  self:_update_cursor(index)
+end
+
+function Overlay.last(self)
+  self:_update_cursor(#self._positions)
+end
+
+function Overlay._update_cursor(self, index)
+  local pos = self._positions[index]
+  if pos == nil then
+    return
+  end
+  self._index = index
+
+  local highlighter = self._cursor_hl_factory:reset()
+  highlighter:add("Todo", pos.row - self._row_offset - 1, pos.column, pos.column + 1)
 end
 
 return M
