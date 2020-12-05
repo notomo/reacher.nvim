@@ -34,6 +34,19 @@ hogea hogeb
     assert.cursor_word("hogeb")
   end)
 
+  it("filters with ignorecase", function()
+    helper.set_lines([[
+Hoge
+foo
+]])
+
+    command("Reacher")
+
+    helper.sync_input("H")
+
+    assert.cursor_word("Hoge")
+  end)
+
   it("can move the cursor to the next match", function()
     helper.set_lines([[
     hogea

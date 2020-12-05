@@ -48,8 +48,9 @@ end
 function Overlay.update(self, input_line)
   local positions = {}
   local root = Node.new()
+  local line = input_line:lower()
   for _, pos in ipairs(self._all_positions) do
-    if vim.startswith(pos.line, input_line) then
+    if vim.startswith(pos.line:lower(), line) then
       table.insert(positions, pos)
       root:add(#positions, pos.line)
     end
