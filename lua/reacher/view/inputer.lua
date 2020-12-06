@@ -17,9 +17,8 @@ function Inputer.open(callback)
     external = false,
     style = "minimal",
   })
-  vim.api.nvim_command("startinsert")
   vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
-  vim.api.nvim_buf_set_name(bufnr, "reacher://reacher")
+  vim.api.nvim_buf_set_name(bufnr, "reacher://REACHER")
   vim.api.nvim_buf_set_option(bufnr, "filetype", "reacher")
   vim.api.nvim_win_set_option(window_id, "winhighlight", "Normal:Normal")
 
@@ -32,6 +31,7 @@ function Inputer.open(callback)
       callback(input_line)
     end,
   })
+  vim.api.nvim_command("startinsert")
 
   local tbl = {window_id = window_id}
   return setmetatable(tbl, Inputer)

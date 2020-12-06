@@ -1,3 +1,5 @@
+local Position = require("reacher/position").Position
+
 local M = {}
 
 local Origin = {}
@@ -14,9 +16,9 @@ function Origin.new(bufnr)
 
   local id = vim.api.nvim_get_current_win()
 
-  local cursor_row, cursor_column = unpack(vim.api.nvim_win_get_cursor(id))
+  local cursor = Position.cursor(id)
   local saved = vim.fn.winsaveview()
-  vim.api.nvim_win_set_cursor(id, {cursor_row, 0})
+  vim.api.nvim_win_set_cursor(id, {cursor.row, 0})
   local number_sign_width = vim.fn.wincol()
   vim.fn.winrestview(saved)
 
@@ -43,16 +45,14 @@ function Origin.new(bufnr)
   local last_column = saved.leftcol + width
 
   local lines = vim.tbl_map(function(line)
-    return line:sub(first_column, last_column)
+    return line:sub(first_column, last_column):lower()
   end, vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true))
 
   local tbl = {
     id = id,
     lines = lines,
-    row_offset = first_row - 1,
-    column_offset = first_column - 1,
-    _first_row = first_row,
-    _cursor = {row = cursor_row, column = cursor_column},
+    offset = Position.new(first_row - 1, first_column - 1),
+    _cursor = cursor,
     _row = row,
     _column = column,
     _width = width,
@@ -69,7 +69,7 @@ function Origin.copy_to_floating_win(self, bufnr)
     relative = "win",
     row = self._row,
     col = self._column,
-    bufpos = {self._first_row - 1, 0},
+    bufpos = {self.offset.row, 0},
     external = false,
     style = "minimal",
     focusable = false,
@@ -78,8 +78,8 @@ function Origin.copy_to_floating_win(self, bufnr)
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, self.lines)
   vim.api.nvim_buf_set_option(bufnr, "textwidth", self._options.textwidth)
   vim.api.nvim_win_set_cursor(window_id, {
-    self._cursor.row - self.row_offset,
-    self._cursor.column - self.column_offset,
+    self._cursor.row - self.offset.row,
+    self._cursor.column - self.offset.column,
   })
   vim.api.nvim_win_set_option(window_id, "list", self._options.list)
   vim.api.nvim_win_set_option(window_id, "wrap", self._options.wrap)

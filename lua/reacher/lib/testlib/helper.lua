@@ -64,4 +64,20 @@ asserts.create("cursor_word"):register_eq(function()
   return vim.fn.expand("<cword>")
 end)
 
+asserts.create("error_message"):register(function(self)
+  return function(_, args)
+    local expected = args[1]
+    local f = args[2]
+    local ok, actual = pcall(f)
+    if ok then
+      self:set_positive("should be error")
+      self:set_negative("should be error")
+      return false
+    end
+    self:set_positive(("error message should end with '%s', but actual: '%s'"):format(expected, actual))
+    self:set_negative(("error message should not end with '%s', but actual: '%s'"):format(expected, actual))
+    return vim.endswith(actual, expected)
+  end
+end)
+
 return M

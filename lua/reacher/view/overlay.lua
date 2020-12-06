@@ -4,6 +4,7 @@ local HlFactory = require("reacher/lib/highlight").HlFactory
 local Origin = require("reacher/view/origin").Origin
 local Node = require("reacher/tree").Node
 local Distance = require("reacher/distance").Distance
+local Position = require("reacher/position").Position
 
 local M = {}
 
@@ -26,10 +27,9 @@ function Overlay.open(source, source_bufnr)
   vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
   vim.api.nvim_win_set_option(window_id, "winhighlight", "Normal:ReacherBackground")
 
-  local cursor = vim.api.nvim_win_get_cursor(window_id)
   local tbl = {
     _window_id = window_id,
-    _cursor = {row = cursor[1], column = cursor[2]},
+    _cursor = Position.cursor(window_id),
     _origin = origin,
     _hl_factory = HlFactory.new("reacher", bufnr),
     _cursor_hl_factory = HlFactory.new("reacher-cursor", bufnr),
@@ -53,10 +53,9 @@ function Overlay.update(self, input_line)
   local root = Node.new()
   input_line = input_line:lower()
   for _, pos in ipairs(self._all_positions) do
-    local line = pos.line:lower()
-    if vim.startswith(line, input_line) then
+    if vim.startswith(pos.line, input_line) then
       table.insert(positions, pos)
-      root:add(#positions, line)
+      root:add(#positions, pos.line)
     end
   end
   self._positions = positions
@@ -81,7 +80,7 @@ function Overlay.update(self, input_line)
 
     highlighter:add("ReacherMatch", pos.row - 1, pos.column, pos.column + 1)
 
-    local idx = root:search(i, pos.line:lower())
+    local idx = root:search(i, pos.line)
     if idx ~= nil then
       highlighter:add("ReacherEnd", pos.row - 1, pos.column + idx - 1, pos.column + idx)
     end
@@ -100,8 +99,8 @@ function Overlay.finish(self, pos)
   windowlib.enter(self._origin.id)
   vim.api.nvim_command("normal! m'")
   vim.api.nvim_win_set_cursor(self._origin.id, {
-    pos.row + self._origin.row_offset,
-    pos.column + self._origin.column_offset + 1,
+    pos.row + self._origin.offset.row,
+    pos.column + self._origin.offset.column + 1, -- + 1 for stopinsert
   })
 end
 

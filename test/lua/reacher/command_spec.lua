@@ -170,4 +170,26 @@ foo
     assert.cursor_word("hogec")
   end)
 
+  it("show error if no targets", function()
+    assert.error_message("no targets", function()
+      command("Reacher")
+    end)
+  end)
+
+  it("cannot open the multiple", function()
+    helper.set_lines([[
+hogea
+hogeb
+]])
+
+    command("Reacher")
+
+    helper.sync_input("h")
+    assert.window_count(3)
+
+    command("Reacher")
+
+    assert.window_count(3)
+  end)
+
 end)
