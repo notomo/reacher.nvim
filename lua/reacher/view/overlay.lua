@@ -15,8 +15,8 @@ M.Overlay = Overlay
 function Overlay.open(source, source_bufnr)
   local origin = Origin.new(source_bufnr)
 
-  local positions = source.collect(origin.lines)
-  if #positions == 0 then
+  local targets = source.collect(origin.lines)
+  if #targets == 0 then
     return nil, "no targets"
   end
 
@@ -33,8 +33,8 @@ function Overlay.open(source, source_bufnr)
     _origin = origin,
     _hl_factory = HlFactory.new("reacher", bufnr),
     _cursor_hl_factory = HlFactory.new("reacher-cursor", bufnr),
-    _all_positions = positions,
-    _positions = {},
+    _all_targets = targets,
+    _targets = {},
   }
   local overlay = setmetatable(tbl, Overlay)
 
@@ -49,40 +49,40 @@ function Overlay.open(source, source_bufnr)
 end
 
 function Overlay.update(self, input_line)
-  local positions = {}
+  local targets = {}
   local root = Node.new()
   input_line = input_line:lower()
-  for _, pos in ipairs(self._all_positions) do
-    if vim.startswith(pos.line, input_line) then
-      table.insert(positions, pos)
-      root:add(#positions, pos.line)
+  for _, target in ipairs(self._all_targets) do
+    if vim.startswith(target.str, input_line) then
+      table.insert(targets, target)
+      root:add(#targets, target.str)
     end
   end
-  self._positions = positions
+  self._targets = targets
 
-  if #positions == 1 then
-    self:finish(positions[1])
+  if #targets == 1 then
+    self:finish(targets[1])
     return
-  elseif #positions == 0 then
+  elseif #targets == 0 then
     self:close()
     return
   end
 
   local index = 1
-  local distance = Distance.new(self._cursor, positions[index])
+  local distance = Distance.new(self._cursor, targets[index])
   local highlighter = self._hl_factory:reset()
-  for i, pos in ipairs(positions) do
-    local d = Distance.new(self._cursor, pos)
+  for i, target in ipairs(targets) do
+    local d = Distance.new(self._cursor, target)
     if d < distance then
       distance = d
       index = i
     end
 
-    highlighter:add("ReacherMatch", pos.row - 1, pos.column, pos.column + 1)
+    highlighter:add("ReacherMatch", target.row - 1, target.column, target.column + 1)
 
-    local idx = root:search(i, pos.line)
+    local idx = root:search(i, target.str)
     if idx ~= nil then
-      highlighter:add("ReacherEnd", pos.row - 1, pos.column + idx - 1, pos.column + idx)
+      highlighter:add("ReacherEnd", target.row - 1, target.column + idx - 1, target.column + idx)
     end
   end
 
@@ -94,13 +94,13 @@ function Overlay.close(self)
   windowlib.close(self._window_id)
 end
 
-function Overlay.finish(self, pos)
-  pos = pos or self._positions[self._index]
+function Overlay.finish(self, target)
+  target = target or self._targets[self._index]
   windowlib.enter(self._origin.id)
   vim.api.nvim_command("normal! m'")
   vim.api.nvim_win_set_cursor(self._origin.id, {
-    pos.row + self._origin.offset.row,
-    pos.column + self._origin.offset.column + 1, -- + 1 for stopinsert
+    target.row + self._origin.offset.row,
+    target.column + self._origin.offset.column + 1, -- + 1 for stopinsert
   })
 end
 
@@ -109,39 +109,39 @@ function Overlay.first(self)
 end
 
 function Overlay.next(self)
-  local index = (self._index % #self._positions) + 1
+  local index = (self._index % #self._targets) + 1
   self:_update_cursor(index)
 end
 
 function Overlay.prev(self)
-  local index = ((self._index - 1) % #self._positions - 1) % #self._positions + 1
+  local index = ((self._index - 1) % #self._targets - 1) % #self._targets + 1
   self:_update_cursor(index)
 end
 
 function Overlay.last(self)
-  self:_update_cursor(#self._positions)
+  self:_update_cursor(#self._targets)
 end
 
 function Overlay._update_cursor(self, index)
-  local pos = self._positions[index]
-  if pos == nil then
+  local target = self._targets[index]
+  if target == nil then
     return
   end
   self._index = index
 
   local highlighter = self._cursor_hl_factory:reset()
-  highlighter:add("ReacherCurrentMatch", pos.row - 1, pos.column, pos.column + 1)
+  highlighter:add("ReacherCurrentMatch", target.row - 1, target.column, target.column + 1)
 
-  local prev_idx = ((index - 1) % #self._positions - 1) % #self._positions + 1
+  local prev_idx = ((index - 1) % #self._targets - 1) % #self._targets + 1
   if prev_idx ~= index then
-    local prev_pos = self._positions[prev_idx]
-    highlighter:add("ReacherPrevMatch", prev_pos.row - 1, prev_pos.column, prev_pos.column + 1)
+    local prev_target = self._targets[prev_idx]
+    highlighter:add("ReacherPrevMatch", prev_target.row - 1, prev_target.column, prev_target.column + 1)
   end
 
-  local next_idx = (index % #self._positions) + 1
+  local next_idx = (index % #self._targets) + 1
   if next_idx ~= index then
-    local next_pos = self._positions[next_idx]
-    highlighter:add("ReacherNextMatch", next_pos.row - 1, next_pos.column, next_pos.column + 1)
+    local next_target = self._targets[next_idx]
+    highlighter:add("ReacherNextMatch", next_target.row - 1, next_target.column, next_target.column + 1)
   end
 end
 
