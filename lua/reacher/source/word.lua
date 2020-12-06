@@ -1,9 +1,8 @@
 local M = {}
 
-local matched_positions = function(line, pattern, row)
+local matched_positions = function(line, regex, row)
   local positions = {}
   local index = 1
-  local regex = vim.regex(pattern)
   repeat
     local str = line:sub(index)
     local s, e = regex:match_str(str)
@@ -15,15 +14,12 @@ local matched_positions = function(line, pattern, row)
   return positions
 end
 
-M.collect = function(bufnr, first_row, last_row, frist_column, last_column)
+M.collect = function(lines)
   local positions = {}
-  local lines = vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true)
-  local row = first_row
-  for _, line in ipairs(lines) do
-    line = line:sub(frist_column, last_column)
-    local matched = matched_positions(line, "\\v[[:alnum:]]+", row)
+  local regex = vim.regex("\\v[[:alnum:]]+")
+  for i, line in ipairs(lines) do
+    local matched = matched_positions(line, regex, i, 0)
     positions = vim.list_extend(positions, matched)
-    row = row + 1
   end
   return positions
 end

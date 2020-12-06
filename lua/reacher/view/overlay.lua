@@ -14,6 +14,11 @@ M.Overlay = Overlay
 function Overlay.open(source, source_bufnr)
   local origin = Origin.new(source_bufnr)
 
+  local positions = source.collect(origin.lines)
+  if #positions == 0 then
+    return nil, "no targets"
+  end
+
   local bufnr = vim.api.nvim_create_buf(false, true)
   local window_id = origin:copy_to_floating_win(bufnr)
 
@@ -21,16 +26,14 @@ function Overlay.open(source, source_bufnr)
   vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
   vim.api.nvim_win_set_option(window_id, "winhighlight", "Normal:ReacherBackground")
 
-  local positions = source.collect(source_bufnr, origin.first_row, origin.last_row, origin.first_column, origin.last_column)
-
+  local cursor = vim.api.nvim_win_get_cursor(window_id)
   local tbl = {
     _window_id = window_id,
+    _cursor = {row = cursor[1], column = cursor[2]},
     _origin = origin,
-    _row_offset = origin.first_row - 1,
-    _column_offset = origin.first_column - 1,
-    _all_positions = positions,
     _hl_factory = HlFactory.new("reacher", bufnr),
     _cursor_hl_factory = HlFactory.new("reacher-cursor", bufnr),
+    _all_positions = positions,
     _positions = {},
   }
   local overlay = setmetatable(tbl, Overlay)
@@ -42,7 +45,7 @@ function Overlay.open(source, source_bufnr)
   })
   overlay:update("")
 
-  return overlay
+  return overlay, nil
 end
 
 function Overlay.update(self, input_line)
@@ -67,24 +70,20 @@ function Overlay.update(self, input_line)
   end
 
   local index = 1
-  local cursor = {
-    row = self._origin.cursor.row,
-    column = self._origin.cursor.column - self._column_offset,
-  }
-  local distance = Distance.new(cursor, positions[index])
+  local distance = Distance.new(self._cursor, positions[index])
   local highlighter = self._hl_factory:reset()
   for i, pos in ipairs(positions) do
-    local d = Distance.new(cursor, pos)
+    local d = Distance.new(self._cursor, pos)
     if d < distance then
       distance = d
       index = i
     end
 
-    highlighter:add("ReacherMatch", pos.row - self._row_offset - 1, pos.column + self._column_offset, pos.column + self._column_offset + 1)
+    highlighter:add("ReacherMatch", pos.row - 1, pos.column, pos.column + 1)
 
     local idx = root:search(i, pos.line:lower())
     if idx ~= nil then
-      highlighter:add("ReacherEnd", pos.row - self._row_offset - 1, pos.column + idx + self._column_offset - 1, pos.column + idx + self._column_offset)
+      highlighter:add("ReacherEnd", pos.row - 1, pos.column + idx - 1, pos.column + idx)
     end
   end
 
@@ -98,9 +97,12 @@ end
 
 function Overlay.finish(self, pos)
   pos = pos or self._positions[self._index]
-  vim.api.nvim_set_current_win(self._origin.id)
+  windowlib.enter(self._origin.id)
   vim.api.nvim_command("normal! m'")
-  vim.api.nvim_win_set_cursor(self._origin.id, {pos.row, pos.column + self._column_offset + 1})
+  vim.api.nvim_win_set_cursor(self._origin.id, {
+    pos.row + self._origin.row_offset,
+    pos.column + self._origin.column_offset + 1,
+  })
 end
 
 function Overlay.first(self)
@@ -129,18 +131,18 @@ function Overlay._update_cursor(self, index)
   self._index = index
 
   local highlighter = self._cursor_hl_factory:reset()
-  highlighter:add("ReacherCurrentMatch", pos.row - self._row_offset - 1, pos.column + self._column_offset, pos.column + self._column_offset + 1)
+  highlighter:add("ReacherCurrentMatch", pos.row - 1, pos.column, pos.column + 1)
 
   local prev_idx = ((index - 1) % #self._positions - 1) % #self._positions + 1
   if prev_idx ~= index then
     local prev_pos = self._positions[prev_idx]
-    highlighter:add("ReacherPrevMatch", prev_pos.row - self._row_offset - 1, prev_pos.column + self._column_offset, prev_pos.column + self._column_offset + 1)
+    highlighter:add("ReacherPrevMatch", prev_pos.row - 1, prev_pos.column, prev_pos.column + 1)
   end
 
   local next_idx = (index % #self._positions) + 1
   if next_idx ~= index then
     local next_pos = self._positions[next_idx]
-    highlighter:add("ReacherNextMatch", next_pos.row - self._row_offset - 1, next_pos.column + self._column_offset, next_pos.column + self._column_offset + 1)
+    highlighter:add("ReacherNextMatch", next_pos.row - 1, next_pos.column, next_pos.column + 1)
   end
 end
 

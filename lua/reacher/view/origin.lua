@@ -5,10 +5,6 @@ Origin.__index = Origin
 M.Origin = Origin
 
 function Origin.new(bufnr)
-  local first_row = vim.fn.line("w0")
-  local last_row = vim.fn.line("w$")
-  local lines = vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true)
-
   local options = {
     list = vim.wo.list,
     wrap = vim.wo.wrap,
@@ -29,11 +25,10 @@ function Origin.new(bufnr)
 
   local row = 0
   local column = 0
-  local first_column = saved.leftcol
-  if first_column >= number_sign_width then
+  if saved.leftcol >= number_sign_width then
     column = number_sign_width + 1
-  elseif first_column >= 1 then
-    column = first_column
+  elseif saved.leftcol >= 1 then
+    column = saved.leftcol
   end
 
   local config = vim.api.nvim_win_get_config(id)
@@ -42,48 +37,49 @@ function Origin.new(bufnr)
     column = column + config.col[false]
   end
 
+  local first_row = vim.fn.line("w0")
+  local last_row = vim.fn.line("w$")
+  local first_column = saved.leftcol + 1
+  local last_column = saved.leftcol + width
+
+  local lines = vim.tbl_map(function(line)
+    return line:sub(first_column, last_column)
+  end, vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true))
+
   local tbl = {
     id = id,
-    first_row = first_row,
-    last_row = last_row,
-    first_column = saved.leftcol + 1,
-    last_column = saved.leftcol + width,
-    cursor = {row = cursor_row, column = cursor_column},
+    lines = lines,
+    row_offset = first_row - 1,
+    column_offset = first_column - 1,
+    _first_row = first_row,
+    _cursor = {row = cursor_row, column = cursor_column},
     _row = row,
     _column = column,
     _width = width,
     _height = height,
-    _saved = saved,
-    _lines = lines,
     _options = options,
   }
   return setmetatable(tbl, Origin)
 end
 
 function Origin.copy_to_floating_win(self, bufnr)
-  local window_id = vim.api.nvim_open_win(bufnr, true, {
+  local window_id = vim.api.nvim_open_win(bufnr, false, {
     width = self._width,
     height = self._height,
     relative = "win",
     row = self._row,
     col = self._column,
-    bufpos = {self.first_row - 1, 0},
+    bufpos = {self._first_row - 1, 0},
     external = false,
     style = "minimal",
+    focusable = false,
   })
 
-  vim.fn.winrestview({
-    col = self._saved.col,
-    coladd = self._saved.coladd,
-    leftcol = self._saved.leftcol,
-    skipcol = self._saved.skipcol,
-  })
-
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, self._lines)
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, self.lines)
   vim.api.nvim_buf_set_option(bufnr, "textwidth", self._options.textwidth)
   vim.api.nvim_win_set_cursor(window_id, {
-    self.cursor.row - (self.first_row - 1),
-    self.cursor.column,
+    self._cursor.row - self.row_offset,
+    self._cursor.column - self.column_offset,
   })
   vim.api.nvim_win_set_option(window_id, "list", self._options.list)
   vim.api.nvim_win_set_option(window_id, "wrap", self._options.wrap)

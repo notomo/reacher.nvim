@@ -1,4 +1,5 @@
 local modulelib = require("reacher/lib/module")
+local messagelib = require("reacher/lib/message")
 local View = require("reacher/view").View
 
 local M = {}
@@ -9,9 +10,12 @@ function Command.start()
   local source_name = "word" -- TODO
   local source = modulelib.find_source(source_name)
   if source == nil then
-    return "[reacher] not found source: " .. source_name
+    return "not found source: " .. source_name
   end
-  View.open(source)
+  local err = View.open(source)
+  if err ~= nil then
+    return err
+  end
 end
 
 local move = function(name)
@@ -54,12 +58,12 @@ M.main = function(...)
   local name = ({...})[1] or "start"
   local cmd = Command[name]
   if cmd == nil then
-    return vim.api.nvim_err_write("[reacher] not found command: " .. name .. "\n")
+    return messagelib.error("not found command: " .. name)
   end
 
   local _, err = xpcall(cmd, debug.traceback)
   if err ~= nil then
-    return vim.api.nvim_err_write(err .. "\n")
+    return messagelib.error(err)
   end
 end
 

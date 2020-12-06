@@ -11,7 +11,11 @@ M.View = View
 function View.open(source)
   local source_bufnr = vim.api.nvim_get_current_buf()
 
-  local overlay = Overlay.open(source, source_bufnr)
+  local overlay, err = Overlay.open(source, source_bufnr)
+  if err ~= nil then
+    return err
+  end
+
   local inputer = Inputer.open(function(input_line)
     vim.schedule(function()
       overlay:update(input_line)
@@ -23,8 +27,6 @@ function View.open(source)
   local view = setmetatable(tbl, View)
 
   repository.set(inputer.window_id, view)
-
-  return view
 end
 
 function View.close(self)
