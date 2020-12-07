@@ -4,12 +4,15 @@ local Node = {}
 Node.__index = Node
 M.Node = Node
 
-function Node.new()
-  local tbl = {}
-  return setmetatable(tbl, Node)
+function Node.new(strs)
+  local self = setmetatable({}, Node)
+  for i, str in ipairs(strs) do
+    self:_add(i, str)
+  end
+  return self
 end
 
-function Node.add(self, id, name)
+function Node._add(self, id, name)
   local data = self
   for i = 1, #name do
     local c = name:sub(i, i)
