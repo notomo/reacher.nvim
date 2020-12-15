@@ -45,7 +45,7 @@ function Origin.new(bufnr)
   local last_column = saved.leftcol + width
 
   local lines = vim.tbl_map(function(line)
-    return line:sub(first_column, last_column):lower()
+    return line:sub(first_column, last_column)
   end, vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true))
 
   local tbl = {
