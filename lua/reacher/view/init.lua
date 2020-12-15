@@ -1,4 +1,4 @@
-local repository = require("reacher/lib/repository")
+local repository = require("reacher/lib/repository").Repository.new("view")
 local Overlay = require("reacher/view/overlay").Overlay
 local Inputer = require("reacher/view/inputer").Inputer
 
@@ -26,14 +26,14 @@ function View.open(source)
   local tbl = {_overlay = overlay, _inputer = inputer}
   local view = setmetatable(tbl, View)
 
-  repository.set(inputer.window_id, view)
+  repository:set(inputer.window_id, view)
 end
 
 function View.close(self)
   self._inputer:close()
   self._overlay:close()
 
-  repository.delete(self._inputer.window_id)
+  repository:delete(self._inputer.window_id)
 end
 
 function View.move(self, name)
@@ -41,7 +41,7 @@ function View.move(self, name)
 end
 
 function View.get(id)
-  return repository.get(id)
+  return repository:get(id)
 end
 
 function View.current()

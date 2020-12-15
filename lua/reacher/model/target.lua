@@ -1,4 +1,4 @@
-local Position = require("reacher/position").Position
+local Position = require("reacher/model/position").Position
 
 local M = {}
 

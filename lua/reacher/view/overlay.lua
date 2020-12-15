@@ -2,10 +2,10 @@ local windowlib = require("reacher/lib/window")
 local highlightlib = require("reacher/lib/highlight")
 local HlFactory = require("reacher/lib/highlight").HlFactory
 local Origin = require("reacher/view/origin").Origin
-local Node = require("reacher/tree").Node
-local Distance = require("reacher/distance").Distance
-local Position = require("reacher/position").Position
-local Targets = require("reacher/target").Targets
+local Node = require("reacher/model/node").Node
+local Distance = require("reacher/model/distance").Distance
+local Position = require("reacher/model/position").Position
+local Targets = require("reacher/model/target").Targets
 
 local M = {}
 
