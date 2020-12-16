@@ -64,6 +64,11 @@ function Overlay.update(self, input_line)
     return
   end
 
+  self._cursor_width = #input_line
+  if self._cursor_width == 0 then
+    self._cursor_width = 1
+  end
+
   local root = Node.new(vim.tbl_map(function(target)
     return target.str
   end, self._targets:values()))
@@ -78,7 +83,7 @@ function Overlay.update(self, input_line)
       index = i
     end
 
-    highlighter:add("ReacherMatch", target.row - 1, target.column, target.column + 1)
+    highlighter:add("ReacherMatch", target.row - 1, target.column, target.column + self._cursor_width)
 
     local idx = root:search(i, target.str)
     if idx ~= nil then
@@ -128,16 +133,16 @@ function Overlay._update_cursor(self, targets)
   self._targets = targets
 
   local highlighter = self._cursor_hl_factory:reset()
-  highlighter:add("ReacherCurrentMatch", target.row - 1, target.column, target.column + 1)
+  highlighter:add("ReacherCurrentMatch", target.row - 1, target.column, target.column + self._cursor_width)
 
   local prev_target = targets:prev():current()
   if prev_target ~= target then
-    highlighter:add("ReacherPrevMatch", prev_target.row - 1, prev_target.column, prev_target.column + 1)
+    highlighter:add("ReacherPrevMatch", prev_target.row - 1, prev_target.column, prev_target.column + self._cursor_width)
   end
 
   local next_target = targets:next():current()
   if next_target ~= target then
-    highlighter:add("ReacherNextMatch", next_target.row - 1, next_target.column, next_target.column + 1)
+    highlighter:add("ReacherNextMatch", next_target.row - 1, next_target.column, next_target.column + self._cursor_width)
   end
 end
 
