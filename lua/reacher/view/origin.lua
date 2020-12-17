@@ -76,17 +76,17 @@ function Origin.copy_to_floating_win(self, bufnr)
   })
 
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, self.lines)
-  vim.api.nvim_buf_set_option(bufnr, "textwidth", self._options.textwidth)
+  vim.bo[bufnr].textwidth = self._options.textwidth
   vim.api.nvim_win_set_cursor(window_id, {
     self._cursor.row - self.offset.row,
     self._cursor.column - self.offset.column,
   })
-  vim.api.nvim_win_set_option(window_id, "list", self._options.list)
-  vim.api.nvim_win_set_option(window_id, "wrap", self._options.wrap)
+  vim.wo[window_id].list = self._options.list
+  vim.wo[window_id].wrap = self._options.wrap
 
   local listchars = table.concat(vim.fn.split(self._options.listchars, ",precedes:."))
   listchars = table.concat(vim.split(listchars, ",extends:.", true))
-  vim.api.nvim_win_set_option(window_id, "listchars", listchars)
+  vim.wo[window_id].listchars = listchars
 
   return window_id
 end

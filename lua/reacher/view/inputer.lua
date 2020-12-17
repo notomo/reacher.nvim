@@ -17,10 +17,11 @@ function Inputer.open(callback)
     external = false,
     style = "minimal",
   })
-  vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
+  vim.bo[bufnr].bufhidden = "wipe"
   vim.api.nvim_buf_set_name(bufnr, "reacher://REACHER")
-  vim.api.nvim_buf_set_option(bufnr, "filetype", "reacher")
-  vim.api.nvim_win_set_option(window_id, "winhighlight", "Normal:Normal")
+  vim.bo[bufnr].filetype = "reacher"
+  vim.wo[window_id].winhighlight = "Normal:Normal,SignColumn:Normal"
+  vim.wo[window_id].signcolumn = "yes:1"
 
   local on_leave = ("autocmd WinClosed,WinLeave,TabLeave,BufLeave,InsertLeave <buffer=%s> ++once lua require 'reacher/command'.close(%s)"):format(bufnr, window_id)
   vim.api.nvim_command(on_leave)

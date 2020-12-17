@@ -25,9 +25,9 @@ function Overlay.open(source, source_bufnr)
   local bufnr = vim.api.nvim_create_buf(false, true)
   local window_id = origin:copy_to_floating_win(bufnr)
 
-  vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
-  vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
-  vim.api.nvim_win_set_option(window_id, "winhighlight", "Normal:ReacherBackground")
+  vim.bo[bufnr].bufhidden = "wipe"
+  vim.bo[bufnr].modifiable = false
+  vim.wo[window_id].winhighlight = "Normal:ReacherBackground"
 
   local tbl = {
     _window_id = window_id,
