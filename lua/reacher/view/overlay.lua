@@ -6,6 +6,7 @@ local Node = require("reacher/model/node").Node
 local Distance = require("reacher/model/distance").Distance
 local Position = require("reacher/model/position").Position
 local Targets = require("reacher/model/target").Targets
+local Target = require("reacher/model/target").Target
 
 local M = {}
 
@@ -59,9 +60,6 @@ function Overlay.update(self, input_line)
   if length == 1 then
     self:finish(self._targets[1])
     return
-  elseif length == 0 then
-    self:close()
-    return
   end
 
   self._cursor_width = #input_line
@@ -73,7 +71,7 @@ function Overlay.update(self, input_line)
     return target.str
   end, self._targets:values()))
 
-  local distance = Distance.new(self._cursor, self._targets:current())
+  local distance = Distance.new(self._cursor, self._targets:current() or Target.new(0, 0, ""))
   local highlighter = self._hl_factory:reset()
   local index = 1
   for i, target in self._targets:iter_all() do
@@ -101,6 +99,10 @@ end
 
 function Overlay.finish(self, target)
   target = target or self._targets:current()
+  if target == nil then
+    return self:close()
+  end
+
   windowlib.enter(self._origin.id)
   vim.api.nvim_command("normal! m'")
   vim.api.nvim_win_set_cursor(self._origin.id, {
@@ -126,13 +128,14 @@ function Overlay.last(self)
 end
 
 function Overlay._update_cursor(self, targets)
+  local highlighter = self._cursor_hl_factory:reset()
+
+  self._targets = targets
   local target = targets:current()
   if target == nil then
     return
   end
-  self._targets = targets
 
-  local highlighter = self._cursor_hl_factory:reset()
   highlighter:add("ReacherCurrentMatch", target.row - 1, target.column, target.column + self._cursor_width)
 
   local prev_target = targets:prev():current()

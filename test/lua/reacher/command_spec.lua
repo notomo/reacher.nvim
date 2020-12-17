@@ -192,4 +192,22 @@ hogeb
     assert.window_count(3)
   end)
 
+  it("`finish` does nothing if there is no targets", function()
+    helper.set_lines([[
+hoge
+foo
+]])
+    helper.search("foo")
+
+    command("Reacher")
+
+    helper.sync_input("hogea")
+    assert.window_count(3)
+
+    command("Reacher finish")
+
+    assert.window_count(1)
+    assert.cursor_word("foo")
+  end)
+
 end)

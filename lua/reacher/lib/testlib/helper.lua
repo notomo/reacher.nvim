@@ -33,6 +33,18 @@ M.input = function(text)
   vim.api.nvim_put({text}, "c", true, true)
 end
 
+M.search = function(pattern)
+  local result = vim.fn.search(pattern)
+  if result == 0 then
+    local info = debug.getinfo(2)
+    local pos = ("%s:%d"):format(info.source, info.currentline)
+    local lines = table.concat(vim.fn.getbufline("%", 1, "$"), "\n")
+    local msg = ("on %s: `%s` not found in buffer:\n%s"):format(pos, pattern, lines)
+    assert(false, msg)
+  end
+  return result
+end
+
 M.sync_input = function(text)
   local finished = false
   require("reacher/view")._after = function()
