@@ -14,22 +14,23 @@ hoge foo
     command("Reacher")
     assert.window_count(3)
 
-    helper.sync_input("h")
+    helper.sync_input("f")
+    command("Reacher finish")
 
-    assert.cursor_word("hoge")
+    assert.cursor_word("foo")
   end)
 
-  it("can search word by chars", function()
+  it("can search word by two words", function()
     helper.set_lines([[
-hogea hogeb
+hogea foo
+hogeb bar
 ]])
 
     command("Reacher")
 
     helper.sync_input("hoge")
-    assert.window_count(3)
-
-    helper.sync_input("b")
+    helper.sync_input(" bar")
+    command("Reacher finish")
 
     assert.cursor_word("hogeb")
   end)
@@ -55,13 +56,14 @@ hogec
 
   it("filters with ignorecase", function()
     helper.set_lines([[
-Hoge
 foo
+Hoge
 ]])
 
     command("Reacher")
 
-    helper.sync_input("H")
+    helper.sync_input("h")
+    command("Reacher finish")
 
     assert.cursor_word("Hoge")
   end)
