@@ -14,6 +14,10 @@ function Target.new(row, column, str)
   return setmetatable(tbl, setmetatable(position, Target))
 end
 
+function Target.zero()
+  return Target.new(1, 1, "")
+end
+
 function Target.__eq(a, b)
   return a.row == b.row and a.column == b.column
 end
@@ -43,11 +47,7 @@ function Targets.filter(self, fn)
   return Targets.new(targets)
 end
 
-function Targets.length(self)
-  return #self._targets
-end
-
-function Targets.iter_all(self)
+function Targets.iter(self)
   return next, self._targets, nil
 end
 

@@ -45,22 +45,6 @@ M.search = function(pattern)
   return result
 end
 
-M.sync_input = function(text)
-  local finished = false
-  require("reacher/view")._after = function()
-    finished = true
-  end
-
-  M.input(text)
-
-  local ok = vim.wait(1000, function()
-    return finished
-  end, 10)
-  if not ok then
-    assert(false, "wait timeout")
-  end
-end
-
 local vassert = require("vusted.assert")
 local asserts = vassert.asserts
 

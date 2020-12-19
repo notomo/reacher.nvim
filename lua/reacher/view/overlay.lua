@@ -6,6 +6,7 @@ local Distance = require("reacher/model/distance").Distance
 local Position = require("reacher/model/position").Position
 local Targets = require("reacher/model/target").Targets
 local Target = require("reacher/model/target").Target
+local Inputs = require("reacher/model/input").Inputs
 
 local M = {}
 
@@ -35,8 +36,8 @@ function Overlay.open(source, source_bufnr)
     _lines = vim.tbl_map(function(line)
       return line:lower()
     end, origin.lines),
-    _hl_factory = HlFactory.new("reacher", bufnr),
-    _cursor_hl_factory = HlFactory.new("reacher-cursor", bufnr),
+    _match_hl = HlFactory.new("reacher", bufnr),
+    _cursor_hl = HlFactory.new("reacher-cursor", bufnr),
     _all_targets = Targets.new(raw_targets),
     _targets = Targets.new(raw_targets),
   }
@@ -53,58 +54,32 @@ function Overlay.open(source, source_bufnr)
 end
 
 function Overlay.update(self, input_line)
-  input_line = input_line:lower()
+  local inputs = Inputs.parse(input_line)
 
-  local inputs = vim.tbl_filter(function(input)
-    return input ~= ""
-  end, vim.split(input_line, "%s+"))
-  local input_head = table.remove(inputs, 1) or ""
-
-  self._targets = self._all_targets:filter(function(target)
-    return vim.startswith(target.str, input_head)
+  local targets = self._all_targets:filter(function(target)
+    return vim.startswith(target.str, inputs.head)
+  end)
+  targets = targets:filter(function(target)
+    return inputs:is_included_in(self._lines[target.row])
   end)
 
-  if #inputs > 0 then
-    self._targets = self._targets:filter(function(target)
-      local line = self._lines[target.row]
-      for _, input in ipairs(inputs) do
-        local ok = line:find(input, 1, true)
-        if not ok then
-          return false
-        end
-      end
-      return true
-    end)
-  end
-
-  self._cursor_width = #input_head
+  self._cursor_width = #inputs.head
   if self._cursor_width == 0 then
     self._cursor_width = 1
   end
 
-  local highlighter = self._hl_factory:reset()
+  local highlighter = self._match_hl:reset()
 
-  for _, target in self._targets:iter_all() do
-    local positions = {}
-    local line = self._lines[target.row]
-    for _, input in ipairs(inputs) do
-      local s
-      local e = 0
-      repeat
-        s, e = line:find(input, e + 1, true)
-        if s ~= nil then
-          table.insert(positions, {s, e})
-        end
-      until s == nil
-    end
-    for _, pos in ipairs(positions) do
-      highlighter:add("ReacherInputMatch", target.row - 1, pos[1] - 1, pos[2])
+  for _, target in targets:iter() do
+    local ranges = inputs:matched(self._lines[target.row])
+    for _, r in ipairs(ranges) do
+      highlighter:add("ReacherInputMatch", target.row - 1, r[1] - 1, r[2])
     end
   end
 
-  local distance = Distance.new(self._cursor, self._targets:current() or Target.new(0, 0, ""))
+  local distance = Distance.new(self._cursor, targets:current() or Target.zero())
   local index = 1
-  for i, target in self._targets:iter_all() do
+  for i, target in targets:iter() do
     local d = Distance.new(self._cursor, target)
     if d < distance then
       distance = d
@@ -113,7 +88,7 @@ function Overlay.update(self, input_line)
     highlighter:add("ReacherMatch", target.row - 1, target.column, target.column + self._cursor_width)
   end
 
-  self:_update_cursor(self._targets:to(index))
+  self:_update_cursor(targets:to(index))
 end
 
 function Overlay.close(self)
@@ -127,12 +102,9 @@ function Overlay.finish(self, target)
     return self:close()
   end
 
-  windowlib.enter(self._origin.id)
-  vim.api.nvim_command("normal! m'")
-  vim.api.nvim_win_set_cursor(self._origin.id, {
-    target.row + self._origin.offset.row,
-    target.column + self._origin.offset.column + 1, -- + 1 for stopinsert
-  })
+  local row = target.row + self._origin.offset.row
+  local column = target.column + self._origin.offset.column + 1 -- + 1 for stopinsert
+  windowlib.jump(self._origin.id, row, column)
 end
 
 function Overlay.first(self)
@@ -152,7 +124,7 @@ function Overlay.last(self)
 end
 
 function Overlay._update_cursor(self, targets)
-  local highlighter = self._cursor_hl_factory:reset()
+  local highlighter = self._cursor_hl:reset()
 
   self._targets = targets
   local target = targets:current()

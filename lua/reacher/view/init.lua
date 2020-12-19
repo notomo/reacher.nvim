@@ -17,10 +17,7 @@ function View.open(source)
   end
 
   local inputer = Inputer.open(function(input_line)
-    vim.schedule(function()
-      overlay:update(input_line)
-      M._after()
-    end)
+    overlay:update(input_line)
   end)
 
   local tbl = {_overlay = overlay, _inputer = inputer}
@@ -47,10 +44,6 @@ end
 function View.current()
   local id = vim.api.nvim_get_current_win()
   return View.get(id)
-end
-
--- for testing
-M._after = function()
 end
 
 return M

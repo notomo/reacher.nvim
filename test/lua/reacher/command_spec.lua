@@ -14,7 +14,7 @@ hoge foo
     command("Reacher")
     assert.window_count(3)
 
-    helper.sync_input("f")
+    helper.input("f")
     command("Reacher finish")
 
     assert.cursor_word("foo")
@@ -28,8 +28,8 @@ hogeb bar
 
     command("Reacher")
 
-    helper.sync_input("hoge")
-    helper.sync_input(" bar")
+    helper.input("hoge")
+    helper.input(" bar")
     command("Reacher finish")
 
     assert.cursor_word("hogeb")
@@ -48,7 +48,7 @@ hogec
     command("normal! j")
     command("Reacher")
 
-    helper.sync_input("h")
+    helper.input("h")
     command("Reacher finish")
 
     assert.cursor_word("hogea")
@@ -62,7 +62,7 @@ Hoge
 
     command("Reacher")
 
-    helper.sync_input("h")
+    helper.input("h")
     command("Reacher finish")
 
     assert.cursor_word("Hoge")
@@ -186,7 +186,7 @@ hogeb
 
     command("Reacher")
 
-    helper.sync_input("h")
+    helper.input("h")
     assert.window_count(3)
 
     command("Reacher")
@@ -203,7 +203,7 @@ foo
 
     command("Reacher")
 
-    helper.sync_input("hogea")
+    helper.input("hogea")
     assert.window_count(3)
 
     command("Reacher finish")
