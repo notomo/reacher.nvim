@@ -40,6 +40,8 @@ function Overlay.open(source, source_bufnr)
     _cursor_hl = HlFactory.new("reacher-cursor", bufnr),
     _all_targets = Targets.new(raw_targets),
     _targets = Targets.new(raw_targets),
+    _inputs = nil,
+    _cursor_width = 1,
   }
   local overlay = setmetatable(tbl, Overlay)
 
@@ -55,6 +57,10 @@ end
 
 function Overlay.update(self, input_line)
   local inputs = Inputs.parse(input_line)
+  if inputs == self._inputs then
+    return
+  end
+  self._inputs = inputs
 
   local targets = self._all_targets:filter(function(target)
     return vim.startswith(target.str, inputs.head)

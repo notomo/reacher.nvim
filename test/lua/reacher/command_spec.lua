@@ -212,4 +212,20 @@ foo
     assert.cursor_word("foo")
   end)
 
+  it("ignores inputting space", function()
+    helper.set_lines([[
+hoge
+foo1
+foo2
+]])
+    command("Reacher")
+
+    helper.input("f")
+    command("Reacher next")
+    helper.input(" ")
+    command("Reacher finish")
+
+    assert.cursor_word("foo2")
+  end)
+
 end)

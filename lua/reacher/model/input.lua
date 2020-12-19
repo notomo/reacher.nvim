@@ -11,6 +11,10 @@ function Inputs.new(inputs)
   return setmetatable(tbl, Inputs)
 end
 
+function Inputs.__eq(a, b)
+  return a.head == b.head and vim.deep_equal(a._inputs, b._inputs)
+end
+
 function Inputs.parse(line)
   vim.validate({line = {line, "string"}})
   local inputs = vim.tbl_filter(function(input)
