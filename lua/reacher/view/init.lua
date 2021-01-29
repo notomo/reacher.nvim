@@ -1,6 +1,6 @@
-local repository = require("reacher/lib/repository").Repository.new("view")
-local Overlay = require("reacher/view/overlay").Overlay
-local Inputer = require("reacher/view/inputer").Inputer
+local repository = require("reacher.lib.repository").Repository.new("view")
+local Overlay = require("reacher.view.overlay").Overlay
+local Inputter = require("reacher.view.inputter").Inputter
 
 local M = {}
 
@@ -16,21 +16,21 @@ function View.open(source)
     return err
   end
 
-  local inputer = Inputer.open(function(input_line)
+  local inputter = Inputter.open(function(input_line)
     overlay:update(input_line)
   end)
 
-  local tbl = {_overlay = overlay, _inputer = inputer}
+  local tbl = {_overlay = overlay, _inputter = inputter}
   local view = setmetatable(tbl, View)
 
-  repository:set(inputer.window_id, view)
+  repository:set(inputter.window_id, view)
 end
 
 function View.close(self)
-  self._inputer:close()
+  self._inputter:close()
   self._overlay:close()
 
-  repository:delete(self._inputer.window_id)
+  repository:delete(self._inputter.window_id)
 end
 
 function View.move(self, name)

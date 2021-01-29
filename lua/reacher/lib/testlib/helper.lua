@@ -1,6 +1,6 @@
 local M = {}
 
-local root, err = require("reacher/lib/path").find_root("reacher/*.lua")
+local root, err = require("reacher.lib.path").find_root("reacher/*.lua")
 if err ~= nil then
   error(err)
 end
@@ -11,7 +11,7 @@ M.command = function(cmd)
 end
 
 M.before_each = function()
-  require("reacher/lib/module").cleanup()
+  require("reacher.lib.module").cleanup()
   M.command("filetype on")
   M.command("syntax enable")
 end

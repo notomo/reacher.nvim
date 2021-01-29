@@ -1,4 +1,4 @@
-local helper = require("reacher/lib/testlib/helper")
+local helper = require("reacher.lib.testlib.helper")
 local command = helper.command
 
 describe("Reacher", function()

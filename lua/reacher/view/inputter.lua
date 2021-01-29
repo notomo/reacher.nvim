@@ -1,12 +1,12 @@
-local windowlib = require("reacher/lib/window")
+local windowlib = require("reacher.lib.window")
 
 local M = {}
 
-local Inputer = {}
-Inputer.__index = Inputer
-M.Inputer = Inputer
+local Inputter = {}
+Inputter.__index = Inputter
+M.Inputter = Inputter
 
-function Inputer.open(callback)
+function Inputter.open(callback)
   local bufnr = vim.api.nvim_create_buf(false, true)
   local window_id = vim.api.nvim_open_win(bufnr, true, {
     width = vim.o.columns,
@@ -23,7 +23,7 @@ function Inputer.open(callback)
   vim.wo[window_id].winhighlight = "Normal:Normal,SignColumn:Normal"
   vim.wo[window_id].signcolumn = "yes:1"
 
-  local on_leave = ("autocmd WinClosed,WinLeave,TabLeave,BufLeave,InsertLeave <buffer=%s> ++once lua require 'reacher/command'.close(%s)"):format(bufnr, window_id)
+  local on_leave = ("autocmd WinClosed,WinLeave,TabLeave,BufLeave,InsertLeave <buffer=%s> ++once lua require('reacher.command').close(%s)"):format(bufnr, window_id)
   vim.api.nvim_command(on_leave)
 
   vim.api.nvim_buf_attach(bufnr, false, {
@@ -35,10 +35,10 @@ function Inputer.open(callback)
   vim.api.nvim_command("startinsert")
 
   local tbl = {window_id = window_id}
-  return setmetatable(tbl, Inputer)
+  return setmetatable(tbl, Inputter)
 end
 
-function Inputer.close(self)
+function Inputter.close(self)
   windowlib.close(self.window_id)
   vim.api.nvim_command("stopinsert")
 end

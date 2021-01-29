@@ -1,6 +1,6 @@
-local modulelib = require("reacher/lib/module")
-local messagelib = require("reacher/lib/message")
-local View = require("reacher/view").View
+local modulelib = require("reacher.lib.module")
+local messagelib = require("reacher.lib.message")
+local View = require("reacher.view").View
 
 local M = {}
 

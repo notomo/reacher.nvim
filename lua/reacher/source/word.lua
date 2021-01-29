@@ -1,4 +1,4 @@
-local Target = require("reacher/model/target").Target
+local Target = require("reacher.model.target").Target
 
 local M = {}
 
