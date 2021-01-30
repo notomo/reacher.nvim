@@ -108,8 +108,13 @@ function Overlay.finish(self, target)
     return self:close()
   end
 
+  local insert_offset = 1 -- for stopinsert
+  if vim.api.nvim_get_mode().mode == "n" then
+    insert_offset = 0
+  end
+
   local row = target.row + self._origin.offset.row
-  local column = target.column + self._origin.offset.column + 1 -- + 1 for stopinsert
+  local column = target.column + self._origin.offset.column + insert_offset
   windowlib.jump(self._origin.id, row, column)
 end
 

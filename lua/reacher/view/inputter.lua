@@ -23,7 +23,7 @@ function Inputter.open(callback)
   vim.wo[window_id].winhighlight = "Normal:Normal,SignColumn:Normal"
   vim.wo[window_id].signcolumn = "yes:1"
 
-  local on_leave = ("autocmd WinClosed,WinLeave,TabLeave,BufLeave,InsertLeave <buffer=%s> ++once lua require('reacher.command').close(%s)"):format(bufnr, window_id)
+  local on_leave = ("autocmd WinClosed,WinLeave,TabLeave,BufLeave <buffer=%s> ++once lua require('reacher.command').close(%s)"):format(bufnr, window_id)
   vim.api.nvim_command(on_leave)
 
   vim.api.nvim_buf_attach(bufnr, false, {
