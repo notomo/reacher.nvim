@@ -50,8 +50,12 @@ M.set_background = function(name, window_id, opts)
   vim.api.nvim_command(cmd)
 end
 
-M.link = function(from, to)
-  vim.api.nvim_command(("highlight default link %s %s"):format(from, to))
+M.link = function(from, to, force)
+  local cmd = "highlight default"
+  if force then
+    cmd = "highlight!"
+  end
+  vim.api.nvim_command(("%s link %s %s"):format(cmd, from, to))
 end
 
 return M

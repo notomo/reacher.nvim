@@ -1,3 +1,4 @@
+local highlightlib = require("reacher.lib.highlight")
 local windowlib = require("reacher.lib.window")
 
 local M = {}
@@ -17,14 +18,20 @@ function Inputter.open(callback)
     external = false,
     style = "minimal",
   })
+  vim.api.nvim_buf_set_name(bufnr, ("reacher://%s/REACHER"):format(bufnr))
   vim.bo[bufnr].bufhidden = "wipe"
-  vim.api.nvim_buf_set_name(bufnr, "reacher://REACHER")
   vim.bo[bufnr].filetype = "reacher"
   vim.wo[window_id].winhighlight = "Normal:Normal,SignColumn:Normal"
   vim.wo[window_id].signcolumn = "yes:1"
 
-  local on_leave = ("autocmd WinClosed,WinLeave,TabLeave,BufLeave <buffer=%s> ++once lua require('reacher.command').close(%s)"):format(bufnr, window_id)
+  local on_leave = ("autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout <buffer=%s> ++once lua require('reacher.command').close(%s)"):format(bufnr, window_id)
   vim.api.nvim_command(on_leave)
+
+  local on_insert_leave = ("autocmd InsertLeave <buffer=%s> lua require('reacher.view.inputter').on_insert_leave()"):format(bufnr)
+  vim.api.nvim_command(on_insert_leave)
+
+  local on_insert_enter = ("autocmd InsertEnter <buffer=%s> lua require('reacher.view.inputter').on_insert_enter()"):format(bufnr)
+  vim.api.nvim_command(on_insert_enter)
 
   vim.api.nvim_buf_attach(bufnr, false, {
     on_lines = function()
@@ -41,6 +48,14 @@ end
 function Inputter.close(self)
   windowlib.close(self.window_id)
   vim.api.nvim_command("stopinsert")
+end
+
+function M.on_insert_leave()
+  highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchNormal", true)
+end
+
+function M.on_insert_enter()
+  highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
 end
 
 return M

@@ -45,6 +45,7 @@ function Overlay.open(source, source_bufnr)
   }
   local overlay = setmetatable(tbl, Overlay)
 
+  highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
   highlightlib.set_background("ReacherBackground", origin.id, {
     fg_hl_group = "Comment",
     fg_default = "#8d9eb2",
@@ -145,8 +146,9 @@ function Overlay._update_cursor(self, targets)
   highlighter:add("ReacherCurrentMatch", target.row - 1, target.column, target.column + self._cursor_width)
 end
 
-highlightlib.link("ReacherMatch", "WarningMsg")
-highlightlib.link("ReacherCurrentMatch", "Todo")
+highlightlib.link("ReacherMatch", "Directory")
+highlightlib.link("ReacherCurrentMatchInsert", "IncSearch")
+highlightlib.link("ReacherCurrentMatchNormal", "Todo")
 highlightlib.link("ReacherInputMatch", "Conditional")
 
 return M
