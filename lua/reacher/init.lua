@@ -26,4 +26,8 @@ function M.finish()
   return Command.new("finish")
 end
 
+function M.cancel()
+  return Command.new("cancel")
+end
+
 return M

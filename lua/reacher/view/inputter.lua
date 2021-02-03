@@ -18,7 +18,12 @@ function Inputter.open(callback)
     external = false,
     style = "minimal",
   })
-  vim.api.nvim_buf_set_name(bufnr, ("reacher://%s/REACHER"):format(bufnr))
+  local name = "reacher://REACHER"
+  local old = vim.fn.bufnr(("^%s$"):format(name))
+  if old ~= -1 then
+    vim.api.nvim_buf_delete(old, {force = true})
+  end
+  vim.api.nvim_buf_set_name(bufnr, "reacher://REACHER")
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].filetype = "reacher"
   vim.wo[window_id].winhighlight = "Normal:Normal,SignColumn:Normal"
@@ -47,7 +52,11 @@ end
 
 function Inputter.close(self)
   windowlib.close(self.window_id)
-  vim.api.nvim_command("stopinsert")
+  if vim.api.nvim_get_mode().mode == "i" then
+    vim.api.nvim_command("stopinsert")
+    local row, column = unpack(vim.api.nvim_win_get_cursor(0))
+    vim.api.nvim_win_set_cursor(0, {row, column + 1})
+  end
 end
 
 function M.on_insert_leave()

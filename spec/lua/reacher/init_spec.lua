@@ -227,4 +227,18 @@ foo2
     assert.cursor_word("foo2")
   end)
 
+  it("can cancel", function()
+    helper.set_lines([[
+hoge
+foo1
+foo2
+]])
+    reacher.start()
+    helper.input("foo")
+
+    reacher.cancel()
+
+    assert.cursor_word("hoge")
+  end)
+
 end)

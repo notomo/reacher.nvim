@@ -61,6 +61,14 @@ function Command.finish()
   view:finish()
 end
 
+function Command.cancel()
+  local view = View.current()
+  if view == nil then
+    return
+  end
+  view:close()
+end
+
 function Command.close(id)
   vim.validate({id = {id, "number"}})
 
