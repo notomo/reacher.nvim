@@ -1,5 +1,4 @@
 local helper = require("reacher.lib.testlib.helper")
-local command = helper.command
 
 describe("Reacher", function()
 
@@ -11,11 +10,11 @@ describe("Reacher", function()
 hoge foo
 ]])
 
-    command("Reacher")
+    vim.cmd("Reacher")
     assert.window_count(3)
 
     helper.input("f")
-    command("Reacher finish")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("foo")
   end)
@@ -26,11 +25,11 @@ hogea foo
 hogeb bar
 ]])
 
-    command("Reacher")
+    vim.cmd("Reacher")
 
     helper.input("hoge")
     helper.input(" bar")
-    command("Reacher finish")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("hogeb")
   end)
@@ -45,11 +44,11 @@ hogeb bar
 hogec
 ]])
 
-    command("normal! j")
-    command("Reacher")
+    vim.cmd("normal! j")
+    vim.cmd("Reacher")
 
     helper.input("h")
-    command("Reacher finish")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("hogea")
   end)
@@ -60,10 +59,10 @@ foo
 Hoge
 ]])
 
-    command("Reacher")
+    vim.cmd("Reacher")
 
     helper.input("h")
-    command("Reacher finish")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("Hoge")
   end)
@@ -75,9 +74,9 @@ Hoge
     hogec
 ]])
 
-    command("Reacher")
-    command("Reacher next")
-    command("Reacher finish")
+    vim.cmd("Reacher")
+    vim.cmd("Reacher next")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("hogeb")
   end)
@@ -89,16 +88,16 @@ Hoge
     hogec
 ]])
 
-    command("Reacher")
-    command("Reacher next")
-    command("Reacher next")
-    command("Reacher finish")
+    vim.cmd("Reacher")
+    vim.cmd("Reacher next")
+    vim.cmd("Reacher next")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("hogec")
 
-    command("Reacher")
-    command("Reacher next")
-    command("Reacher finish")
+    vim.cmd("Reacher")
+    vim.cmd("Reacher next")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("hogea")
   end)
@@ -110,15 +109,15 @@ Hoge
     hogec
 ]])
 
-    command("Reacher")
-    command("Reacher next")
-    command("Reacher finish")
+    vim.cmd("Reacher")
+    vim.cmd("Reacher next")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("hogeb")
 
-    command("Reacher")
-    command("Reacher prev")
-    command("Reacher finish")
+    vim.cmd("Reacher")
+    vim.cmd("Reacher prev")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("hogea")
   end)
@@ -130,9 +129,9 @@ Hoge
     hogec
 ]])
 
-    command("Reacher")
-    command("Reacher prev")
-    command("Reacher finish")
+    vim.cmd("Reacher")
+    vim.cmd("Reacher prev")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("hogec")
   end)
@@ -144,16 +143,16 @@ Hoge
     hogec
 ]])
 
-    command("Reacher")
-    command("Reacher next")
-    command("Reacher next")
-    command("Reacher finish")
+    vim.cmd("Reacher")
+    vim.cmd("Reacher next")
+    vim.cmd("Reacher next")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("hogec")
 
-    command("Reacher")
-    command("Reacher first")
-    command("Reacher finish")
+    vim.cmd("Reacher")
+    vim.cmd("Reacher first")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("hogea")
   end)
@@ -165,16 +164,16 @@ Hoge
     hogec
 ]])
 
-    command("Reacher")
-    command("Reacher last")
-    command("Reacher finish")
+    vim.cmd("Reacher")
+    vim.cmd("Reacher last")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("hogec")
   end)
 
   it("show error if no targets", function()
     assert.error_message("no targets", function()
-      command("Reacher")
+      vim.cmd("Reacher")
     end)
   end)
 
@@ -184,12 +183,12 @@ hogea
 hogeb
 ]])
 
-    command("Reacher")
+    vim.cmd("Reacher")
 
     helper.input("h")
     assert.window_count(3)
 
-    command("Reacher")
+    vim.cmd("Reacher")
 
     assert.window_count(3)
   end)
@@ -201,12 +200,12 @@ foo
 ]])
     helper.search("foo")
 
-    command("Reacher")
+    vim.cmd("Reacher")
 
     helper.input("hogea")
     assert.window_count(3)
 
-    command("Reacher finish")
+    vim.cmd("Reacher finish")
 
     assert.window_count(1)
     assert.cursor_word("foo")
@@ -218,12 +217,12 @@ hoge
 foo1
 foo2
 ]])
-    command("Reacher")
+    vim.cmd("Reacher")
 
     helper.input("f")
-    command("Reacher next")
+    vim.cmd("Reacher next")
     helper.input(" ")
-    command("Reacher finish")
+    vim.cmd("Reacher finish")
 
     assert.cursor_word("foo2")
   end)

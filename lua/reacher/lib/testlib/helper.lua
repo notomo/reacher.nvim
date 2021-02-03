@@ -6,23 +6,18 @@ if err ~= nil then
 end
 M.root = root
 
-M.command = function(cmd)
-  vim.api.nvim_command(cmd)
-end
-
 M.before_each = function()
   require("reacher.lib.module").cleanup()
-  M.command("filetype on")
-  M.command("syntax enable")
+  vim.cmd("filetype on")
+  vim.cmd("syntax enable")
 end
 
 M.after_each = function()
-  M.command("tabedit")
-  M.command("tabonly!")
-  M.command("silent! %bwipeout!")
-  M.command("filetype off")
-  M.command("syntax off")
-  print(" ")
+  vim.cmd("tabedit")
+  vim.cmd("tabonly!")
+  vim.cmd("silent! %bwipeout!")
+  vim.cmd("filetype off")
+  vim.cmd("syntax off")
 end
 
 M.set_lines = function(lines)
