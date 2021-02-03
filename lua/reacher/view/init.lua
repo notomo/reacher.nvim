@@ -33,6 +33,11 @@ function View.close(self)
   repository:delete(self._inputter.window_id)
 end
 
+function View.finish(self)
+  self._overlay:finish()
+  self:close()
+end
+
 function View.move(self, name)
   self._overlay[name](self._overlay)
 end

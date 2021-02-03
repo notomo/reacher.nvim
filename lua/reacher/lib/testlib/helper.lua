@@ -18,6 +18,7 @@ M.after_each = function()
   vim.cmd("silent! %bwipeout!")
   vim.cmd("filetype off")
   vim.cmd("syntax off")
+  print(" ")
 end
 
 M.set_lines = function(lines)
@@ -68,6 +69,21 @@ asserts.create("error_message"):register(function(self)
     self:set_positive(("error message should end with '%s', but actual: '%s'"):format(expected, actual))
     self:set_negative(("error message should not end with '%s', but actual: '%s'"):format(expected, actual))
     return vim.endswith(actual, expected)
+  end
+end)
+
+asserts.create("exists_message"):register(function(self)
+  return function(_, args)
+    local expected = args[1]
+    self:set_positive(("`%s` not found message"):format(expected))
+    self:set_negative(("`%s` found message"):format(expected))
+    local messages = vim.split(vim.api.nvim_exec("messages", true), "\n")
+    for _, msg in ipairs(messages) do
+      if msg:match(expected) then
+        return true
+      end
+    end
+    return false
   end
 end)
 

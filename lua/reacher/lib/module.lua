@@ -1,7 +1,7 @@
 local M = {}
 
-local find = function(path)
-  local ok, module = pcall(require, path)
+M.find = function(path)
+  local ok, module = pcall(require, path:gsub("/", "."))
   if not ok then
     return nil
   end
@@ -17,12 +17,6 @@ M.cleanup = function()
       package.loaded[key] = nil
     end
   end
-end
-
--- for app
-
-M.find_source = function(name)
-  return find("reacher/source/" .. name)
 end
 
 return M

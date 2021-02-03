@@ -106,7 +106,7 @@ end
 function Overlay.finish(self, target)
   target = target or self._targets:current()
   if target == nil then
-    return self:close()
+    return
   end
 
   local insert_offset = 1 -- for stopinsert
