@@ -26,16 +26,22 @@ function View.open(source)
   repository:set(inputter.window_id, view)
 end
 
-function View.close(self)
-  self._inputter:close()
+function View.close(self, is_cancel)
+  self._inputter:close(is_cancel)
   self._overlay:close()
 
   repository:delete(self._inputter.window_id)
 end
 
 function View.finish(self)
-  self._overlay:finish()
-  self:close()
+  local jump = self._overlay:finish()
+
+  local is_cancel = jump == nil
+  self:close(is_cancel)
+
+  if jump ~= nil then
+    jump()
+  end
 end
 
 function View.move(self, name)

@@ -29,7 +29,7 @@ function Inputter.open(callback)
   vim.wo[window_id].winhighlight = "Normal:Normal,SignColumn:Normal"
   vim.wo[window_id].signcolumn = "yes:1"
 
-  local on_leave = ("autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout <buffer=%s> ++once lua require('reacher.command').Command.new('close', %s)"):format(bufnr, window_id)
+  local on_leave = ("autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout <buffer=%s> ++once lua require('reacher.command').Command.new('close', %s, true)"):format(bufnr, window_id)
   vim.api.nvim_command(on_leave)
 
   local on_insert_leave = ("autocmd InsertLeave <buffer=%s> lua require('reacher.view.inputter').on_insert_leave()"):format(bufnr)
@@ -50,10 +50,18 @@ function Inputter.open(callback)
   return setmetatable(tbl, Inputter)
 end
 
-function Inputter.close(self)
+function Inputter.close(self, is_cancel)
+  vim.validate({is_cancel = {is_cancel, "boolean", true}})
+
   windowlib.close(self.window_id)
-  if vim.api.nvim_get_mode().mode == "i" then
-    vim.api.nvim_command("stopinsert")
+
+  local insert_mode = vim.api.nvim_get_mode().mode == "i"
+  if not insert_mode then
+    return
+  end
+  vim.api.nvim_command("stopinsert")
+
+  if is_cancel then
     local row, column = unpack(vim.api.nvim_win_get_cursor(0))
     vim.api.nvim_win_set_cursor(0, {row, column + 1})
   end

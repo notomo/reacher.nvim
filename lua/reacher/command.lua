@@ -18,8 +18,7 @@ function Command.new(name, ...)
   if not ok then
     return messagelib.error(msg)
   elseif msg then
-    messagelib.warn(msg)
-    return msg
+    return messagelib.warn(msg)
   end
 end
 
@@ -66,10 +65,10 @@ function Command.cancel()
   if view == nil then
     return
   end
-  view:close()
+  view:close(true)
 end
 
-function Command.close(id)
+function Command.close(id, is_cancel)
   vim.validate({id = {id, "number"}})
 
   local view = View.get(id)
@@ -77,7 +76,7 @@ function Command.close(id)
     return
   end
 
-  view:close()
+  view:close(is_cancel)
 end
 
 return M
