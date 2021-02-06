@@ -3,7 +3,6 @@ local highlightlib = require("reacher.lib.highlight")
 local HlFactory = require("reacher.lib.highlight").HlFactory
 local Origin = require("reacher.view.origin").Origin
 local Distance = require("reacher.model.distance").Distance
-local Position = require("reacher.model.position").Position
 local Targets = require("reacher.model.target").Targets
 local Target = require("reacher.model.target").Target
 local Inputs = require("reacher.model.input").Inputs
@@ -31,7 +30,7 @@ function Overlay.open(source, source_bufnr)
 
   local tbl = {
     _window_id = window_id,
-    _cursor = Position.cursor(window_id),
+    _cursor = origin.cursor,
     _origin = origin,
     _lines = vim.tbl_map(function(line)
       return line:lower()
@@ -150,7 +149,7 @@ end
 
 highlightlib.link("ReacherMatch", "Directory")
 highlightlib.link("ReacherCurrentMatchInsert", "IncSearch")
-highlightlib.link("ReacherCurrentMatchNormal", "Todo")
+highlightlib.link("ReacherCurrentMatchNormal", "Search")
 highlightlib.link("ReacherInputMatch", "Conditional")
 
 return M

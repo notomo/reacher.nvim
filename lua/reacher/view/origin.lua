@@ -44,26 +44,47 @@ function Origin.new(bufnr)
   local first_column = saved.leftcol + 1
   local last_column = saved.leftcol + width
 
-  local lines = vim.tbl_map(function(line)
-    return line:sub(first_column, last_column)
-  end, vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true))
+  local start_row = first_row
+  local count = vim.api.nvim_buf_line_count(bufnr)
+  local folds = {}
+  while start_row <= count do
+    local end_row = vim.fn.foldclosedend(start_row)
+    if end_row ~= -1 then
+      table.insert(folds, {start_row, end_row})
+      start_row = end_row + 1
+    else
+      start_row = start_row + 1
+    end
+  end
 
+  local lines = vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true)
+  for _, fold in ipairs(folds) do
+    for i = fold[1] - first_row + 1, fold[2] - first_row + 1, 1 do
+      lines[i] = ""
+    end
+  end
+  lines = vim.tbl_map(function(line)
+    return line:sub(first_column, last_column)
+  end, lines)
+
+  local offset = Position.new(first_row - 1, first_column - 1)
   local tbl = {
     id = id,
     lines = lines,
-    offset = Position.new(first_row - 1, first_column - 1),
-    _cursor = cursor,
+    offset = offset,
+    cursor = Position.new(cursor.row - offset.row, cursor.column - offset.column),
     _row = row,
     _column = column,
     _width = width,
     _height = height,
     _options = options,
+    _folds = folds,
   }
   return setmetatable(tbl, Origin)
 end
 
 function Origin.copy_to_floating_win(self, bufnr)
-  local window_id = vim.api.nvim_open_win(bufnr, false, {
+  local window_id = vim.api.nvim_open_win(bufnr, true, {
     width = self._width,
     height = self._height,
     relative = "win",
@@ -76,17 +97,20 @@ function Origin.copy_to_floating_win(self, bufnr)
   })
 
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, self.lines)
+  for _, range in ipairs(self._folds) do
+    vim.cmd(("%d,%dfold"):format(range[1], range[2]))
+  end
+
   vim.bo[bufnr].textwidth = self._options.textwidth
-  vim.api.nvim_win_set_cursor(window_id, {
-    self._cursor.row - self.offset.row,
-    self._cursor.column - self.offset.column,
-  })
   vim.wo[window_id].list = self._options.list
   vim.wo[window_id].wrap = self._options.wrap
+  vim.wo[window_id].foldenable = #self._folds > 0
 
   local listchars = table.concat(vim.fn.split(self._options.listchars, ",precedes:."))
   listchars = table.concat(vim.split(listchars, ",extends:.", true))
   vim.wo[window_id].listchars = listchars
+
+  vim.api.nvim_set_current_win(self.id)
 
   return window_id
 end
