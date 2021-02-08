@@ -63,9 +63,11 @@ function Origin.new(bufnr)
       lines[i] = ""
     end
   end
-  lines = vim.tbl_map(function(line)
-    return line:sub(first_column, last_column)
-  end, lines)
+  if not options.wrap then
+    lines = vim.tbl_map(function(line)
+      return line:sub(first_column, last_column)
+    end, lines)
+  end
 
   local offset = Position.new(first_row - 1, first_column - 1)
   local tbl = {
