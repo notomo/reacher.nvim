@@ -7,17 +7,22 @@ M.Folds = Folds
 function Folds.new(s, e)
   local row = s
   local folds = {}
+  local offset = 0
   while row <= e do
+    local diff_count = vim.fn.diff_filler(row)
+    if diff_count ~= 0 then
+      offset = offset + diff_count
+    end
     local end_row = vim.fn.foldclosedend(row)
     if end_row ~= -1 then
-      table.insert(folds, {row, end_row})
+      table.insert(folds, {row + offset - s + 1, end_row + offset - s + 1})
       row = end_row + 1
     else
       row = row + 1
     end
   end
 
-  local tbl = {_folds = folds, _first_row = s}
+  local tbl = {_folds = folds, _first_row = s, _last_row = e + offset}
   return setmetatable(tbl, Folds)
 end
 
@@ -28,17 +33,21 @@ function Folds.execute(self)
 end
 
 function Folds.rows(self)
-  local rows = {}
-  for _, fold in ipairs(self._folds) do
-    for i = fold[1] - self._first_row + 1, fold[2] - self._first_row + 1, 1 do
-      table.insert(rows, i)
-    end
-  end
-  return ipairs(rows)
+  return self:_rows(self._folds)
 end
 
 function Folds.exists(self)
   return #self._folds > 0
+end
+
+function Folds._rows(self, ranges)
+  local rows = {}
+  for _, range in ipairs(ranges) do
+    for i = range[1] - self._first_row + 1, range[2] - self._first_row + 1, 1 do
+      table.insert(rows, i)
+    end
+  end
+  return ipairs(rows)
 end
 
 return M

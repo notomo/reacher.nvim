@@ -109,7 +109,7 @@ function Overlay.finish(self, target)
   end
 
   return function()
-    local row = target.row + self._origin.offset.row
+    local row = target.origin_row
     local column = target.column + self._origin.offset.column + insert_offset
     windowlib.jump(self._origin.id, row, column)
   end

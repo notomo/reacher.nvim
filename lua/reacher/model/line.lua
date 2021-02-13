@@ -12,7 +12,7 @@ end
 local Lines = {}
 M.Lines = Lines
 
-function Lines.new(bufnr, first_row, last_row, first_column, last_column, folds, wrap)
+function Lines.new(bufnr, first_row, last_row, first_column, last_column, folds, fillers, wrap)
   local strs = vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true)
   for _, row in folds:rows() do
     strs[row] = ""
@@ -26,15 +26,22 @@ function Lines.new(bufnr, first_row, last_row, first_column, last_column, folds,
 
   local lines = {}
   for i, str in ipairs(strs) do
-    table.insert(lines, {str = str, row = i})
+    table.insert(lines, {str = str, row = i + first_row - 1})
+  end
+
+  for _, filler in fillers:reverse() do
+    for _ = 1, filler.diff_count, 1 do
+      local i = filler.row - first_row + 1
+      table.insert(lines, i, {str = "", row = i})
+    end
   end
 
   local tbl = {
     _lines = lines,
     _folds = folds,
-    strs = vim.tbl_map(function(str)
-      return str:lower()
-    end, strs),
+    strs = vim.tbl_map(function(line)
+      return line.str:lower()
+    end, lines),
   }
   return setmetatable(tbl, Lines)
 end

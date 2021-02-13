@@ -6,16 +6,16 @@ local Target = setmetatable({}, Position)
 Target.__index = Target
 M.Target = Target
 
-function Target.new(row, column, str)
-  vim.validate({str = {str, "string"}})
-  local tbl = {str = str}
+function Target.new(row, column, str, origin_row)
+  vim.validate({str = {str, "string"}, origin_row = {origin_row, "number"}})
+  local tbl = {str = str, origin_row = origin_row}
   local position = Position.new(row, column)
   position.__index = position
   return setmetatable(tbl, setmetatable(position, Target))
 end
 
 function Target.zero()
-  return Target.new(1, 1, "")
+  return Target.new(1, 1, "", 1)
 end
 
 function Target.__eq(a, b)

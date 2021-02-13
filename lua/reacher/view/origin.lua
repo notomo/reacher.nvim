@@ -1,5 +1,6 @@
 local Position = require("reacher.model.position").Position
 local Folds = require("reacher.model.fold").Folds
+local Fillers = require("reacher.model.filler").Fillers
 local Lines = require("reacher.model.line").Lines
 
 local M = {}
@@ -46,15 +47,16 @@ function Origin.new(bufnr)
   local first_column = saved.leftcol + 1
   local last_column = saved.leftcol + width
 
-  local folds = Folds.new(first_row, vim.api.nvim_buf_line_count(bufnr))
-  local lines = Lines.new(bufnr, first_row, last_row, first_column, last_column, folds, options.wrap)
+  local folds = Folds.new(first_row, last_row)
+  local fillers = Fillers.new(first_row, last_row)
+  local lines = Lines.new(bufnr, first_row, last_row, first_column, last_column, folds, fillers, options.wrap)
 
   local offset = Position.new(first_row - 1, first_column - 1)
   local tbl = {
     id = id,
     lines = lines,
     offset = offset,
-    cursor = Position.new(cursor.row - offset.row, cursor.column - offset.column),
+    cursor = Position.new(fillers:apply_offset(cursor.row) - offset.row, cursor.column - offset.column),
     _row = row,
     _column = column,
     _width = width,
