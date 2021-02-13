@@ -32,9 +32,7 @@ function Overlay.open(source, source_bufnr)
     _window_id = window_id,
     _cursor = origin.cursor,
     _origin = origin,
-    _lines = vim.tbl_map(function(line)
-      return line:lower()
-    end, origin.lines),
+    _lines = origin.lines.strs,
     _match_hl = HlFactory.new("reacher", bufnr),
     _cursor_hl = HlFactory.new("reacher-cursor", bufnr),
     _all_targets = Targets.new(raw_targets),
@@ -64,9 +62,6 @@ function Overlay.update(self, input_line)
 
   local targets = self._all_targets:filter(function(target)
     return vim.startswith(target.str, inputs.head)
-  end)
-  targets = targets:filter(function(target)
-    return inputs:is_included_in(self._lines[target.row])
   end)
 
   self._cursor_width = #inputs.head

@@ -27,17 +27,6 @@ function Inputs.iter(self)
   return next, self._inputs, nil
 end
 
-function Inputs.is_included_in(self, line)
-  vim.validate({line = {line, "string"}})
-  for _, input in self:iter() do
-    local ok = line:find(input, 1, true)
-    if not ok then
-      return false
-    end
-  end
-  return true
-end
-
 function Inputs.matched(self, line)
   vim.validate({line = {line, "string"}})
   local ranges = {}

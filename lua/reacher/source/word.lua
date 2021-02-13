@@ -19,8 +19,8 @@ end
 M.collect = function(lines)
   local targets = {}
   local regex = vim.regex("\\v[[:alnum:]]+")
-  for i, line in ipairs(lines) do
-    local matched = search(line, regex, i)
+  for _, line in lines:iter() do
+    local matched = search(line.str, regex, line.row)
     targets = vim.list_extend(targets, matched)
   end
   return targets

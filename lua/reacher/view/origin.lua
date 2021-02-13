@@ -1,4 +1,6 @@
 local Position = require("reacher.model.position").Position
+local Folds = require("reacher.model.fold").Folds
+local Lines = require("reacher.model.line").Lines
 
 local M = {}
 
@@ -44,30 +46,8 @@ function Origin.new(bufnr)
   local first_column = saved.leftcol + 1
   local last_column = saved.leftcol + width
 
-  local start_row = first_row
-  local count = vim.api.nvim_buf_line_count(bufnr)
-  local folds = {}
-  while start_row <= count do
-    local end_row = vim.fn.foldclosedend(start_row)
-    if end_row ~= -1 then
-      table.insert(folds, {start_row, end_row})
-      start_row = end_row + 1
-    else
-      start_row = start_row + 1
-    end
-  end
-
-  local lines = vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true)
-  for _, fold in ipairs(folds) do
-    for i = fold[1] - first_row + 1, fold[2] - first_row + 1, 1 do
-      lines[i] = ""
-    end
-  end
-  if not options.wrap then
-    lines = vim.tbl_map(function(line)
-      return line:sub(first_column, last_column)
-    end, lines)
-  end
+  local folds = Folds.new(first_row, vim.api.nvim_buf_line_count(bufnr))
+  local lines = Lines.new(bufnr, first_row, last_row, first_column, last_column, folds, options.wrap)
 
   local offset = Position.new(first_row - 1, first_column - 1)
   local tbl = {
@@ -98,15 +78,12 @@ function Origin.copy_to_floating_win(self, bufnr)
     focusable = false,
   })
 
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, self.lines)
-  for _, range in ipairs(self._folds) do
-    vim.cmd(("%d,%dfold"):format(range[1], range[2]))
-  end
+  self.lines:copy_to(bufnr)
 
   vim.bo[bufnr].textwidth = self._options.textwidth
   vim.wo[window_id].list = self._options.list
   vim.wo[window_id].wrap = self._options.wrap
-  vim.wo[window_id].foldenable = #self._folds > 0
+  vim.wo[window_id].foldenable = self._folds:exists()
 
   local listchars = table.concat(vim.fn.split(self._options.listchars, ",precedes:."))
   listchars = table.concat(vim.split(listchars, ",extends:.", true))

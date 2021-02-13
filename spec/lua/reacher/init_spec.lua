@@ -20,21 +20,6 @@ hoge foo
     assert.cursor_word("foo")
   end)
 
-  it("can search word by two words", function()
-    helper.set_lines([[
-hogea foo
-hogeb bar
-]])
-
-    reacher.start()
-
-    helper.input("hoge")
-    helper.input(" bar")
-    reacher.finish()
-
-    assert.cursor_word("hogeb")
-  end)
-
   it("moves to the nearest", function()
     helper.set_lines([[
               hogea hogeb

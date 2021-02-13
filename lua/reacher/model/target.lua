@@ -51,10 +51,6 @@ function Targets.iter(self)
   return next, self._targets, nil
 end
 
-function Targets.values(self)
-  return vim.deepcopy(self._targets)
-end
-
 function Targets.current(self)
   return self._targets[self._index]
 end
