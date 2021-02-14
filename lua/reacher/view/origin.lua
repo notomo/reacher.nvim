@@ -14,10 +14,12 @@ function Origin.new(bufnr)
   local options = {
     list = vim.wo.list,
     wrap = vim.wo.wrap,
-    textwidth = vim.bo.textwidth,
     listchars = vim.o.listchars,
     tabstop = vim.bo.tabstop,
     softtabstop = vim.bo.softtabstop,
+    breakindent = vim.wo.breakindent,
+    breakindentopt = vim.wo.breakindentopt,
+    linebreak = vim.wo.linebreak,
   }
 
   local id = vim.api.nvim_get_current_win()
@@ -85,11 +87,13 @@ function Origin.copy_to_floating_win(self, bufnr)
 
   self.lines:copy_to(bufnr)
 
-  vim.bo[bufnr].textwidth = self._options.textwidth
   vim.bo[bufnr].tabstop = self._options.tabstop
   vim.bo[bufnr].softtabstop = self._options.softtabstop
   vim.wo[window_id].list = self._options.list
   vim.wo[window_id].wrap = self._options.wrap
+  vim.wo[window_id].breakindent = self._options.breakindent
+  vim.wo[window_id].breakindentopt = self._options.breakindentopt
+  vim.wo[window_id].linebreak = self._options.linebreak
   vim.wo[window_id].foldenable = self._folds:exists()
 
   local listchars = table.concat(vim.fn.split(self._options.listchars, ",precedes:."))
