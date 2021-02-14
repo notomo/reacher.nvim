@@ -2,6 +2,7 @@ local Position = require("reacher.model.position").Position
 local Folds = require("reacher.model.fold").Folds
 local Fillers = require("reacher.model.filler").Fillers
 local Lines = require("reacher.model.line").Lines
+local vim = vim
 
 local M = {}
 

@@ -1,6 +1,7 @@
 local repository = require("reacher.lib.repository").Repository.new("view")
 local Overlay = require("reacher.view.overlay").Overlay
 local Inputter = require("reacher.view.inputter").Inputter
+local vim = vim
 
 local M = {}
 

@@ -1,5 +1,6 @@
 local highlightlib = require("reacher.lib.highlight")
 local windowlib = require("reacher.lib.window")
+local vim = vim
 
 local M = {}
 

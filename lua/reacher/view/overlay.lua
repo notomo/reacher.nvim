@@ -6,6 +6,7 @@ local Distance = require("reacher.model.distance").Distance
 local Targets = require("reacher.model.target").Targets
 local Target = require("reacher.model.target").Target
 local Inputs = require("reacher.model.input").Inputs
+local vim = vim
 
 local M = {}
 

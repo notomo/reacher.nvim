@@ -1,4 +1,5 @@
 local Position = require("reacher.model.position").Position
+local vim = vim
 
 local M = {}
 

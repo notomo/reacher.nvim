@@ -1,4 +1,5 @@
 local Target = require("reacher.model.target").Target
+local vim = vim
 
 local M = {}
 
