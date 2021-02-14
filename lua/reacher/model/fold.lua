@@ -22,7 +22,7 @@ function Folds.new(s, e)
     end
   end
 
-  local tbl = {_folds = folds, _first_row = s, _last_row = e + offset}
+  local tbl = {_folds = folds}
   return setmetatable(tbl, Folds)
 end
 
@@ -33,21 +33,17 @@ function Folds.execute(self)
 end
 
 function Folds.rows(self)
-  return self:_rows(self._folds)
-end
-
-function Folds.exists(self)
-  return #self._folds > 0
-end
-
-function Folds._rows(self, ranges)
   local rows = {}
-  for _, range in ipairs(ranges) do
-    for i = range[1] - self._first_row + 1, range[2] - self._first_row + 1, 1 do
+  for _, range in ipairs(self._folds) do
+    for i = range[1], range[2], 1 do
       table.insert(rows, i)
     end
   end
   return ipairs(rows)
+end
+
+function Folds.exists(self)
+  return #self._folds > 0
 end
 
 return M

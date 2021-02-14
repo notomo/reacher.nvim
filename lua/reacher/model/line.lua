@@ -14,16 +14,6 @@ M.Lines = Lines
 
 function Lines.new(bufnr, first_row, last_row, first_column, last_column, folds, fillers, wrap)
   local strs = vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true)
-  for _, row in folds:rows() do
-    strs[row] = ""
-  end
-
-  if not wrap then
-    strs = vim.tbl_map(function(line)
-      return line:sub(first_column, last_column)
-    end, strs)
-  end
-
   local lines = {}
   for i, str in ipairs(strs) do
     table.insert(lines, {str = str, row = i + first_row - 1})
@@ -34,6 +24,16 @@ function Lines.new(bufnr, first_row, last_row, first_column, last_column, folds,
       local i = filler.row - first_row + 1
       table.insert(lines, i, {str = "", row = i})
     end
+  end
+
+  for _, row in folds:rows() do
+    lines[row].str = ""
+  end
+  if not wrap then
+    lines = vim.tbl_map(function(line)
+      line.str = line.str:sub(first_column, last_column)
+      return line
+    end, lines)
   end
 
   local tbl = {
