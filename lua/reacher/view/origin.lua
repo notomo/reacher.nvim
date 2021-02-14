@@ -15,6 +15,8 @@ function Origin.new(bufnr)
     wrap = vim.wo.wrap,
     textwidth = vim.bo.textwidth,
     listchars = vim.o.listchars,
+    tabstop = vim.bo.tabstop,
+    softtabstop = vim.bo.softtabstop,
   }
 
   local id = vim.api.nvim_get_current_win()
@@ -83,6 +85,8 @@ function Origin.copy_to_floating_win(self, bufnr)
   self.lines:copy_to(bufnr)
 
   vim.bo[bufnr].textwidth = self._options.textwidth
+  vim.bo[bufnr].tabstop = self._options.tabstop
+  vim.bo[bufnr].softtabstop = self._options.softtabstop
   vim.wo[window_id].list = self._options.list
   vim.wo[window_id].wrap = self._options.wrap
   vim.wo[window_id].foldenable = self._folds:exists()
