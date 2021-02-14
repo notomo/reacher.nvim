@@ -47,13 +47,15 @@ function Inputter.open(callback)
   })
   vim.api.nvim_command("startinsert")
 
-  local tbl = {window_id = window_id}
+  local tbl = {window_id = window_id, _bufnr = bufnr}
   return setmetatable(tbl, Inputter)
 end
 
 function Inputter.close(self, is_cancel)
   vim.validate({is_cancel = {is_cancel, "boolean", true}})
 
+  -- NOTICE: bacause sometimes the buffer is not deleted.
+  vim.api.nvim_buf_delete(self._bufnr, {force = true})
   windowlib.close(self.window_id)
 
   local insert_mode = vim.api.nvim_get_mode().mode == "i"
