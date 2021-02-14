@@ -15,22 +15,15 @@ local Lines = {}
 M.Lines = Lines
 
 function Lines.new(bufnr, first_row, last_row, first_column, last_column, folds, fillers, wrap)
-  local strs = vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true)
   local lines = {}
-  for i, str in ipairs(strs) do
+
+  for i, str in ipairs(vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true)) do
     table.insert(lines, {str = str, row = i + first_row - 1})
   end
 
-  for _, filler in fillers:reverse() do
-    for _ = 1, filler.diff_count, 1 do
-      local i = filler.row - first_row + 1
-      table.insert(lines, i, {str = "", row = i})
-    end
-  end
+  lines = fillers:add_to(lines)
+  lines = folds:apply_to(lines)
 
-  for _, row in folds:rows() do
-    lines[row].str = ""
-  end
   if not wrap then
     lines = vim.tbl_map(function(line)
       line.str = line.str:sub(first_column, last_column)
@@ -60,11 +53,9 @@ function Lines.__index(self, k)
 end
 
 function Lines.copy_to(self, bufnr)
-  local strs = vim.tbl_map(function(line)
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, vim.tbl_map(function(line)
     return line.str
-  end, self._lines)
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, strs)
-
+  end, self._lines))
   self._folds:execute()
 end
 

@@ -226,4 +226,111 @@ foo2
     assert.cursor_word("hoge")
   end)
 
+  it("ignores folded texts", function()
+    helper.set_lines([[
+foo
+hoge1
+hoge2
+hoge3
+hoge4
+]])
+    vim.cmd("2,4fold")
+    vim.wo.foldenable = true
+
+    reacher.start()
+    helper.input("hoge")
+    reacher.finish()
+
+    assert.current_line("hoge4")
+  end)
+
+  it("shows diff fillers", function()
+    vim.bo.buftype = "nofile"
+    helper.set_lines([[
+hoge
+hoge1
+hoge2
+foo
+foo1
+foo2
+foo3
+bar
+]])
+    vim.bo.buftype = "nofile"
+    vim.cmd("diffthis")
+
+    vim.cmd("vnew")
+    helper.set_lines([[
+hoge
+foo
+bar
+]])
+    vim.bo.buftype = "nofile"
+    vim.cmd("diffthis")
+
+    reacher.start()
+    helper.input("bar")
+    reacher.finish()
+
+    assert.current_line("bar")
+  end)
+
+  it("shows folded texts and diff fillers", function()
+    vim.bo.buftype = "nofile"
+    helper.set_lines([[
+hoge
+hoge1
+hoge2
+foo
+foo1
+foo2
+foo3
+bar
+for_folded
+for_folded
+for_folded
+for_folded
+for_folded
+buz_folded
+buz_folded
+for_folded
+for_folded
+for_folded
+for_folded
+for_folded
+for_folded
+]])
+    vim.bo.buftype = "nofile"
+    vim.cmd("diffthis")
+
+    vim.cmd("vnew")
+    helper.set_lines([[
+hoge
+foo
+bar
+for_folded
+for_folded
+for_folded
+for_folded
+for_folded
+buz_folded
+buz_folded
+for_folded
+for_folded
+for_folded
+for_folded
+for_folded
+for_folded
+buz
+]])
+    vim.bo.buftype = "nofile"
+    vim.cmd("diffthis")
+
+    reacher.start()
+    helper.input("buz")
+    reacher.finish()
+
+    assert.current_line("buz")
+  end)
+
 end)

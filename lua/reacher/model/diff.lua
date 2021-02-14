@@ -8,7 +8,7 @@ M.Fillers = Fillers
 
 function Fillers.new(s, e)
   if not vim.wo.diff then
-    local tbl = {_fillers = {}}
+    local tbl = {_fillers = {}, _first_row = s}
     return setmetatable(tbl, Fillers)
   end
 
@@ -20,7 +20,7 @@ function Fillers.new(s, e)
     end
   end
 
-  local tbl = {_fillers = fillers}
+  local tbl = {_fillers = fillers, _first_row = s}
   return setmetatable(tbl, Fillers)
 end
 
@@ -35,8 +35,14 @@ function Fillers.apply_offset(self, row)
   return result_row
 end
 
-function Fillers.reverse(self)
-  return ipairs(vim.fn.reverse(self._fillers))
+function Fillers.add_to(self, lines)
+  for _, filler in ipairs(vim.fn.reverse(self._fillers)) do
+    for _ = 1, filler.diff_count, 1 do
+      local i = filler.row - self._first_row + 1
+      table.insert(lines, i, {str = "", row = i})
+    end
+  end
+  return lines
 end
 
 return M

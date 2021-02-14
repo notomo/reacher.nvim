@@ -39,7 +39,18 @@ function Folds.execute(self)
   end
 end
 
-function Folds.rows(self)
+function Folds.apply_to(self, lines)
+  for _, row in self:_rows() do
+    lines[row].str = ""
+  end
+  return lines
+end
+
+function Folds.exists(self)
+  return #self._folds > 0
+end
+
+function Folds._rows(self)
   local rows = {}
   for _, range in ipairs(self._folds) do
     for i = range[1], range[2], 1 do
@@ -47,10 +58,6 @@ function Folds.rows(self)
     end
   end
   return ipairs(rows)
-end
-
-function Folds.exists(self)
-  return #self._folds > 0
 end
 
 return M
