@@ -57,7 +57,6 @@ function Command.finish()
   if view == nil then
     return
   end
-
   view:finish()
 end
 

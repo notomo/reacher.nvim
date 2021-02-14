@@ -7,6 +7,11 @@ Folds.__index = Folds
 M.Folds = Folds
 
 function Folds.new(s, e)
+  if not vim.wo.foldenable then
+    local tbl = {_folds = {}}
+    return setmetatable(tbl, Folds)
+  end
+
   local row = s
   local folds = {}
   local offset = 0

@@ -7,6 +7,11 @@ Fillers.__index = Fillers
 M.Fillers = Fillers
 
 function Fillers.new(s, e)
+  if not vim.wo.diff then
+    local tbl = {_fillers = {}}
+    return setmetatable(tbl, Fillers)
+  end
+
   local fillers = {}
   for row = s, e, 1 do
     local diff_count = vim.fn.diff_filler(row)
