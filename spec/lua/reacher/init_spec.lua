@@ -333,4 +333,27 @@ buz
     assert.current_line("buz")
   end)
 
+  it("removes extra input lines", function()
+    helper.set_lines([[
+foo
+foo
+hoge
+]])
+
+    reacher.start()
+    helper.input([[
+hoge
+foo
+]])
+
+    local ok = vim.wait(1000, function()
+      return vim.fn.line("$") == 1
+    end)
+    assert.is_true(ok)
+
+    reacher.finish()
+
+    assert.current_line("hoge")
+  end)
+
 end)

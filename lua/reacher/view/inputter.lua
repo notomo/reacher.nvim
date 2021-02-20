@@ -43,6 +43,13 @@ function Inputter.open(callback)
     on_lines = function()
       local input_line = vim.api.nvim_buf_get_lines(bufnr, 0, -1, true)[1]
       callback(input_line)
+
+      if vim.api.nvim_buf_line_count(bufnr) == 1 then
+        return
+      end
+      vim.schedule(function()
+        vim.api.nvim_buf_set_lines(bufnr, 1, -1, false, {})
+      end)
     end,
   })
   vim.api.nvim_command("startinsert")

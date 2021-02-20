@@ -25,8 +25,9 @@ M.set_lines = function(lines)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(lines, "\n"))
 end
 
-M.input = function(text)
-  vim.api.nvim_put({text}, "c", true, true)
+M.input = function(str)
+  local texts = vim.split(str, "\n", true)
+  vim.api.nvim_put(texts, "", false, true)
 end
 
 M.search = function(pattern)
