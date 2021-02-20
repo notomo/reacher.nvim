@@ -52,8 +52,8 @@ function Origin.new(bufnr)
   local first_column = saved.leftcol + 1
   local last_column = saved.leftcol + width
 
-  local folds = Folds.new(first_row, last_row)
   local fillers = Fillers.new(first_row, last_row)
+  local folds = Folds.new(first_row, last_row, fillers)
   local lines = Lines.new(bufnr, first_row, last_row, first_column, last_column, folds, fillers, options.wrap)
 
   local offset = Position.new(first_row - 1, first_column - 1)

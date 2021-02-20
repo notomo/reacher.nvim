@@ -6,7 +6,9 @@ local Folds = {}
 Folds.__index = Folds
 M.Folds = Folds
 
-function Folds.new(s, e)
+function Folds.new(s, e, fillers)
+  vim.validate({s = {s, "number"}, e = {e, "number"}, fillers = {fillers, "table"}})
+
   if not vim.wo.foldenable then
     local tbl = {_folds = {}}
     return setmetatable(tbl, Folds)
@@ -14,14 +16,10 @@ function Folds.new(s, e)
 
   local row = s
   local folds = {}
-  local offset = 0
   while row <= e do
-    local diff_count = vim.fn.diff_filler(row)
-    if diff_count ~= 0 then
-      offset = offset + diff_count
-    end
     local end_row = vim.fn.foldclosedend(row)
     if end_row ~= -1 then
+      local offset = fillers:offset(row)
       table.insert(folds, {row + offset - s + 1, end_row + offset - s + 1})
       row = end_row + 1
     else

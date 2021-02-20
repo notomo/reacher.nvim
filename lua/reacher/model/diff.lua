@@ -7,8 +7,10 @@ Fillers.__index = Fillers
 M.Fillers = Fillers
 
 function Fillers.new(s, e)
+  vim.validate({s = {s, "number"}, e = {e, "number"}})
+
   if not vim.wo.diff then
-    local tbl = {_fillers = {}, _first_row = s}
+    local tbl = {_fillers = {}, _first_row = s, _lookup_tbl = {}}
     return setmetatable(tbl, Fillers)
   end
 
@@ -20,8 +22,25 @@ function Fillers.new(s, e)
     end
   end
 
-  local tbl = {_fillers = fillers, _first_row = s}
+  local lookup_tbl = {}
+  local offset = 0
+  for _, filler in ipairs(fillers) do
+    offset = offset + filler.diff_count
+    lookup_tbl[filler.row] = offset
+  end
+
+  local tbl = {_fillers = fillers, _first_row = s, _lookup_tbl = lookup_tbl}
   return setmetatable(tbl, Fillers)
+end
+
+function Fillers.offset(self, row)
+  local nearest = 0
+  for r in pairs(self._lookup_tbl) do
+    if nearest < r and r <= row then
+      nearest = r
+    end
+  end
+  return self._lookup_tbl[nearest] or 0
 end
 
 function Fillers.apply_offset(self, row)
