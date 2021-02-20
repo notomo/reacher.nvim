@@ -61,7 +61,7 @@ function Origin.new(bufnr)
     id = id,
     lines = lines,
     offset = offset,
-    cursor = Position.new(fillers:apply_offset(cursor.row) - offset.row, cursor.column - offset.column),
+    cursor = Position.new(cursor.row + fillers:offset(cursor.row) - offset.row, cursor.column - offset.column),
     _row = row,
     _column = column,
     _width = width,
