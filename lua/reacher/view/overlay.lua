@@ -94,7 +94,7 @@ function Overlay.update(self, input_line)
 end
 
 function Overlay.close(self)
-  windowlib.enter(self._origin.id)
+  self._origin:enter()
   windowlib.close(self._window_id)
 end
 
@@ -104,15 +104,9 @@ function Overlay.finish(self, target)
     return
   end
 
-  local insert_offset = 1 -- for stopinsert
-  if vim.api.nvim_get_mode().mode == "n" then
-    insert_offset = 0
-  end
-
+  local mode = vim.api.nvim_get_mode().mode
   return function()
-    local row = target.origin_row
-    local column = target.column + self._origin.offset.column + insert_offset
-    windowlib.jump(self._origin.id, row, column)
+    self._origin:jump(target.origin_row, target.column, mode)
   end
 end
 

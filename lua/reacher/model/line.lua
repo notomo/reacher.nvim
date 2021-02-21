@@ -14,10 +14,11 @@ end
 local Lines = {}
 M.Lines = Lines
 
-function Lines.new(bufnr, first_row, last_row, first_column, last_column, folds, fillers, wrap)
+function Lines.new(first_row, first_column, last_column, conceals, folds, fillers, wrap)
   local lines = {}
 
-  for i, str in ipairs(vim.api.nvim_buf_get_lines(bufnr, first_row - 1, last_row, true)) do
+  local strs = conceals:lines()
+  for i, str in ipairs(strs) do
     table.insert(lines, {str = str, row = i + first_row - 1})
   end
 

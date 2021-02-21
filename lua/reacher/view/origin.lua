@@ -1,7 +1,9 @@
 local Position = require("reacher.model.position").Position
 local Folds = require("reacher.model.fold").Folds
 local Fillers = require("reacher.model.diff").Fillers
+local Conceals = require("reacher.model.conceal").Conceals
 local Lines = require("reacher.model.line").Lines
+local windowlib = require("reacher.lib.window")
 local vim = vim
 
 local M = {}
@@ -54,20 +56,24 @@ function Origin.new(bufnr)
 
   local fillers = Fillers.new(first_row, last_row)
   local folds = Folds.new(first_row, last_row, fillers)
-  local lines = Lines.new(bufnr, first_row, last_row, first_column, last_column, folds, fillers, options.wrap)
+  local conceals = Conceals.new(bufnr, first_row, last_row, fillers)
+  local lines = Lines.new(first_row, first_column, last_column, conceals, folds, fillers, options.wrap)
 
   local offset = Position.new(first_row - 1, first_column - 1)
+  local pos = Position.new(cursor.row + fillers:offset(cursor.row) - offset.row, cursor.column - offset.column - conceals:offset_from_origin(cursor.row, cursor.column + 1))
   local tbl = {
     id = id,
     lines = lines,
-    offset = offset,
-    cursor = Position.new(cursor.row + fillers:offset(cursor.row) - offset.row, cursor.column - offset.column),
+    cursor = pos,
+    _offset = offset,
     _row = row,
     _column = column,
     _width = width,
     _height = height,
     _options = options,
+    _conceals = conceals,
     _folds = folds,
+    _fillers = fillers,
   }
   return setmetatable(tbl, Origin)
 end
@@ -79,7 +85,7 @@ function Origin.copy_to_floating_win(self, bufnr)
     relative = "win",
     row = self._row,
     col = self._column,
-    bufpos = {self.offset.row, 0},
+    bufpos = {self._offset.row, 0},
     external = false,
     style = "minimal",
     focusable = false,
@@ -103,6 +109,21 @@ function Origin.copy_to_floating_win(self, bufnr)
   vim.api.nvim_set_current_win(self.id)
 
   return window_id
+end
+
+function Origin.enter(self)
+  windowlib.enter(self.id)
+end
+
+function Origin.jump(self, origin_row, column, mode)
+  local insert_offset = 1 -- for stopinsert
+  if mode == "n" then
+    insert_offset = 0
+  end
+  column = column + self._offset.column + insert_offset
+  local origin_column = column + self._conceals:offset(origin_row, column)
+
+  windowlib.jump(self.id, origin_row, origin_column)
 end
 
 return M
