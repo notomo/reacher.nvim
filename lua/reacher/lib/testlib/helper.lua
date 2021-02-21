@@ -88,4 +88,8 @@ asserts.create("exists_message"):register(function(self)
   end
 end)
 
+asserts.create("column"):register_eq(function()
+  return vim.fn.col(".")
+end)
+
 return M

@@ -356,4 +356,22 @@ foo
     assert.current_line("hoge")
   end)
 
+  it("shows concealed texts", function()
+    vim.wo.conceallevel = 3
+    vim.wo.concealcursor = "nvic"
+    vim.cmd([[syntax match testHoge "|hoge|" conceal]])
+    vim.cmd([[syntax match testHoge "(hogehoge)" conceal]])
+
+    helper.set_lines([[
+foo |hoge| bar (hogehoge)
+]])
+
+    reacher.start()
+    helper.input("bar")
+    reacher.finish()
+
+    assert.cursor_word("bar")
+    assert.column(12)
+  end)
+
 end)
