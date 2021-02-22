@@ -1,5 +1,6 @@
 local highlightlib = require("reacher.lib.highlight")
 local windowlib = require("reacher.lib.window")
+local wraplib = require("reacher.lib.wrap")
 local vim = vim
 
 local M = {}
@@ -40,7 +41,7 @@ function Inputter.open(callback)
   vim.api.nvim_command(on_insert_enter)
 
   vim.api.nvim_buf_attach(bufnr, false, {
-    on_lines = function()
+    on_lines = wraplib.traceback(function()
       local input_line = vim.api.nvim_buf_get_lines(bufnr, 0, -1, true)[1]
       callback(input_line)
 
@@ -50,7 +51,7 @@ function Inputter.open(callback)
       vim.schedule(function()
         vim.api.nvim_buf_set_lines(bufnr, 1, -1, false, {})
       end)
-    end,
+    end),
   })
   vim.api.nvim_command("startinsert")
 
