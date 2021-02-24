@@ -17,7 +17,7 @@ local search = function(line, regex, row, origin_row)
   return targets
 end
 
-M.collect = function(lines)
+function M.collect(lines)
   local targets = {}
   local regex = vim.regex("\\v[[:alnum:]]+")
   for i, line in lines:iter() do

@@ -1,6 +1,7 @@
 local M = {}
 
-M.find = function(path)
+function M.find(path)
+  vim.validate({path = {path, "string"}})
   local ok, module = pcall(require, path:gsub("/", "."))
   if not ok then
     return nil
@@ -9,7 +10,7 @@ M.find = function(path)
 end
 
 local plugin_name = vim.split((...):gsub("%.", "/"), "/", true)[1]
-M.cleanup = function()
+function M.cleanup()
   local dir = plugin_name .. "/"
   local dot = plugin_name .. "."
   for key in pairs(package.loaded) do

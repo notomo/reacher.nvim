@@ -1,18 +1,14 @@
 local M = {}
 
-local root, err = require("reacher.lib.path").find_root("reacher/*.lua")
-if err ~= nil then
-  error(err)
-end
-M.root = root
+M.root = require("reacher.lib.path").find_root()
 
-M.before_each = function()
+function M.before_each()
   require("reacher.lib.module").cleanup()
   vim.cmd("filetype on")
   vim.cmd("syntax enable")
 end
 
-M.after_each = function()
+function M.after_each()
   vim.cmd("tabedit")
   vim.cmd("tabonly!")
   vim.cmd("silent! %bwipeout!")
@@ -21,16 +17,16 @@ M.after_each = function()
   print(" ")
 end
 
-M.set_lines = function(lines)
+function M.set_lines(lines)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(lines, "\n"))
 end
 
-M.input = function(str)
+function M.input(str)
   local texts = vim.split(str, "\n", true)
   vim.api.nvim_put(texts, "", false, true)
 end
 
-M.search = function(pattern)
+function M.search(pattern)
   local result = vim.fn.search(pattern)
   if result == 0 then
     local info = debug.getinfo(2)
