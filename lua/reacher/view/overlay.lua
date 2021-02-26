@@ -35,7 +35,7 @@ function Overlay.open(source, source_bufnr)
     _origin = origin,
     _lines = origin.lines.strs,
     _match_hl = HlFactory.new("reacher", bufnr),
-    _cursor_hl = HlFactory.new("reacher-cursor", bufnr),
+    _cursor_hl = HlFactory.new("reacher_cursor", bufnr),
     _all_targets = Targets.new(raw_targets),
     _targets = Targets.new(raw_targets),
     _inputs = nil,
@@ -61,36 +61,20 @@ function Overlay.update(self, input_line)
   end
   self._inputs = inputs
 
-  local targets = self._all_targets:filter(function(target)
-    return vim.startswith(target.str, inputs.head)
-  end)
-
   self._cursor_width = #inputs.head
   if self._cursor_width == 0 then
     self._cursor_width = 1
   end
 
+  local targets = self._all_targets:filter(function(target)
+    return vim.startswith(target.str, inputs.head)
+  end)
   local highlighter = self._match_hl:reset()
-
   for _, target in targets:iter() do
-    local ranges = inputs:matched(self._lines[target.row])
-    for _, r in ipairs(ranges) do
-      highlighter:add("ReacherInputMatch", target.row - 1, r[1] - 1, r[2])
-    end
-  end
-
-  local distance = Distance.new(self._cursor, targets:current() or Target.zero())
-  local index = 1
-  for i, target in targets:iter() do
-    local d = Distance.new(self._cursor, target)
-    if d < distance then
-      distance = d
-      index = i
-    end
     highlighter:add("ReacherMatch", target.row - 1, target.column, target.column + self._cursor_width)
   end
 
-  self:_update_cursor(targets:to(index))
+  self:_update_cursor(targets:match(self._cursor))
 end
 
 function Overlay.close(self)
@@ -140,6 +124,5 @@ end
 highlightlib.link("ReacherMatch", "Directory")
 highlightlib.link("ReacherCurrentMatchInsert", "IncSearch")
 highlightlib.link("ReacherCurrentMatchNormal", "Search")
-highlightlib.link("ReacherInputMatch", "Conditional")
 
 return M

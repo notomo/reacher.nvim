@@ -1,4 +1,5 @@
 local Position = require("reacher.model.position").Position
+local Distance = require("reacher.model.distance").Distance
 local vim = vim
 
 local M = {}
@@ -13,10 +14,6 @@ function Target.new(row, column, str, origin_row)
   local position = Position.new(row, column)
   position.__index = position
   return setmetatable(tbl, setmetatable(position, Target))
-end
-
-function Target.zero()
-  return Target.new(1, 1, "", 1)
 end
 
 function Target.__eq(a, b)
@@ -74,7 +71,21 @@ function Targets.last(self)
   return Targets.new(self._targets, #self._targets)
 end
 
-function Targets.to(self, index)
+function Targets.match(self, position)
+  local current_target = self:current()
+  if not current_target then
+    return Targets.new({})
+  end
+
+  local distance = Distance.new(position, current_target)
+  local index = 1
+  for i, target in self:iter() do
+    local d = Distance.new(position, target)
+    if d < distance then
+      distance = d
+      index = i
+    end
+  end
   return Targets.new(self._targets, index)
 end
 
