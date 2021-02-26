@@ -33,7 +33,6 @@ function Overlay.open(source, source_bufnr)
     _window_id = window_id,
     _cursor = origin.cursor,
     _origin = origin,
-    _lines = origin.lines.strs,
     _match_hl = HlFactory.new("reacher", bufnr),
     _cursor_hl = HlFactory.new("reacher_cursor", bufnr),
     _all_targets = Targets.new(raw_targets),
@@ -67,7 +66,11 @@ function Overlay.update(self, input_line)
   end
 
   local targets = self._all_targets:filter(function(target)
-    return vim.startswith(target.str, inputs.head)
+    local str = target.str
+    if inputs.ignorecase then
+      str = str:lower()
+    end
+    return vim.startswith(str, inputs.head)
   end)
   local highlighter = self._match_hl:reset()
   for _, target in targets:iter() do

@@ -32,13 +32,7 @@ function Lines.new(first_row, first_column, last_column, conceals, folds, filler
     end, lines)
   end
 
-  local tbl = {
-    _lines = lines,
-    _folds = folds,
-    strs = vim.tbl_map(function(line)
-      return line.str:lower()
-    end, lines),
-  }
+  local tbl = {_lines = lines, _folds = folds}
   return setmetatable(tbl, Lines)
 end
 

@@ -32,9 +32,6 @@ M.Targets = Targets
 function Targets.new(targets, index)
   vim.validate({targets = {targets, "table"}, index = {index, "number", true}})
   index = index or 1
-  for _, target in ipairs(targets) do
-    target.str = target.str:lower()
-  end
   local tbl = {_targets = targets, _index = index}
   return setmetatable(tbl, Targets)
 end

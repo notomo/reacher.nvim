@@ -6,10 +6,10 @@ local Inputs = {}
 Inputs.__index = Inputs
 M.Inputs = Inputs
 
-function Inputs.new(inputs)
-  vim.validate({inputs = {inputs, "table"}})
+function Inputs.new(inputs, ignorecase)
+  vim.validate({inputs = {inputs, "table"}, ignorecase = {ignorecase, "boolean"}})
   local head = table.remove(inputs, 1) or ""
-  local tbl = {_inputs = inputs, head = head}
+  local tbl = {_inputs = inputs, head = head, ignorecase = ignorecase}
   return setmetatable(tbl, Inputs)
 end
 
@@ -19,30 +19,18 @@ end
 
 function Inputs.parse(line)
   vim.validate({line = {line, "string"}})
+
+  local ignorecase = false
+  local str = line
+  if not line:find("[A-Z]") then
+    ignorecase = true
+    str = line:lower()
+  end
+
   local inputs = vim.tbl_filter(function(input)
     return input ~= ""
-  end, vim.split(line:lower(), "%s+"))
-  return Inputs.new(inputs)
-end
-
-function Inputs.iter(self)
-  return next, self._inputs, nil
-end
-
-function Inputs.matched(self, line)
-  vim.validate({line = {line, "string"}})
-  local ranges = {}
-  for _, input in self:iter() do
-    local s
-    local e = 0
-    repeat
-      s, e = line:find(input, e + 1, true)
-      if s ~= nil then
-        table.insert(ranges, {s, e})
-      end
-    until s == nil
-  end
-  return ranges
+  end, vim.split(str, "%s+"))
+  return Inputs.new(inputs, ignorecase)
 end
 
 return M

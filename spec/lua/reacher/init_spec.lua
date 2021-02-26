@@ -39,7 +39,7 @@ hogec
     assert.cursor_word("hogea")
   end)
 
-  it("filters with ignorecase", function()
+  it("can filter with ignorecase", function()
     helper.set_lines([[
 foo
 Hoge
@@ -48,6 +48,21 @@ Hoge
     reacher.start()
 
     helper.input("h")
+    reacher.finish()
+
+    assert.cursor_word("Hoge")
+  end)
+
+  it("can filter with smartcase", function()
+    helper.set_lines([[
+foo
+hoge
+Hoge
+]])
+
+    reacher.start()
+
+    helper.input("H")
     reacher.finish()
 
     assert.cursor_word("Hoge")
