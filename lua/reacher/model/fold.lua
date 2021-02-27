@@ -8,27 +8,26 @@ M.Folds = Folds
 
 function Folds.new(s, e, fillers)
   vim.validate({s = {s, "number"}, e = {e, "number"}, fillers = {fillers, "table"}})
+  local tbl = {_folds = {}}
+  local self = setmetatable(tbl, Folds)
 
   if not vim.wo.foldenable then
-    local tbl = {_folds = {}}
-    return setmetatable(tbl, Folds)
+    return self
   end
 
   local row = s
-  local folds = {}
   while row <= e do
     local end_row = vim.fn.foldclosedend(row)
     if end_row ~= -1 then
       local offset = fillers:offset(row)
-      table.insert(folds, {row + offset - s + 1, end_row + offset - s + 1})
+      table.insert(self._folds, {row + offset - s + 1, end_row + offset - s + 1})
       row = end_row + 1
     else
       row = row + 1
     end
   end
 
-  local tbl = {_folds = folds}
-  return setmetatable(tbl, Folds)
+  return self
 end
 
 function Folds.execute(self)

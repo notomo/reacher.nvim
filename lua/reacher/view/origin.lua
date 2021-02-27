@@ -60,11 +60,11 @@ function Origin.new(bufnr)
   local lines = Lines.new(first_column, last_column, conceals, folds, fillers, options.wrap)
 
   local offset = Position.new(first_row - 1, first_column - 1)
-  local pos = Position.new(cursor.row + fillers:offset(cursor.row) - offset.row, cursor.column - offset.column - conceals:offset_from_origin(cursor.row, cursor.column + 1))
+  local cursor_pos = Position.new(cursor.row + fillers:offset(cursor.row) - offset.row, cursor.column - offset.column - conceals:offset_from_origin(cursor.row, cursor.column + 1))
   local tbl = {
     id = id,
     lines = lines,
-    cursor = pos,
+    cursor = cursor_pos,
     _offset = offset,
     _row = row,
     _column = column,

@@ -10,29 +10,27 @@ M.Fillers = Fillers
 
 function Fillers.new(s, e)
   vim.validate({s = {s, "number"}, e = {e, "number"}})
+  local tbl = {_fillers = {}, _first_row = s, _offsets = {}}
+  local self = setmetatable(tbl, Fillers)
 
   if not vim.wo.diff then
-    local tbl = {_fillers = {}, _first_row = s, _offsets = {}}
-    return setmetatable(tbl, Fillers)
+    return self
   end
 
-  local fillers = {}
   for row = s, e, 1 do
     local diff_count = vim.fn.diff_filler(row)
     if diff_count ~= 0 then
-      table.insert(fillers, {row = row, diff_count = diff_count})
+      table.insert(self._fillers, {row = row, diff_count = diff_count})
     end
   end
 
-  local offsets = {}
   local offset = 0
-  for _, filler in ipairs(fillers) do
+  for _, filler in ipairs(self._fillers) do
     offset = offset + filler.diff_count
-    offsets[filler.row] = offset
+    self._offsets[filler.row] = offset
   end
 
-  local tbl = {_fillers = fillers, _first_row = s, _offsets = offsets}
-  return setmetatable(tbl, Fillers)
+  return self
 end
 
 function Fillers.offset(self, row)

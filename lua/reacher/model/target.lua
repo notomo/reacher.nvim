@@ -16,10 +16,6 @@ function Target.new(row, column, str)
   return setmetatable(tbl, setmetatable(position, Target))
 end
 
-function Target.__eq(a, b)
-  return a.row == b.row and a.column == b.column
-end
-
 local Targets = {}
 M.Targets = Targets
 
