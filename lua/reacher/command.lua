@@ -1,5 +1,5 @@
 local View = require("reacher.view").View
-local modulelib = require("reacher.lib.module")
+local Source = require("reacher.source").Source
 local messagelib = require("reacher.lib.message")
 local vim = vim
 
@@ -23,22 +23,20 @@ function Command.new(name, ...)
   end
 end
 
-function Command.start()
+function Command.start(name)
+  vim.validate({name = {name, "string", true}})
+
   local old = View.current()
   if old ~= nil then
     old:close()
   end
 
-  local name = "word"
-  local source = modulelib.find("reacher.source." .. name)
-  if source == nil then
-    return "not found source: " .. name
-  end
-
-  local err = View.open(source)
+  local source, err = Source.new(name or "word")
   if err ~= nil then
     return err
   end
+
+  return View.open(source)
 end
 
 function Command.move(action_name)

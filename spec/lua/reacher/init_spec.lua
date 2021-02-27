@@ -177,6 +177,11 @@ Hoge
     assert.exists_message("no targets")
   end)
 
+  it("show error if no source", function()
+    reacher.start("invalid")
+    assert.exists_message("not found source: invalid")
+  end)
+
   it("cannot open the multiple", function()
     helper.set_lines([[
 hogea

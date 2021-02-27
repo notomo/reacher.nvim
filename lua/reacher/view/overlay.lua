@@ -2,7 +2,6 @@ local windowlib = require("reacher.lib.window")
 local highlightlib = require("reacher.lib.highlight")
 local HlFactory = require("reacher.lib.highlight").HlFactory
 local Origin = require("reacher.view.origin").Origin
-local Targets = require("reacher.model.target").Targets
 local Inputs = require("reacher.model.input").Inputs
 local vim = vim
 
@@ -15,9 +14,9 @@ M.Overlay = Overlay
 function Overlay.open(source, source_bufnr)
   local origin = Origin.new(source_bufnr)
 
-  local raw_targets = source.collect(origin.lines)
-  if #raw_targets == 0 then
-    return nil, "no targets"
+  local targets, err = source:collect(origin.lines)
+  if err ~= nil then
+    return nil, err
   end
 
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -33,8 +32,8 @@ function Overlay.open(source, source_bufnr)
     _origin = origin,
     _match_hl = HlFactory.new("reacher", bufnr),
     _cursor_hl = HlFactory.new("reacher_cursor", bufnr),
-    _all_targets = Targets.new(raw_targets),
-    _targets = Targets.new(raw_targets),
+    _all_targets = targets,
+    _targets = targets,
     _inputs = nil,
     _cursor_width = 1,
   }

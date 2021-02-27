@@ -21,12 +21,6 @@ function Target.__eq(a, b)
 end
 
 local Targets = {}
-Targets.__index = function(self, k)
-  if type(k) == "number" then
-    return self._targets[k]
-  end
-  return Targets[k]
-end
 M.Targets = Targets
 
 function Targets.new(targets, index)
@@ -84,6 +78,13 @@ function Targets.match(self, position)
     end
   end
   return Targets.new(self._targets, index)
+end
+
+function Targets.__index(self, k)
+  if type(k) == "number" then
+    return self._targets[k]
+  end
+  return Targets[k]
 end
 
 return M
