@@ -2,7 +2,7 @@ local windowlib = require("reacher.lib.window")
 local highlightlib = require("reacher.lib.highlight")
 local HlFactory = require("reacher.lib.highlight").HlFactory
 local Origin = require("reacher.view.origin").Origin
-local Inputs = require("reacher.model.input").Inputs
+local Input = require("reacher.model.input").Input
 local vim = vim
 
 local M = {}
@@ -34,13 +34,13 @@ function Overlay.open(source, source_bufnr)
     _cursor_hl = HlFactory.new("reacher_cursor", bufnr),
     _all_targets = targets,
     _targets = targets,
-    _inputs = nil,
+    _input = nil,
     _cursor_width = 1,
   }
   local overlay = setmetatable(tbl, Overlay)
 
   highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
-  highlightlib.set_background("ReacherBackground", origin.id, {
+  highlightlib.set_background("ReacherBackground", origin.window_id, {
     fg_hl_group = "Comment",
     fg_default = "#8d9eb2",
     bg_default = "#334152",
@@ -50,24 +50,24 @@ function Overlay.open(source, source_bufnr)
   return overlay, nil
 end
 
-function Overlay.update(self, input_line)
-  local inputs = Inputs.parse(input_line)
-  if inputs == self._inputs then
+function Overlay.update(self, line)
+  local input = Input.new(line)
+  if input == self._input then
     return
   end
-  self._inputs = inputs
+  self._input = input
 
-  self._cursor_width = #inputs.head
+  self._cursor_width = #input.str
   if self._cursor_width == 0 then
     self._cursor_width = 1
   end
 
   local targets = self._all_targets:filter(function(target)
     local str = target.str
-    if inputs.ignorecase then
+    if input.ignorecase then
       str = str:lower()
     end
-    return vim.startswith(str, inputs.head)
+    return vim.startswith(str, input.str)
   end)
   local highlighter = self._match_hl:reset()
   for _, target in targets:iter() do

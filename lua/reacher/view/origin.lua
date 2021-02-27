@@ -24,16 +24,16 @@ function Origin.new(bufnr)
     linebreak = vim.wo.linebreak,
   }
 
-  local id = vim.api.nvim_get_current_win()
+  local window_id = vim.api.nvim_get_current_win()
 
-  local cursor = Position.cursor(id)
+  local cursor = Position.cursor(window_id)
   local saved = vim.fn.winsaveview()
-  vim.api.nvim_win_set_cursor(id, {cursor.row, 0})
+  vim.api.nvim_win_set_cursor(window_id, {cursor.row, 0})
   local number_sign_width = vim.fn.wincol()
   vim.fn.winrestview(saved)
 
-  local width = vim.api.nvim_win_get_width(id) - number_sign_width + 1
-  local height = vim.api.nvim_win_get_height(id)
+  local width = vim.api.nvim_win_get_width(window_id) - number_sign_width + 1
+  local height = vim.api.nvim_win_get_height(window_id)
 
   local row = 0
   local column = 0
@@ -43,7 +43,7 @@ function Origin.new(bufnr)
     column = saved.leftcol
   end
 
-  local config = vim.api.nvim_win_get_config(id)
+  local config = vim.api.nvim_win_get_config(window_id)
   if config.relative ~= "" then
     row = row + config.row[false]
     column = column + config.col[false]
@@ -62,7 +62,7 @@ function Origin.new(bufnr)
   local offset = Position.new(first_row - 1, first_column - 1)
   local cursor_pos = Position.new(cursor.row + fillers:offset(cursor.row) - offset.row, cursor.column - offset.column - conceals:offset_from_origin(cursor.row, cursor.column + 1))
   local tbl = {
-    id = id,
+    window_id = window_id,
     lines = lines,
     cursor = cursor_pos,
     _offset = offset,
@@ -107,13 +107,13 @@ function Origin.copy_to_floating_win(self, bufnr)
   end, vim.fn.split(self._options.listchars, ",", true))
   vim.wo[window_id].listchars = table.concat(listchars, ",")
 
-  vim.api.nvim_set_current_win(self.id)
+  vim.api.nvim_set_current_win(self.window_id)
 
   return window_id
 end
 
 function Origin.enter(self)
-  windowlib.enter(self.id)
+  windowlib.enter(self.window_id)
 end
 
 function Origin.jump(self, row, column, mode)
@@ -126,7 +126,7 @@ function Origin.jump(self, row, column, mode)
   column = column + self._offset.column + insert_offset
   local origin_column = column + self._conceals:offset(origin_row, column)
 
-  windowlib.jump(self.id, origin_row, origin_column)
+  windowlib.jump(self.window_id, origin_row, origin_column)
 end
 
 return M

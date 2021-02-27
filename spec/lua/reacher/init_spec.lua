@@ -216,22 +216,6 @@ foo
     assert.cursor_word("foo")
   end)
 
-  it("ignores inputting space", function()
-    helper.set_lines([[
-hoge
-foo1
-foo2
-]])
-    reacher.start()
-
-    helper.input("f")
-    reacher.next()
-    helper.input(" ")
-    reacher.finish()
-
-    assert.cursor_word("foo2")
-  end)
-
   it("can cancel", function()
     helper.set_lines([[
 hoge
