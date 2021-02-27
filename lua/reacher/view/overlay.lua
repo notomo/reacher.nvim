@@ -2,9 +2,7 @@ local windowlib = require("reacher.lib.window")
 local highlightlib = require("reacher.lib.highlight")
 local HlFactory = require("reacher.lib.highlight").HlFactory
 local Origin = require("reacher.view.origin").Origin
-local Distance = require("reacher.model.distance").Distance
 local Targets = require("reacher.model.target").Targets
-local Target = require("reacher.model.target").Target
 local Inputs = require("reacher.model.input").Inputs
 local vim = vim
 
