@@ -57,7 +57,7 @@ function Origin.new(bufnr)
   local fillers = Fillers.new(first_row, last_row)
   local folds = Folds.new(first_row, last_row, fillers)
   local conceals = Conceals.new(bufnr, first_row, last_row, fillers)
-  local lines = Lines.new(first_row, first_column, last_column, conceals, folds, fillers, options.wrap)
+  local lines = Lines.new(first_column, last_column, conceals, folds, fillers, options.wrap)
 
   local offset = Position.new(first_row - 1, first_column - 1)
   local pos = Position.new(cursor.row + fillers:offset(cursor.row) - offset.row, cursor.column - offset.column - conceals:offset_from_origin(cursor.row, cursor.column + 1))
@@ -116,7 +116,9 @@ function Origin.enter(self)
   windowlib.enter(self.id)
 end
 
-function Origin.jump(self, origin_row, column, mode)
+function Origin.jump(self, row, column, mode)
+  local origin_row = row + self._offset.row - self._fillers:offset_from_origin(row)
+
   local insert_offset = 1 -- for stopinsert
   if mode == "n" then
     insert_offset = 0

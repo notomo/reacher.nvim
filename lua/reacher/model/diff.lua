@@ -1,3 +1,5 @@
+local Line = require("reacher.model.line").Line
+
 local vim = vim
 
 local M = {}
@@ -43,11 +45,21 @@ function Fillers.offset(self, row)
   return self._offsets[nearest_row] or 0
 end
 
+function Fillers.offset_from_origin(self, row)
+  local nearest_row = 0
+  for r, offset in pairs(self._offsets) do
+    if nearest_row < r and r + offset <= row then
+      nearest_row = r
+    end
+  end
+  return self._offsets[nearest_row] or 0
+end
+
 function Fillers.add_to(self, lines)
   for _, filler in ipairs(vim.fn.reverse(self._fillers)) do
     for _ = 1, filler.diff_count, 1 do
       local i = filler.row - self._first_row + 1
-      table.insert(lines, i, {str = "", row = i})
+      table.insert(lines, i, Line.new(""))
     end
   end
   return lines

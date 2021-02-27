@@ -6,20 +6,21 @@ local Line = {}
 Line.__index = Line
 M.Line = Line
 
-function Line.new()
-  local tbl = {}
+function Line.new(str)
+  vim.validate({str = {str, "string"}})
+  local tbl = {str = str}
   return setmetatable(tbl, Line)
 end
 
 local Lines = {}
 M.Lines = Lines
 
-function Lines.new(first_row, first_column, last_column, conceals, folds, fillers, wrap)
+function Lines.new(first_column, last_column, conceals, folds, fillers, wrap)
   local lines = {}
 
   local strs = conceals:lines()
-  for i, str in ipairs(strs) do
-    table.insert(lines, {str = str, row = i + first_row - 1})
+  for _, str in ipairs(strs) do
+    table.insert(lines, Line.new(str))
   end
 
   lines = fillers:add_to(lines)
@@ -38,10 +39,7 @@ end
 
 function Lines.__index(self, k)
   if type(k) == "number" then
-    local line = self._lines[k]
-    if not line then
-      return nil
-    end
+    local line = self._lines[k] or {}
     return line.str
   end
   return Lines[k]
