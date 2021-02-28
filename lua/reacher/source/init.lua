@@ -14,8 +14,8 @@ function SourceResult.new(source, result)
   return setmetatable(tbl, SourceResult)
 end
 
-function SourceResult.filter(self, input, bufnr)
-  local ctx = {input = input, bufnr = bufnr}
+function SourceResult.filter(self, input, bufnr, cursor)
+  local ctx = {input = input, bufnr = bufnr, cursor = cursor}
   return Targets.new(self._source:filter(ctx, self._result))
 end
 
@@ -30,7 +30,12 @@ function Source.new(name)
     return nil, "not found source: " .. name
   end
 
-  local tbl = {name = name, _source = source, new_target = Target.new}
+  local tbl = {
+    name = name,
+    _source = source,
+    new_target = Target.new,
+    new_virtual_target = Target.new_virtual,
+  }
   return setmetatable(tbl, Source), nil
 end
 

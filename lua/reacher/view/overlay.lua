@@ -57,10 +57,10 @@ function Overlay.update(self, line)
   end
   self._input = input
 
-  local targets = self._source_result:filter(input, self._bufnr)
+  local targets = self._source_result:filter(input, self._bufnr, self._cursor)
   local highlighter = self._match_highlight:reset()
   for _, target in targets:iter() do
-    highlighter:add("ReacherMatch", target.row - 1, target.column, target.column_end)
+    target:highlight(highlighter, "ReacherMatch")
   end
 
   self:_update_cursor(targets:match(self._cursor))
@@ -107,7 +107,7 @@ function Overlay._update_cursor(self, targets)
   if target == nil then
     return
   end
-  highlighter:add("ReacherCurrentMatch", target.row - 1, target.column, target.column_end)
+  target:highlight(highlighter, "ReacherCurrentMatch")
 end
 
 highlightlib.link("ReacherMatch", "Directory")

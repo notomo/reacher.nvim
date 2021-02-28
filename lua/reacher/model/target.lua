@@ -8,16 +8,32 @@ local Target = setmetatable({}, Position)
 Target.__index = Target
 M.Target = Target
 
-function Target.new(row, column, column_end, str)
-  vim.validate({str = {str, "string"}, column_end = {column_end, "number"}})
-  local tbl = {str = str, column_end = column_end}
+function Target.new(row, column, column_end, str, is_virtual)
+  vim.validate({
+    str = {str, "string"},
+    column_end = {column_end, "number"},
+    is_virtual = {is_virtual, "boolean", true},
+  })
+  local tbl = {str = str, column_end = column_end, _is_virtual = is_virtual or false}
   local position = Position.new(row, column)
   position.__index = position
   return setmetatable(tbl, setmetatable(position, Target))
 end
 
+function Target.new_virtual(row, column, column_end, str)
+  return Target.new(row, column, column_end, str, true)
+end
+
 function Target.change_width(self, width)
-  return Target.new(self.row, self.column, self.column + width, self.str)
+  return Target.new(self.row, self.column, self.column + width, self.str, self._is_virtual)
+end
+
+function Target.highlight(self, highlighter, hl_group)
+  if not self._is_virtual then
+    highlighter:add(hl_group, self.row - 1, self.column, self.column_end)
+  else
+    highlighter:add_virtual(hl_group, self.row - 1, self.column, self.column_end, self.str)
+  end
 end
 
 local Targets = {}
