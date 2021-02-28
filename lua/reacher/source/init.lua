@@ -4,6 +4,21 @@ local Target = require("reacher.model.target").Target
 
 local M = {}
 
+local SourceResult = {}
+SourceResult.__index = SourceResult
+M.SourceResult = SourceResult
+
+function SourceResult.new(source, result)
+  vim.validate({source = {source, "table"}, result = {result, "table"}})
+  local tbl = {_source = source, _result = result, targets = Targets.new(result.targets)}
+  return setmetatable(tbl, SourceResult)
+end
+
+function SourceResult.filter(self, input, bufnr)
+  local ctx = {input = input, bufnr = bufnr}
+  return Targets.new(self._source:filter(ctx, self._result))
+end
+
 local Source = {}
 M.Source = Source
 
@@ -27,11 +42,14 @@ function Source.collect(self, lines)
     table.insert(raw_lines, line)
   end
 
-  local raw_targets = self._source.collect(self, raw_lines)
-  if #raw_targets == 0 then
-    return nil, "no targets: " .. self.name
+  local result, err = self._source.collect(self, raw_lines)
+  if err ~= nil then
+    return nil, ("source `%s`: %s"):format(self.name, err)
   end
-  return Targets.new(raw_targets), nil
+  if not result.targets then
+    return nil, ("source `%s`: `targets` field is required."):format(self.name)
+  end
+  return SourceResult.new(self, result), nil
 end
 
 function Source.__index(self, k)

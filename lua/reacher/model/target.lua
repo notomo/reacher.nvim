@@ -8,12 +8,16 @@ local Target = setmetatable({}, Position)
 Target.__index = Target
 M.Target = Target
 
-function Target.new(row, column, str)
-  vim.validate({str = {str, "string"}})
-  local tbl = {str = str}
+function Target.new(row, column, column_end, str)
+  vim.validate({str = {str, "string"}, column_end = {column_end, "number"}})
+  local tbl = {str = str, column_end = column_end}
   local position = Position.new(row, column)
   position.__index = position
   return setmetatable(tbl, setmetatable(position, Target))
+end
+
+function Target.change_width(self, width)
+  return Target.new(self.row, self.column, self.column + width, self.str)
 end
 
 local Targets = {}
@@ -24,12 +28,6 @@ function Targets.new(targets, index)
   index = index or 1
   local tbl = {_targets = targets, _index = index}
   return setmetatable(tbl, Targets)
-end
-
-function Targets.filter(self, fn)
-  vim.validate({fn = {fn, "function"}})
-  local targets = vim.tbl_filter(fn, self._targets)
-  return Targets.new(targets)
 end
 
 function Targets.iter(self)

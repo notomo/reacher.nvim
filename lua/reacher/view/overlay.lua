@@ -14,7 +14,7 @@ M.Overlay = Overlay
 function Overlay.open(source, source_bufnr)
   local origin = Origin.new(source_bufnr)
 
-  local targets, err = source:collect(origin.lines)
+  local source_result, err = source:collect(origin.lines)
   if err ~= nil then
     return nil, err
   end
@@ -30,12 +30,12 @@ function Overlay.open(source, source_bufnr)
     _window_id = window_id,
     _cursor = origin.cursor,
     _origin = origin,
-    _match_hl = HlFactory.new("reacher", bufnr),
-    _cursor_hl = HlFactory.new("reacher_cursor", bufnr),
-    _all_targets = targets,
-    _targets = targets,
+    _match_highlight = HlFactory.new("reacher", bufnr),
+    _cursor_highlight = HlFactory.new("reacher_cursor", bufnr),
+    _source_result = source_result,
+    _targets = source_result.targets,
     _input = nil,
-    _cursor_width = 1,
+    _bufnr = bufnr,
   }
   local overlay = setmetatable(tbl, Overlay)
 
@@ -57,21 +57,10 @@ function Overlay.update(self, line)
   end
   self._input = input
 
-  self._cursor_width = #input.str
-  if self._cursor_width == 0 then
-    self._cursor_width = 1
-  end
-
-  local targets = self._all_targets:filter(function(target)
-    local str = target.str
-    if input.ignorecase then
-      str = str:lower()
-    end
-    return vim.startswith(str, input.str)
-  end)
-  local highlighter = self._match_hl:reset()
+  local targets = self._source_result:filter(input, self._bufnr)
+  local highlighter = self._match_highlight:reset()
   for _, target in targets:iter() do
-    highlighter:add("ReacherMatch", target.row - 1, target.column, target.column + self._cursor_width)
+    highlighter:add("ReacherMatch", target.row - 1, target.column, target.column_end)
   end
 
   self:_update_cursor(targets:match(self._cursor))
@@ -111,14 +100,14 @@ function Overlay.last(self)
 end
 
 function Overlay._update_cursor(self, targets)
-  local highlighter = self._cursor_hl:reset()
+  local highlighter = self._cursor_highlight:reset()
 
   self._targets = targets
   local target = targets:current()
   if target == nil then
     return
   end
-  highlighter:add("ReacherCurrentMatch", target.row - 1, target.column, target.column + self._cursor_width)
+  highlighter:add("ReacherCurrentMatch", target.row - 1, target.column, target.column_end)
 end
 
 highlightlib.link("ReacherMatch", "Directory")
