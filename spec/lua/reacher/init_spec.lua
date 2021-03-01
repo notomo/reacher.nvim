@@ -172,14 +172,24 @@ Hoge
     assert.cursor_word("hogec")
   end)
 
-  it("show error if no targets", function()
+  it("shows error if no targets", function()
     reacher.start()
     assert.exists_message("no targets")
   end)
 
-  it("show error if no source", function()
+  it("shows error if no source", function()
     reacher.start("invalid")
     assert.exists_message("not found source: invalid")
+  end)
+
+  it("shows error if it is not started on moving", function()
+    reacher.first()
+    assert.exists_message("is not started")
+  end)
+
+  it("shows error if it is not started on finishing", function()
+    reacher.finish()
+    assert.exists_message("is not started")
   end)
 
   it("cannot open the multiple", function()

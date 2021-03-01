@@ -44,7 +44,7 @@ function Command.move(action_name)
 
   local view = View.current()
   if view == nil then
-    return
+    return "is not started"
   end
 
   view:move(action_name)
@@ -53,7 +53,7 @@ end
 function Command.finish()
   local view = View.current()
   if view == nil then
-    return
+    return "is not started"
   end
   view:finish()
 end
