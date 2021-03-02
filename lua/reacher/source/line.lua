@@ -1,5 +1,8 @@
 local M = {}
 
+M.matcher_name = "regex"
+M.matcher_method_name = "partial"
+
 function M.collect(self, lines)
   local targets = {}
   for row, line in ipairs(lines) do
@@ -12,22 +15,15 @@ function M.collect(self, lines)
   return {targets = targets}
 end
 
--- TODO refactor matcher
-function M.filter(_, ctx, result)
-  local input = ctx.input
-  local targets = vim.tbl_filter(function(target)
-    local str, input_str = input:apply_smartcase(target.str)
-    return vim.startswith(str, input_str)
-  end, result.targets)
-
-  local input_width = #input.str
-  if input_width == 0 then
-    return targets
+function M.filter(self, ctx, result)
+  local targets = {}
+  for _, target in ipairs(result.targets) do
+    local t = self.matcher:match(target, ctx.input)
+    if t then
+      table.insert(targets, t)
+    end
   end
-
-  return vim.tbl_map(function(target)
-    return target:change_width(input_width)
-  end, targets)
+  return targets
 end
 
 return M

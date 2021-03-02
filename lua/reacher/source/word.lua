@@ -2,7 +2,8 @@ local vim = vim
 
 local M = {}
 
-M._regex = vim.regex("\\v[[:alnum:]]+")
+M.matcher_name = "regex"
+M.matcher_method_name = "startswith"
 
 function M.collect(self, lines)
   local targets = {}
@@ -15,36 +16,32 @@ function M.collect(self, lines)
   return {targets = targets}
 end
 
-function M._search(self, line, row)
+local Matcher = require("reacher.matcher").Matcher
+local regex_matcher = Matcher.new("regex")
+
+function M._search(_, line, row)
   local targets = {}
-  local column = 1
-  local regex = M._regex
+  local column = 0
   repeat
-    local str = line:sub(column)
-    local s, e = regex:match_str(str)
-    if s ~= nil then
-      table.insert(targets, self.new_target(row, column + s - 1, column + s, str:sub(s + 1, e)))
-      column = column + e + 1
+    local target = regex_matcher:partial(line, row, column, {str = "\\v[[:alnum:]]+"})
+    if not target then
+      break
     end
-  until s == nil
+    table.insert(targets, target)
+    column = target.column_end
+  until target == nil
   return targets
 end
 
-function M.filter(_, ctx, result)
-  local input = ctx.input
-  local targets = vim.tbl_filter(function(target)
-    local str, input_str = input:apply_smartcase(target.str)
-    return vim.startswith(str, input_str)
-  end, result.targets)
-
-  local input_width = #input.str
-  if input_width == 0 then
-    return targets
+function M.filter(self, ctx, result)
+  local targets = {}
+  for _, target in ipairs(result.targets) do
+    local t = self.matcher:match(target, ctx.input)
+    if t then
+      table.insert(targets, t)
+    end
   end
-
-  return vim.tbl_map(function(target)
-    return target:change_width(input_width)
-  end, targets)
+  return targets
 end
 
 return M

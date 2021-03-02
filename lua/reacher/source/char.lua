@@ -2,6 +2,9 @@ local vim = vim
 
 local M = {}
 
+M.matcher_name = "regex"
+M.matcher_method_name = "partial"
+
 function M.collect(_, lines)
   return {targets = {}, _lines = lines}
 end
@@ -34,18 +37,13 @@ function M._search(self, pattern, line, row)
   local targets = {}
   local column = 0
   repeat
-    local ok, result = pcall(vim.fn.matchstrpos, line, pattern, column)
-    if not ok then
+    local target = self.matcher:match_str(line, row, column, {str = pattern})
+    if not target then
       break
     end
-
-    local str, s, e = unpack(result)
-    if s == e then
-      break
-    end
-    table.insert(targets, self.new_target(row, s, e, str))
-    column = e
-  until s == -1
+    table.insert(targets, target)
+    column = target.column_end
+  until target == nil
   return targets
 end
 

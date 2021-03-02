@@ -1,6 +1,7 @@
 local modulelib = require("reacher.lib.module")
 local Targets = require("reacher.model.target").Targets
 local Target = require("reacher.model.target").Target
+local Matcher = require("reacher.matcher").Matcher
 
 local M = {}
 
@@ -10,7 +11,12 @@ M.SourceResult = SourceResult
 
 function SourceResult.new(source, result)
   vim.validate({source = {source, "table"}, result = {result, "table"}})
-  local tbl = {_source = source, _result = result, targets = Targets.new(result.targets)}
+  local tbl = {
+    matcher = source.matcher,
+    targets = Targets.new(result.targets),
+    _source = source,
+    _result = result,
+  }
   return setmetatable(tbl, SourceResult)
 end
 
@@ -30,11 +36,17 @@ function Source.new(name)
     return nil, "not found source: " .. name
   end
 
+  local matcher, err = Matcher.new(source.matcher_name, source.matcher_method_name)
+  if err ~= nil then
+    return nil, err
+  end
+
   local tbl = {
     name = name,
-    _source = source,
+    matcher = matcher,
     new_target = Target.new,
     new_virtual_target = Target.new_virtual,
+    _source = source,
   }
   return setmetatable(tbl, Source), nil
 end
