@@ -1,7 +1,8 @@
+local vim = vim
+
 local M = {}
 
-function M.startswith(self, str, row, column, input)
-  local pattern = input.str
+function M.startswith(self, str, row, column, pattern)
   if pattern == "" then
     pattern = "."
   end
@@ -19,8 +20,7 @@ function M.startswith(self, str, row, column, input)
   return self.new_target(row, column + s, column + e, matched)
 end
 
-function M.partial(self, str, row, column, input)
-  local pattern = input.str
+function M.partial(self, str, row, column, pattern)
   if pattern == "" then
     pattern = ".*"
   end

@@ -2,7 +2,6 @@ local windowlib = require("reacher.lib.window")
 local highlightlib = require("reacher.lib.highlight")
 local HlFactory = require("reacher.lib.highlight").HlFactory
 local Origin = require("reacher.view.origin").Origin
-local Input = require("reacher.model.input").Input
 local vim = vim
 
 local M = {}
@@ -50,14 +49,13 @@ function Overlay.open(source, source_bufnr)
   return overlay, nil
 end
 
-function Overlay.update(self, line)
-  local input = Input.new(line)
+function Overlay.update(self, input)
   if input == self._input then
     return
   end
   self._input = input
 
-  local targets = self._source_result:filter(input, self._bufnr, self._cursor)
+  local targets = self._source_result:update(input, self._bufnr, self._cursor)
   local highlighter = self._match_highlight:reset()
   for _, target in targets:iter() do
     target:highlight(highlighter, "ReacherMatch")
