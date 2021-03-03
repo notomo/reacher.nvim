@@ -38,7 +38,7 @@ function SourceResult.update(self, input, bufnr, cursor)
 end
 
 function SourceResult._default_update(self, ctx, collected)
-  return self.matcher:match_all(collected.targets, ctx.input)
+  return self.matcher:match_targets(collected.targets, ctx.input)
 end
 
 function SourceResult.__index(self, k)

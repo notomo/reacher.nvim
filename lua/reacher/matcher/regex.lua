@@ -2,12 +2,12 @@ local vim = vim
 
 local M = {}
 
-function M.startswith(self, str, row, column, pattern)
+function M.startswith(self, str, row, column, column_offset, pattern)
   if pattern == "" then
     pattern = "."
   end
 
-  local ok, result = pcall(vim.fn.matchstrpos, str, "^" .. pattern, 0)
+  local ok, result = pcall(vim.fn.matchstrpos, str, "^" .. pattern, column_offset)
   if not ok then
     return nil
   end
@@ -20,12 +20,12 @@ function M.startswith(self, str, row, column, pattern)
   return self.new_target(row, column + s, column + e, matched)
 end
 
-function M.partial(self, str, row, column, pattern)
+function M.partial(self, str, row, column, column_offset, pattern)
   if pattern == "" then
     pattern = ".*"
   end
 
-  local ok, result = pcall(vim.fn.matchstrpos, str, pattern, column)
+  local ok, result = pcall(vim.fn.matchstrpos, str, pattern, column_offset)
   if not ok then
     return nil
   end
@@ -35,7 +35,7 @@ function M.partial(self, str, row, column, pattern)
     return nil
   end
 
-  return self.new_target(row, s, e, matched)
+  return self.new_target(row, column + s, column + e, matched)
 end
 
 return M

@@ -13,7 +13,7 @@ function M.update(self, ctx)
 
   local targets = {}
   for row, line in ipairs(ctx.lines) do
-    targets = vim.list_extend(targets, self.matcher:match_str_all(line.str, row, 0, pattern))
+    targets = vim.list_extend(targets, self.matcher:match_all(line.str, row, 0, pattern))
   end
   return targets
 end

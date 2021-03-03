@@ -12,7 +12,7 @@ function M.collect(self, lines)
 
   local targets = {}
   for row, line in ipairs(lines) do
-    targets = vim.list_extend(targets, matcher:match_str_all(line.str, row, 0, M.pattern))
+    targets = vim.list_extend(targets, matcher:match_all(line.str, row, 0, M.pattern))
   end
 
   if #targets == 0 then

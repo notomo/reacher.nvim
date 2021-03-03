@@ -31,32 +31,28 @@ function Matcher.new(name, method_name)
   return setmetatable(tbl, Matcher)
 end
 
-function Matcher.match(self, target, pattern)
-  return self._default_method(self, target.str, target.row, target.column, pattern)
+function Matcher.match(self, str, row, column, column_offset, pattern)
+  return self._default_method(self, str, row, column, column_offset, pattern)
 end
 
-function Matcher.match_str(self, str, row, column, pattern)
-  return self._default_method(self, str, row, column, pattern)
-end
-
-function Matcher.match_str_all(self, str, row, start_column, pattern)
+function Matcher.match_all(self, str, row, start_column, pattern)
   local targets = {}
-  local column = start_column
+  local column_offset = start_column
   repeat
-    local target = self:match_str(str, row, column, pattern)
+    local target = self:match(str, row, 0, column_offset, pattern)
     if not target then
       break
     end
     table.insert(targets, target)
-    column = target.column_end
+    column_offset = target.column_end
   until target == nil
   return targets
 end
 
-function Matcher.match_all(self, original_targets, pattern)
+function Matcher.match_targets(self, original_targets, pattern)
   local targets = {}
   for _, t in ipairs(original_targets) do
-    local target = self:match(t, pattern)
+    local target = self:match(t.str, t.row, t.column, 0, pattern)
     if target then
       table.insert(targets, target)
     end
