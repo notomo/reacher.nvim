@@ -1,5 +1,5 @@
 local View = require("reacher.view").View
-local Source = require("reacher.source").Source
+local Source = require("reacher.model.source").Source
 local messagelib = require("reacher.lib.message")
 local vim = vim
 

@@ -1,18 +1,18 @@
 local helper = require("reacher.lib.testlib.helper")
 local reacher = require("reacher")
 
-describe("reacher.nvim char source", function()
+describe("reacher.nvim pattern source", function()
 
   before_each(helper.before_each)
   after_each(helper.after_each)
 
-  it("can search all char", function()
+  it("can search by pattern", function()
     helper.set_lines([[
 foo
 hoge
 ]])
 
-    reacher.start("char")
+    reacher.start("pattern")
 
     helper.input("ge")
     reacher.finish()

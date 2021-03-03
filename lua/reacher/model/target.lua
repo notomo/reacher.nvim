@@ -24,10 +24,6 @@ function Target.new_virtual(row, column, column_end, str)
   return Target.new(row, column, column_end, str, true)
 end
 
-function Target.change_width(self, width)
-  return Target.new(self.row, self.column, self.column + width, self.str, self._is_virtual)
-end
-
 function Target.highlight(self, highlighter, hl_group)
   if not self._is_virtual then
     highlighter:add(hl_group, self.row - 1, self.column, self.column_end)
