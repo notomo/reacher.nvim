@@ -21,4 +21,19 @@ hoge
     assert.column(3)
   end)
 
+  it("has the current position target on init", function()
+    helper.set_lines([[
+foo
+hoge
+]])
+    helper.search("hoge")
+    vim.cmd("normal! $")
+
+    reacher.start("pattern")
+    reacher.finish()
+
+    assert.current_line("hoge")
+    assert.column(4)
+  end)
+
 end)

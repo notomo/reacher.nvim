@@ -23,18 +23,24 @@ function Translator.to_targets_from_str(_, matcher, str, row, start_column, patt
     local target = Target.new(row, s, e, matched)
     table.insert(targets, target)
     column_offset = target.column_end
-  until target == nil
+  until matched == nil
   return targets
 end
 
 function Translator.to_targets_from_targets(_, matcher, original_targets, pattern)
   local targets = {}
   for _, t in ipairs(original_targets) do
-    local matched, s, e = matcher:match(t.str, pattern, 0)
-    if matched then
+    local str = t.str
+    local column_offset = 0
+    repeat
+      local matched, s, e = matcher:match(str, pattern, column_offset)
+      if not matched then
+        break
+      end
       local target = Target.new(t.row, t.column + s, t.column + e, matched)
       table.insert(targets, target)
-    end
+      column_offset = target.column_end
+    until matched == nil
   end
   return targets
 end
