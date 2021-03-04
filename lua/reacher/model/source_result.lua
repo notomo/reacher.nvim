@@ -14,6 +14,8 @@ function SourceResult.new(source, collected, raw_lines)
   })
   local tbl = {
     matcher = source.matcher,
+    regex_matcher = source.regex_matcher,
+    translator = source.translator,
     targets = Targets.new(collected.targets),
     _source = source,
     _collected = collected,
@@ -35,7 +37,7 @@ function SourceResult.update(self, input, bufnr, cursor)
 end
 
 function SourceResult._default_update(self, ctx, collected)
-  return self.matcher:match_targets(collected.targets, ctx.input)
+  return self.translator:to_targets_from_targets(self.matcher, collected.targets, ctx.input)
 end
 
 function SourceResult.__index(self, k)

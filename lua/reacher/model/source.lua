@@ -1,7 +1,9 @@
 local modulelib = require("reacher.lib.module")
 local Target = require("reacher.model.target").Target
 local SourceResult = require("reacher.model.source_result").SourceResult
+local Translator = require("reacher.model.translator").Translator
 local Matcher = require("reacher.model.matcher").Matcher
+local regex_matcher = Matcher.must("regex")
 
 local M = {}
 
@@ -24,6 +26,8 @@ function Source.new(name)
   local tbl = {
     name = name,
     matcher = matcher,
+    regex_matcher = regex_matcher,
+    translator = Translator.new(regex_matcher),
     new_target = Target.new,
     new_virtual_target = Target.new_virtual,
     new_matcher = Matcher.new,
@@ -64,6 +68,14 @@ end
 
 function Source.__index(self, k)
   return rawget(Source, k) or self._source[k]
+end
+
+function Source.to_targets_from_str(self, str, row, start_column, pattern)
+  return self.translator:to_targets_from_str(self.matcher, str, row, start_column, pattern)
+end
+
+function Source.to_targets_from(self, original_targets, pattern)
+  return self.translator:to_targets_from_targets(self.matcher, original_targets, pattern)
 end
 
 return M

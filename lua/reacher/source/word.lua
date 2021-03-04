@@ -5,14 +5,9 @@ local M = {}
 M.pattern = "\\v[[:alnum:]]+"
 
 function M.collect(self, lines)
-  local matcher, err = self.new_matcher("regex")
-  if err ~= nil then
-    error(err)
-  end
-
   local targets = {}
   for row, line in ipairs(lines) do
-    targets = vim.list_extend(targets, matcher:match_all(line.str, row, 0, M.pattern))
+    targets = vim.list_extend(targets, self.translator:to_targets_from_str(self.regex_matcher, line.str, row, 0, M.pattern))
   end
 
   if #targets == 0 then

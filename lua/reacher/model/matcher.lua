@@ -1,4 +1,3 @@
-local Target = require("reacher.model.target").Target
 local modulelib = require("reacher.lib.module")
 
 local M = {}
@@ -21,43 +20,20 @@ function Matcher.new(name, method_name)
     return nil, ("not found %s matcher function: %s"):format(name, method_name)
   end
 
-  local tbl = {
-    name = name,
-    _matcher = matcher,
-    _default_method = default_method,
-    new_target = Target.new,
-    new_virtual_target = Target.new_virtual,
-  }
+  local tbl = {name = name, _matcher = matcher, _default_method = default_method}
   return setmetatable(tbl, Matcher)
 end
 
-function Matcher.match(self, str, row, column, column_offset, pattern)
-  return self._default_method(self, str, row, column, column_offset, pattern)
-end
-
-function Matcher.match_all(self, str, row, start_column, pattern)
-  local targets = {}
-  local column_offset = start_column
-  repeat
-    local target = self:match(str, row, 0, column_offset, pattern)
-    if not target then
-      break
-    end
-    table.insert(targets, target)
-    column_offset = target.column_end
-  until target == nil
-  return targets
-end
-
-function Matcher.match_targets(self, original_targets, pattern)
-  local targets = {}
-  for _, t in ipairs(original_targets) do
-    local target = self:match(t.str, t.row, t.column, 0, pattern)
-    if target then
-      table.insert(targets, target)
-    end
+function Matcher.must(name, method_name)
+  local matcher, err = Matcher.new(name, method_name)
+  if err ~= nil then
+    error(err)
   end
-  return targets
+  return matcher
+end
+
+function Matcher.match(self, str, pattern, column_offset)
+  return self._default_method(self, str, pattern, column_offset)
 end
 
 function Matcher.__index(self, k)
