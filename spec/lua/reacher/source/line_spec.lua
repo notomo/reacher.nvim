@@ -19,6 +19,7 @@ bar
     reacher.finish()
 
     assert.current_line("bar")
+    assert.column(1)
   end)
 
 end)

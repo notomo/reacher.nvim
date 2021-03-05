@@ -27,22 +27,24 @@ function Translator.to_targets_from_str(_, matcher, str, row, start_column, patt
   return targets
 end
 
-function Translator.to_targets_from_targets(_, matcher, original_targets, pattern)
-  local targets = {}
-  for _, t in ipairs(original_targets) do
-    local str = t.str
+function Translator.to_targets_from_targets(_, matcher, targets, pattern)
+  local result_targets = {}
+  for _, target in ipairs(targets) do
+    local matches = {}
     local column_offset = 0
     repeat
-      local matched, s, e = matcher:match(str, pattern, column_offset)
+      local matched, s, e = matcher:match(target.str, pattern, column_offset)
       if not matched then
         break
       end
-      local target = Target.new(t.row, t.column + s, t.column + e, matched)
-      table.insert(targets, target)
-      column_offset = target.column_end
+      table.insert(matches, {s, e})
+      column_offset = target.column + e
     until matched == nil
+    if matches[1] then
+      table.insert(result_targets, target:with(matches))
+    end
   end
-  return targets
+  return result_targets
 end
 
 function Translator.to_targets_from_position(self, str, row, column)
