@@ -3,6 +3,9 @@ local vim = vim
 local M = {}
 
 function M.startswith(self, str, pattern, column_offset)
+  if column_offset > 0 then
+    return
+  end
   if pattern == "" then
     pattern = "."
   end

@@ -6,20 +6,6 @@ describe("reacher.nvim", function()
   before_each(helper.before_each)
   after_each(helper.after_each)
 
-  it("can search word by one char", function()
-    helper.set_lines([[
-hoge foo
-]])
-
-    reacher.start()
-    assert.window_count(3)
-
-    helper.input("f")
-    reacher.finish()
-
-    assert.cursor_word("foo")
-  end)
-
   it("moves to the nearest", function()
     helper.set_lines([[
               hogea hogeb
@@ -141,11 +127,6 @@ hogec
     reacher.finish()
 
     assert.cursor_word("hogec")
-  end)
-
-  it("shows error if no targets", function()
-    reacher.start()
-    assert.exists_message("no targets")
   end)
 
   it("shows error if no source", function()
