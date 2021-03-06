@@ -2,8 +2,7 @@ local vim = vim
 
 local M = {}
 
-M.matcher_name = "regex"
-M.matcher_method_name = "partial"
+M.opts = {matcher_opts = {name = "regex", method_name = "partial"}}
 
 function M.update(self, ctx)
   local pattern = ctx.input

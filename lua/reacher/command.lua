@@ -23,15 +23,16 @@ function Command.new(name, ...)
   end
 end
 
-function Command.start(name)
-  vim.validate({name = {name, "string", true}})
+function Command.start(name, opts)
+  vim.validate({name = {name, "string"}, opts = {opts, "table", true}})
+  opts = opts or {}
 
   local old = View.current()
   if old ~= nil then
     old:close()
   end
 
-  local source, err = Source.new(name or "word")
+  local source, err = Source.new(name, opts.source_opts or {})
   if err ~= nil then
     return err
   end
@@ -72,7 +73,7 @@ function Command.cancel()
 end
 
 function Command.close(id, is_cancel)
-  vim.validate({id = {id, "number"}})
+  vim.validate({id = {id, "number"}, is_cancel = {is_cancel, "boolean"}})
 
   local view = View.get(id)
   if view == nil then

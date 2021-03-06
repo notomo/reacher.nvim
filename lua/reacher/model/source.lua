@@ -4,21 +4,24 @@ local SourceResult = require("reacher.model.source_result").SourceResult
 local Translator = require("reacher.model.translator").Translator
 local Matcher = require("reacher.model.matcher").Matcher
 local regex_matcher = Matcher.must("regex")
+local vim = vim
 
 local M = {}
 
 local Source = {}
 M.Source = Source
 
-function Source.new(name)
-  vim.validate({name = {name, "string"}})
+function Source.new(name, raw_opts)
+  vim.validate({name = {name, "string"}, raw_opts = {raw_opts, "table"}})
 
   local source = modulelib.find("reacher.source." .. name)
   if source == nil then
     return nil, "not found source: " .. name
   end
+  local opts = vim.tbl_deep_extend("force", source.opts or {}, raw_opts or {})
 
-  local matcher, err = Matcher.new(source.matcher_name, source.matcher_method_name)
+  local matcher_opts = opts.matcher_opts
+  local matcher, err = Matcher.new(matcher_opts.name, matcher_opts.method_name)
   if err ~= nil then
     return nil, err
   end
@@ -26,6 +29,7 @@ function Source.new(name)
   local tbl = {
     name = name,
     matcher = matcher,
+    opts = opts.source_opts,
     regex_matcher = regex_matcher,
     translator = Translator.new(regex_matcher),
     new_target = Target.new,

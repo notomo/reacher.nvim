@@ -17,7 +17,7 @@ hogec
 ]])
 
     vim.cmd("normal! j")
-    reacher.start()
+    reacher.start("word")
 
     helper.input("h")
     reacher.finish()
@@ -32,7 +32,7 @@ hogec
     hogec
 ]])
 
-    reacher.start()
+    reacher.start("word")
     reacher.next()
     reacher.finish()
 
@@ -46,14 +46,14 @@ hogec
     hogec
 ]])
 
-    reacher.start()
+    reacher.start("word")
     reacher.next()
     reacher.next()
     reacher.finish()
 
     assert.cursor_word("hogec")
 
-    reacher.start()
+    reacher.start("word")
     reacher.next()
     reacher.finish()
 
@@ -67,13 +67,13 @@ hogec
     hogec
 ]])
 
-    reacher.start()
+    reacher.start("word")
     reacher.next()
     reacher.finish()
 
     assert.cursor_word("hogeb")
 
-    reacher.start()
+    reacher.start("word")
     reacher.prev()
     reacher.finish()
 
@@ -87,7 +87,7 @@ hogec
     hogec
 ]])
 
-    reacher.start()
+    reacher.start("word")
     reacher.prev()
     reacher.finish()
 
@@ -101,14 +101,14 @@ hogec
     hogec
 ]])
 
-    reacher.start()
+    reacher.start("word")
     reacher.next()
     reacher.next()
     reacher.finish()
 
     assert.cursor_word("hogec")
 
-    reacher.start()
+    reacher.start("word")
     reacher.first()
     reacher.finish()
 
@@ -122,7 +122,7 @@ hogec
     hogec
 ]])
 
-    reacher.start()
+    reacher.start("word")
     reacher.last()
     reacher.finish()
 
@@ -150,12 +150,12 @@ hogea
 hogeb
 ]])
 
-    reacher.start()
+    reacher.start("word")
 
     helper.input("h")
     assert.window_count(3)
 
-    reacher.start()
+    reacher.start("word")
 
     assert.window_count(3)
   end)
@@ -167,7 +167,7 @@ foo
 ]])
     helper.search("foo")
 
-    reacher.start()
+    reacher.start("word")
 
     helper.input("hogea")
     assert.window_count(3)
@@ -184,7 +184,7 @@ hoge
 foo1
 foo2
 ]])
-    reacher.start()
+    reacher.start("word")
     helper.input("foo")
 
     reacher.cancel()
@@ -203,7 +203,7 @@ hoge4
     vim.cmd("2,4fold")
     vim.wo.foldenable = true
 
-    reacher.start()
+    reacher.start("word")
     helper.input("hoge")
     reacher.finish()
 
@@ -234,7 +234,7 @@ bar
     vim.bo.buftype = "nofile"
     vim.cmd("diffthis")
 
-    reacher.start()
+    reacher.start("word")
     helper.input("bar")
     reacher.finish()
 
@@ -292,7 +292,7 @@ buz
     vim.bo.buftype = "nofile"
     vim.cmd("diffthis")
 
-    reacher.start()
+    reacher.start("word")
     helper.input("buz")
     reacher.finish()
 
@@ -306,7 +306,7 @@ foo
 hoge
 ]])
 
-    reacher.start()
+    reacher.start("word")
     helper.input([[
 hoge
 foo
@@ -332,7 +332,7 @@ foo
 foo |hoge| bar (hogehoge)
 ]])
 
-    reacher.start()
+    reacher.start("word")
     helper.input("bar")
     reacher.finish()
 
@@ -360,7 +360,7 @@ foo |hoge| bar (hogehoge)
   hoge
 ]])
 
-    reacher.start()
+    reacher.start("word")
     reacher.finish()
 
     -- NOTE: no stopinsert offset
@@ -372,10 +372,24 @@ foo |hoge| bar (hogehoge)
 hoge
 ]])
 
-    reacher.start()
+    reacher.start("word")
     reacher.cancel()
 
     assert.exists_message("canceled")
+  end)
+
+  it("can change matcher by option", function()
+    helper.set_lines([[
+foo
+hoge
+]])
+
+    reacher.start("word", {source_opts = {matcher_opts = {method_name = "partial"}}})
+    helper.input("ge")
+    reacher.finish()
+
+    assert.column(1)
+    assert.cursor_word("hoge")
   end)
 
 end)

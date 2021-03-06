@@ -2,12 +2,12 @@ local vim = vim
 
 local M = {}
 
-M.pattern = "\\v[[:alnum:]]+"
+M.opts = {pattern = "\\v[[:alnum:]]+", matcher_opts = {name = "regex", method_name = "startswith"}}
 
 function M.collect(self, lines)
   local targets = {}
   for row, line in ipairs(lines) do
-    targets = vim.list_extend(targets, self.translator:to_targets_from_str(self.regex_matcher, line.str, row, 0, M.pattern))
+    targets = vim.list_extend(targets, self.translator:to_targets_from_str(self.regex_matcher, line.str, row, 0, self.opts.pattern))
   end
 
   if #targets == 0 then
@@ -16,8 +16,5 @@ function M.collect(self, lines)
 
   return {targets = targets}
 end
-
-M.matcher_name = "regex"
-M.matcher_method_name = "startswith"
 
 return M

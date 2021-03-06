@@ -1,5 +1,7 @@
 local M = {}
 
+M.opts = {matcher_opts = {name = "regex", method_name = "partial"}}
+
 function M.collect(self, lines)
   local targets = {}
   for row, line in ipairs(lines) do
@@ -13,8 +15,5 @@ function M.collect(self, lines)
 
   return {targets = targets}
 end
-
-M.matcher_name = "regex"
-M.matcher_method_name = "partial"
 
 return M
