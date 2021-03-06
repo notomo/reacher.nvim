@@ -55,7 +55,11 @@ function Command.finish()
   if view == nil then
     return "is not started"
   end
-  view:finish()
+
+  local row, column = view:finish()
+  if row ~= nil then
+    messagelib.info(("jumped to (%d, %d)"):format(row, column))
+  end
 end
 
 function Command.cancel()
@@ -64,6 +68,7 @@ function Command.cancel()
     return
   end
   view:close(true)
+  messagelib.info("canceled")
 end
 
 function Command.close(id, is_cancel)

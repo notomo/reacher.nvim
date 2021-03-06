@@ -354,4 +354,28 @@ foo |hoge| bar (hogehoge)
     assert.cursor_word("hoge")
   end)
 
+  it("shows jump info message", function()
+    helper.set_lines([[
+
+  hoge
+]])
+
+    reacher.start()
+    reacher.finish()
+
+    -- NOTE: no stopinsert offset
+    assert.exists_message("jumped to %(2, 2%)")
+  end)
+
+  it("shows cancel message", function()
+    helper.set_lines([[
+hoge
+]])
+
+    reacher.start()
+    reacher.cancel()
+
+    assert.exists_message("canceled")
+  end)
+
 end)

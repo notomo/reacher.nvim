@@ -127,6 +127,7 @@ function Origin.jump(self, row, column, mode)
   local origin_column = column + self._conceals:offset(origin_row, column)
 
   windowlib.jump(self.window_id, origin_row, origin_column)
+  return origin_row, origin_column
 end
 
 return M

@@ -77,7 +77,7 @@ function Overlay.finish(self, target)
 
   local mode = vim.api.nvim_get_mode().mode
   return function()
-    self._origin:jump(target.row, target.column, mode)
+    return self._origin:jump(target.row, target.column, mode)
   end
 end
 

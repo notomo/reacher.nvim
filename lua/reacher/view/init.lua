@@ -41,7 +41,7 @@ function View.finish(self)
   self:close(is_cancel)
 
   if jump ~= nil then
-    jump()
+    return jump()
   end
 end
 
