@@ -59,7 +59,7 @@ function Origin.new(bufnr)
   local conceals = Conceals.new(bufnr, first_row, last_row, fillers)
   local lines = Lines.new(first_column, last_column, conceals, folds, fillers, options.wrap)
 
-  local offset = Position.new(first_row - 1, first_column - 1)
+  local offset = lines:offset(first_row)
   local cursor_pos = Position.new(cursor.row + fillers:offset(cursor.row) - offset.row, cursor.column - offset.column - conceals:offset_from_origin(cursor.row, cursor.column + 1))
   local tbl = {
     window_id = window_id,

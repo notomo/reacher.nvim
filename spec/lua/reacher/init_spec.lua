@@ -340,4 +340,18 @@ foo |hoge| bar (hogehoge)
     assert.column(12)
   end)
 
+  it("can show with multibyte", function()
+    vim.wo.wrap = false
+    helper.set_lines([[
+あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああhoge foo bar]])
+    vim.cmd("normal! $")
+
+    reacher.start("word")
+
+    helper.input("hoge")
+    reacher.finish()
+
+    assert.cursor_word("hoge")
+  end)
+
 end)

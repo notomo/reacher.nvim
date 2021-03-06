@@ -1,3 +1,6 @@
+local Position = require("reacher.model.position").Position
+local ColumnRange = require("reacher.model.column_range").ColumnRange
+
 local vim = vim
 
 local M = {}
@@ -18,7 +21,8 @@ M.Lines = Lines
 function Lines.new(first_column, last_column, conceals, folds, fillers, wrap)
   local lines = {}
 
-  local strs = conceals:lines()
+  local strs, column_range = ColumnRange.trim(conceals:lines(), first_column, last_column, wrap)
+
   for _, str in ipairs(strs) do
     table.insert(lines, Line.new(str))
   end
@@ -26,14 +30,7 @@ function Lines.new(first_column, last_column, conceals, folds, fillers, wrap)
   lines = fillers:add_to(lines)
   lines = folds:apply_to(lines)
 
-  if not wrap then
-    lines = vim.tbl_map(function(line)
-      line.str = line.str:sub(first_column, last_column)
-      return line
-    end, lines)
-  end
-
-  local tbl = {_lines = lines, _folds = folds}
+  local tbl = {_lines = lines, _folds = folds, _column_range = column_range}
   return setmetatable(tbl, Lines)
 end
 
@@ -50,6 +47,10 @@ function Lines.copy_to(self, bufnr)
     return line.str
   end, self._lines))
   self._folds:execute()
+end
+
+function Lines.offset(self, first_row)
+  return Position.new(first_row - 1, self._column_range.s - 1)
 end
 
 function Lines.iter(self)
