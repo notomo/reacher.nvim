@@ -26,8 +26,8 @@ function Target.new(row, column, column_end, str, is_virtual, matches)
   return setmetatable(tbl, setmetatable(position, Target))
 end
 
-function Target.new_virtual(row, column, column_end, str)
-  return Target.new(row, column, column_end, str, true)
+function Target.new_virtual(row, column, str)
+  return Target.new(row, column, column + #str - 1, str, true)
 end
 
 function Target.with(self, matches)
@@ -42,7 +42,7 @@ function Target.highlight(self, highlighter, hl_group)
       highlighter:add(hl_group, self.row - 1, self.column + range[1], self.column + range[2])
     end
   else
-    highlighter:add_virtual(hl_group, self.row - 1, self.column, self.column_end, self.str)
+    highlighter:add_virtual(hl_group, self.row - 1, self.column, self.column_end - 1, self.str)
   end
 end
 

@@ -78,8 +78,8 @@ function Source.to_targets_from_str(self, str, row, start_column, pattern)
   return self.translator:to_targets_from_str(self.matcher, str, row, start_column, pattern)
 end
 
-function Source.to_targets_from(self, original_targets, pattern)
-  return self.translator:to_targets_from_targets(self.matcher, original_targets, pattern)
+function Source.to_targets_from(self, targets, pattern)
+  return self.translator:to_targets_from_targets(self.matcher, targets, pattern)
 end
 
 return M

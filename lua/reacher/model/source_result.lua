@@ -13,9 +13,6 @@ function SourceResult.new(source, collected, raw_lines)
     raw_lines = {raw_lines, "table"},
   })
   local tbl = {
-    matcher = source.matcher,
-    regex_matcher = source.regex_matcher,
-    translator = source.translator,
     targets = Targets.new(collected.targets),
     _source = source,
     _collected = collected,

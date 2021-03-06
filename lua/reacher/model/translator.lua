@@ -52,7 +52,7 @@ function Translator.to_targets_from_position(self, str, row, column)
   if matched then
     return {Target.new(row, s, e, matched)}
   end
-  return {Target.new_virtual(row, column, column + 1, " ")}
+  return {Target.new_virtual(row, column, " ")}
 end
 
 return M
