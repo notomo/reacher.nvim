@@ -12,7 +12,7 @@ local Origin = {}
 Origin.__index = Origin
 M.Origin = Origin
 
-function Origin.new(bufnr)
+function Origin.new(bufnr, row_range)
   local options = {
     list = vim.wo.list,
     wrap = vim.wo.wrap,
@@ -33,7 +33,6 @@ function Origin.new(bufnr)
   vim.fn.winrestview(saved)
 
   local width = vim.api.nvim_win_get_width(window_id) - number_sign_width + 1
-  local height = vim.api.nvim_win_get_height(window_id)
 
   local row = 0
   local column = 0
@@ -49,8 +48,8 @@ function Origin.new(bufnr)
     column = column + config.col[false]
   end
 
-  local first_row = vim.fn.line("w0")
-  local last_row = vim.fn.line("w$")
+  local first_row = row_range:first()
+  local last_row = row_range:last()
   local first_column = saved.leftcol + 1
   local last_column = saved.leftcol + width
 
@@ -69,7 +68,7 @@ function Origin.new(bufnr)
     _row = row,
     _column = column,
     _width = width,
-    _height = height,
+    _height = last_row - first_row + 1,
     _options = options,
     _conceals = conceals,
     _folds = folds,

@@ -1,6 +1,7 @@
 local repository = require("reacher.lib.repository").Repository.new("view")
 local Overlay = require("reacher.view.overlay").Overlay
 local Inputter = require("reacher.view.inputter").Inputter
+local RowRange = require("reacher.view.row_range").RowRange
 local vim = vim
 
 local M = {}
@@ -9,10 +10,11 @@ local View = {}
 View.__index = View
 M.View = View
 
-function View.open(source)
+function View.open(source, opts)
   local source_bufnr = vim.api.nvim_get_current_buf()
 
-  local overlay, err = Overlay.open(source, source_bufnr)
+  local row_range = RowRange.new(opts.first_row, opts.last_row)
+  local overlay, err = Overlay.open(source, source_bufnr, row_range)
   if err ~= nil then
     return err
   end

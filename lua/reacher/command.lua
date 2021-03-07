@@ -37,7 +37,7 @@ function Command.start(name, opts)
     return err
   end
 
-  return View.open(source)
+  return View.open(source, opts)
 end
 
 function Command.move(action_name)

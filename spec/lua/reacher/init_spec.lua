@@ -392,4 +392,20 @@ hoge
     assert.cursor_word("hoge")
   end)
 
+  it("can limit row range", function()
+    helper.set_lines([[
+foo hoge_a hoge_b
+hoge
+]])
+
+    reacher.start("pattern", {first_row = vim.fn.line("."), last_row = vim.fn.line(".")})
+    helper.input("ge")
+    reacher.next()
+    reacher.next()
+    reacher.finish()
+
+    assert.cursor_word("hoge_a")
+    assert.current_line("foo hoge_a hoge_b")
+  end)
+
 end)

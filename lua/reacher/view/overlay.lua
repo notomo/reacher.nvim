@@ -10,8 +10,8 @@ local Overlay = {}
 Overlay.__index = Overlay
 M.Overlay = Overlay
 
-function Overlay.open(source, source_bufnr)
-  local origin = Origin.new(source_bufnr)
+function Overlay.open(source, source_bufnr, row_range)
+  local origin = Origin.new(source_bufnr, row_range)
 
   local source_result, err = source:collect(origin.lines)
   if err ~= nil then
