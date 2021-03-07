@@ -144,6 +144,15 @@ hogec
     assert.exists_message("is not started")
   end)
 
+  it("shows error if there is no range", function()
+    helper.set_lines([[
+hoge
+]])
+
+    reacher.start("word", {last_row = -1})
+    assert.exists_message("no range")
+  end)
+
   it("cannot open the multiple", function()
     helper.set_lines([[
 hogea

@@ -11,11 +11,14 @@ Overlay.__index = Overlay
 M.Overlay = Overlay
 
 function Overlay.open(source, source_bufnr, row_range)
-  local origin = Origin.new(source_bufnr, row_range)
-
-  local source_result, err = source:collect(origin.lines)
+  local origin, err = Origin.new(source_bufnr, row_range)
   if err ~= nil then
     return nil, err
+  end
+
+  local source_result, collect_err = source:collect(origin.lines)
+  if collect_err ~= nil then
+    return nil, collect_err
   end
 
   local bufnr = vim.api.nvim_create_buf(false, true)

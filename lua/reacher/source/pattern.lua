@@ -8,7 +8,10 @@ function M.update(self, ctx)
   if #ctx.inputs == 1 and ctx.inputs[1] == "" then
     local row = ctx.cursor.row
     local column = ctx.cursor.column
-    local line = ctx.lines[row] or {str = ""}
+    local line = ctx.lines[row]
+    if not line then
+      return {}
+    end
     return self.translator:to_targets_from_position(line.str, row, column)
   end
 

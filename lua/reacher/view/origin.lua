@@ -13,6 +13,13 @@ Origin.__index = Origin
 M.Origin = Origin
 
 function Origin.new(bufnr, row_range)
+  local first_row = row_range:first()
+  local last_row = row_range:last()
+  local height = last_row - first_row + 1
+  if height <= 0 then
+    return nil, "no range"
+  end
+
   local options = {
     list = vim.wo.list,
     wrap = vim.wo.wrap,
@@ -48,8 +55,6 @@ function Origin.new(bufnr, row_range)
     column = column + config.col[false]
   end
 
-  local first_row = row_range:first()
-  local last_row = row_range:last()
   local first_column = saved.leftcol + 1
   local last_column = saved.leftcol + width
 
@@ -68,7 +73,7 @@ function Origin.new(bufnr, row_range)
     _row = row,
     _column = column,
     _width = width,
-    _height = last_row - first_row + 1,
+    _height = height,
     _options = options,
     _conceals = conceals,
     _folds = folds,

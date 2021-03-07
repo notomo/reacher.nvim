@@ -36,4 +36,18 @@ hoge
     assert.column(4)
   end)
 
+  it("does not have current position target if it is in row range", function()
+    helper.set_lines([[
+hoge_a
+hoge_b
+bar
+]])
+
+    reacher.start("pattern", {first_row = vim.fn.line(".") + 1})
+    helper.input("hoge")
+    reacher.finish()
+
+    assert.current_line("hoge_b")
+  end)
+
 end)
