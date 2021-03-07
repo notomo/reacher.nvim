@@ -1,6 +1,6 @@
 local M = {}
 
-M.opts = {matcher_opts = {name = "regex", method_name = "partial"}}
+M.opts = {matcher_opts = {name = "regex", method_name = "partial"}, input_separator = "\\v\\s+"}
 
 function M.collect(self, lines)
   local targets = {}

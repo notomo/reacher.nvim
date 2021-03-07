@@ -22,4 +22,19 @@ bar
     assert.column(1)
   end)
 
+  it("can search by two words", function()
+    helper.set_lines([[
+foo hoge
+bar
+bar baz
+]])
+
+    reacher.start("line")
+
+    helper.input("ar az")
+    reacher.finish()
+
+    assert.current_line("bar baz")
+  end)
+
 end)

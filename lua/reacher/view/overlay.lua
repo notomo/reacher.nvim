@@ -33,7 +33,7 @@ function Overlay.open(source, source_bufnr)
     _cursor_highlight = HlFactory.new("reacher_cursor", bufnr),
     _source_result = source_result,
     _targets = source_result.targets,
-    _input = nil,
+    _input_line = nil,
     _bufnr = bufnr,
   }
   local overlay = setmetatable(tbl, Overlay)
@@ -49,13 +49,13 @@ function Overlay.open(source, source_bufnr)
   return overlay, nil
 end
 
-function Overlay.update(self, input)
-  if input == self._input then
+function Overlay.update(self, input_line)
+  if input_line == self._input_line then
     return
   end
-  self._input = input
+  self._input_line = input_line
 
-  local targets = self._source_result:update(input, self._bufnr, self._cursor)
+  local targets = self._source_result:update(input_line, self._bufnr, self._cursor)
   local highlighter = self._match_highlight:reset()
   for _, target in targets:iter() do
     target:highlight(highlighter, "ReacherMatch")

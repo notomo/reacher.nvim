@@ -1,4 +1,5 @@
 local Target = require("reacher.model.target").Target
+local vim = vim
 
 local M = {}
 
@@ -27,21 +28,30 @@ function Translator.to_targets_from_str(_, matcher, str, row, start_column, patt
   return targets
 end
 
-function Translator.to_targets_from_targets(_, matcher, targets, pattern)
+function Translator.to_targets_from_targets(_, matcher, targets, patterns)
   local result_targets = {}
   for _, target in ipairs(targets) do
-    local matches = {}
-    local column_offset = 0
-    repeat
-      local matched, s, e = matcher:match(target.str, pattern, column_offset)
-      if not matched then
+    local ok = true
+    local all_matches = {}
+    for _, pattern in ipairs(patterns) do
+      local matches = {}
+      local column_offset = 0
+      repeat
+        local matched, s, e = matcher:match(target.str, pattern, column_offset)
+        if not matched then
+          break
+        end
+        table.insert(matches, {s, e})
+        column_offset = target.column + e
+      until matched == nil
+      if #matches == 0 then
+        ok = false
         break
       end
-      table.insert(matches, {s, e})
-      column_offset = target.column + e
-    until matched == nil
-    if matches[1] then
-      table.insert(result_targets, target:with(matches))
+      vim.list_extend(all_matches, matches)
+    end
+    if ok then
+      table.insert(result_targets, target:with(all_matches))
     end
   end
   return result_targets
