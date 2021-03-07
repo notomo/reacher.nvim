@@ -16,6 +16,11 @@ function Origin.new(bufnr, row_range)
   local first_row = row_range:first()
   local last_row = row_range:last()
   local height = last_row - first_row + 1
+  local window_id = vim.api.nvim_get_current_win()
+  local win_height = vim.api.nvim_win_get_height(window_id)
+  if height > win_height then
+    height = win_height
+  end
   if height <= 0 then
     return nil, "no range"
   end
@@ -30,8 +35,6 @@ function Origin.new(bufnr, row_range)
     breakindentopt = vim.wo.breakindentopt,
     linebreak = vim.wo.linebreak,
   }
-
-  local window_id = vim.api.nvim_get_current_win()
 
   local cursor = Position.cursor(window_id)
   local saved = vim.fn.winsaveview()
