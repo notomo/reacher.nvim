@@ -56,7 +56,7 @@ function Inputter.open(callback, default_input)
       end)
     end),
   })
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, {default_input})
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, {vim.split(default_input, "\n", true)[1]})
   vim.cmd("startinsert!")
 
   local tbl = {window_id = window_id, _bufnr = bufnr}

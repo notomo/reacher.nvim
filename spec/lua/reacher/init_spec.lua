@@ -431,4 +431,21 @@ hoge_b
     assert.cursor_word("hoge_b")
   end)
 
+  it("trims multiline input", function()
+    helper.set_lines([[
+foo
+hoge
+]])
+
+    reacher.start("pattern", {
+      input = [[
+hoge
+foo
+]],
+    })
+    reacher.finish()
+
+    assert.cursor_word("hoge")
+  end)
+
 end)
