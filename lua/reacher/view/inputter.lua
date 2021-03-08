@@ -9,7 +9,10 @@ local Inputter = {}
 Inputter.__index = Inputter
 M.Inputter = Inputter
 
-function Inputter.open(callback)
+function Inputter.open(callback, default_input)
+  vim.validate({callback = {callback, "function"}, default_input = {default_input, "string", true}})
+  default_input = default_input or ""
+
   local bufnr = vim.api.nvim_create_buf(false, true)
   local window_id = vim.api.nvim_open_win(bufnr, true, {
     width = vim.o.columns,
@@ -53,7 +56,8 @@ function Inputter.open(callback)
       end)
     end),
   })
-  vim.cmd("startinsert")
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, {default_input})
+  vim.cmd("startinsert!")
 
   local tbl = {window_id = window_id, _bufnr = bufnr}
   return setmetatable(tbl, Inputter)

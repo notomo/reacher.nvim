@@ -21,7 +21,7 @@ function View.open(source, opts)
 
   local inputter = Inputter.open(function(input_line)
     overlay:update(input_line)
-  end)
+  end, opts.input)
 
   local tbl = {_overlay = overlay, _inputter = inputter}
   local view = setmetatable(tbl, View)

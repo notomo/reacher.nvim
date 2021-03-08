@@ -47,7 +47,6 @@ function Overlay.open(source, source_bufnr, row_range)
     fg_default = "#8d9eb2",
     bg_default = "#334152",
   })
-  overlay:update("")
 
   return overlay, nil
 end

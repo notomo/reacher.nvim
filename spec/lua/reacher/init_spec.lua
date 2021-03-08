@@ -417,4 +417,18 @@ hoge
     assert.current_line("foo hoge_a hoge_b")
   end)
 
+  it("can pass input", function()
+    helper.set_lines([[
+foo
+hoge_a
+hoge_b
+]])
+
+    reacher.start("pattern", {input = "hoge"})
+    helper.input("_b")
+    reacher.finish()
+
+    assert.cursor_word("hoge_b")
+  end)
+
 end)
