@@ -79,6 +79,8 @@ function Overlay.finish(self, target)
 
   local mode = vim.api.nvim_get_mode().mode
   return function()
+    vim.fn.histadd("search", self._input_line)
+    vim.fn.setreg("/", self._input_line)
     return self._origin:jump(target.row, target.column, mode)
   end
 end

@@ -448,4 +448,33 @@ foo
     assert.cursor_word("hoge")
   end)
 
+  it("adds search history on finish", function()
+    helper.set_lines([[
+foo
+history_a
+history_b
+]])
+
+    reacher.start("word")
+    helper.input("history")
+    reacher.finish()
+
+    assert.equals("history", vim.fn.histget("/"))
+  end)
+
+  it("set search register on finish", function()
+    helper.set_lines([[
+foo
+register_a
+register_b
+]])
+
+    reacher.start("word")
+    helper.input("register")
+    reacher.finish()
+    vim.cmd("silent! normal! n")
+
+    assert.cursor_word("register_b")
+  end)
+
 end)
