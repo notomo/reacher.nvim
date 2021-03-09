@@ -477,4 +477,47 @@ register_b
     assert.cursor_word("register_b")
   end)
 
+  it("can recall backward history", function()
+    helper.set_lines([[
+hoge
+foo
+]])
+
+    reacher.start("word")
+    helper.input("foo")
+    reacher.finish()
+    vim.cmd("normal! gg")
+
+    reacher.start("word")
+    reacher.backward_history()
+    reacher.finish()
+
+    assert.cursor_word("foo")
+  end)
+
+  it("can recall forward history", function()
+    helper.set_lines([[
+hoge
+foo
+bar
+]])
+
+    reacher.start("word")
+    helper.input("foo")
+    reacher.finish()
+
+    reacher.start("word")
+    helper.input("bar")
+    reacher.finish()
+    vim.cmd("normal! gg")
+
+    reacher.start("word")
+    reacher.backward_history()
+    reacher.backward_history()
+    reacher.forward_history()
+    reacher.finish()
+
+    assert.cursor_word("bar")
+  end)
+
 end)

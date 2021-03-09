@@ -22,6 +22,14 @@ function M.last()
   Command.new("move", "last")
 end
 
+function M.forward_history()
+  Command.new("recall_history", 1)
+end
+
+function M.backward_history()
+  Command.new("recall_history", -1)
+end
+
 function M.finish()
   Command.new("finish")
 end

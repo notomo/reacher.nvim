@@ -63,6 +63,15 @@ function Command.finish()
   end
 end
 
+function Command.recall_history(offset)
+  vim.validate({offset = {offset, "number"}})
+  local view = View.current()
+  if view == nil then
+    return "is not started"
+  end
+  view:recall_history(offset)
+end
+
 function Command.cancel()
   local view = View.current()
   if view == nil then

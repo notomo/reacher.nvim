@@ -29,6 +29,10 @@ function View.open(source, opts)
   repository:set(inputter.window_id, view)
 end
 
+function View.recall_history(self, offset)
+  self._inputter:recall_history(offset)
+end
+
 function View.close(self, is_cancel)
   self._inputter:close(is_cancel)
   self._overlay:close()

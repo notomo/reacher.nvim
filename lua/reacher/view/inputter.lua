@@ -1,5 +1,6 @@
 local highlightlib = require("reacher.lib.highlight")
 local windowlib = require("reacher.lib.window")
+local cursorlib = require("reacher.lib.cursor")
 local wraplib = require("reacher.lib.wrap")
 local vim = vim
 
@@ -59,8 +60,20 @@ function Inputter.open(callback, default_input)
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, {vim.split(default_input, "\n", true)[1]})
   vim.cmd("startinsert!")
 
-  local tbl = {window_id = window_id, _bufnr = bufnr}
+  local tbl = {window_id = window_id, _bufnr = bufnr, _history_offset = 0}
   return setmetatable(tbl, Inputter)
+end
+
+function Inputter.recall_history(self, offset)
+  local next_index = self._history_offset + offset
+  next_index = math.min(next_index, 0)
+  next_index = math.max(next_index, -vim.fn.histnr("search"))
+
+  local history = vim.fn.histget("search", next_index)
+  vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, true, {history})
+  cursorlib.set_column(#history + 1)
+
+  self._history_offset = next_index
 end
 
 function Inputter.close(self, is_cancel)
