@@ -15,13 +15,8 @@ M.Origin = Origin
 function Origin.new(bufnr, row_range)
   local first_row = row_range:first()
   local last_row = row_range:last()
-  local height = last_row - first_row + 1
-  local window_id = vim.api.nvim_get_current_win()
-  local win_height = vim.api.nvim_win_get_height(window_id)
-  if height > win_height then
-    height = win_height
-  end
-  if height <= 0 then
+  local win_first_row, height = M._view_position(first_row, last_row)
+  if height <= 0 or last_row - first_row < 0 then
     return nil, "no range"
   end
 
@@ -36,6 +31,7 @@ function Origin.new(bufnr, row_range)
     linebreak = vim.wo.linebreak,
   }
 
+  local window_id = vim.api.nvim_get_current_win()
   local cursor = Position.cursor(window_id)
   local saved = vim.fn.winsaveview()
   vim.api.nvim_win_set_cursor(window_id, {cursor.row, 0})
@@ -44,7 +40,7 @@ function Origin.new(bufnr, row_range)
 
   local width = vim.api.nvim_win_get_width(window_id) - number_sign_width + 1
 
-  local row = 0
+  local row = win_first_row
   local column = 0
   if saved.leftcol >= number_sign_width then
     column = number_sign_width + 1
@@ -86,13 +82,21 @@ function Origin.new(bufnr, row_range)
 end
 
 function Origin.copy_to_floating_win(self, bufnr)
+  local bufpos = {1, 0}
+  local row = self._row
+  local first_row = vim.fn.line("w0")
+  -- HACK: ?
+  if first_row <= 2 then
+    bufpos = {first_row - 1, 0}
+    row = row - 1
+  end
   local window_id = vim.api.nvim_open_win(bufnr, true, {
     width = self._width,
     height = self._height,
     relative = "win",
-    row = self._row,
+    row = row,
     col = self._column,
-    bufpos = {self._offset.row, 0},
+    bufpos = bufpos,
     external = false,
     style = "minimal",
     focusable = false,
@@ -135,6 +139,25 @@ function Origin.jump(self, row, column, mode)
 
   windowlib.jump(self.window_id, origin_row, origin_column)
   return origin_row, origin_column
+end
+
+-- HACK
+function M._view_position(first_row, last_row)
+  local saved = vim.fn.winsaveview()
+
+  local scrolloff = vim.api.nvim_exec("silent! echo &scrolloff", true)
+  vim.cmd("silent! setlocal scrolloff=0")
+
+  vim.cmd(("silent! noautocmd %d"):format(first_row))
+  local win_first_row = vim.fn.winline()
+  vim.fn.winrestview(saved)
+
+  vim.cmd(("silent! noautocmd %d"):format(last_row))
+  local win_last_row = vim.fn.winline()
+  vim.cmd("silent! setlocal scrolloff=" .. tostring(scrolloff))
+  vim.fn.winrestview(saved)
+
+  return win_first_row, win_last_row - win_first_row + 1
 end
 
 return M
