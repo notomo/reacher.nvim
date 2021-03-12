@@ -1,5 +1,5 @@
 local View = require("reacher.view").View
-local Source = require("reacher.model.source").Source
+local Matcher = require("reacher.model.matcher").Matcher
 local messagelib = require("reacher.lib.message")
 local vim = vim
 
@@ -8,6 +8,8 @@ local M = {}
 local Command = {}
 Command.__index = Command
 M.Command = Command
+
+local IsNotStartedErr = "is not started"
 
 function Command.new(name, ...)
   local args = {...}
@@ -23,21 +25,21 @@ function Command.new(name, ...)
   end
 end
 
-function Command.start(name, opts)
-  vim.validate({name = {name, "string"}, opts = {opts, "table", true}})
-  opts = opts or {}
+function Command.start(raw_opts)
+  vim.validate({raw_opts = {raw_opts, "table", true}})
 
   local old = View.current()
   if old ~= nil then
     old:close()
   end
 
-  local source, err = Source.new(name, opts.source_opts or {})
+  local opts = vim.tbl_deep_extend("force", {matcher_opts = {name = "regex"}}, raw_opts or {})
+  local matcher, err = Matcher.new(opts.matcher_opts.name)
   if err ~= nil then
     return err
   end
 
-  return View.open(source, opts)
+  return View.open(matcher, opts)
 end
 
 function Command.move(action_name)
@@ -45,7 +47,7 @@ function Command.move(action_name)
 
   local view = View.current()
   if view == nil then
-    return "is not started"
+    return IsNotStartedErr
   end
 
   view:move(action_name)
@@ -54,7 +56,7 @@ end
 function Command.finish()
   local view = View.current()
   if view == nil then
-    return "is not started"
+    return IsNotStartedErr
   end
 
   local row, column = view:finish()
@@ -67,7 +69,7 @@ function Command.recall_history(offset)
   vim.validate({offset = {offset, "number"}})
   local view = View.current()
   if view == nil then
-    return "is not started"
+    return IsNotStartedErr
   end
   view:recall_history(offset)
 end

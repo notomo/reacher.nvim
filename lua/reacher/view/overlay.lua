@@ -2,6 +2,7 @@ local windowlib = require("reacher.lib.window")
 local highlightlib = require("reacher.lib.highlight")
 local HlFactory = require("reacher.lib.highlight").HlFactory
 local Origin = require("reacher.view.origin").Origin
+local Collector = require("reacher.model.collector").Collector
 local vim = vim
 
 local M = {}
@@ -10,15 +11,10 @@ local Overlay = {}
 Overlay.__index = Overlay
 M.Overlay = Overlay
 
-function Overlay.open(source, source_bufnr, row_range)
+function Overlay.open(matcher, source_bufnr, row_range)
   local origin, err = Origin.new(source_bufnr, row_range)
   if err ~= nil then
     return nil, err
-  end
-
-  local source_result, collect_err = source:collect(origin.lines)
-  if collect_err ~= nil then
-    return nil, collect_err
   end
 
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -28,16 +24,17 @@ function Overlay.open(source, source_bufnr, row_range)
   vim.bo[bufnr].modifiable = false
   vim.wo[window_id].winhighlight = "Normal:ReacherBackground"
 
+  local collector, initial_targets = Collector.new(matcher, origin.lines, origin.cursor)
+
   local tbl = {
     _window_id = window_id,
     _cursor = origin.cursor,
     _origin = origin,
     _match_highlight = HlFactory.new("reacher", bufnr),
     _cursor_highlight = HlFactory.new("reacher_cursor", bufnr),
-    _source_result = source_result,
-    _targets = source_result.targets,
+    _collector = collector,
+    _targets = initial_targets,
     _input_line = nil,
-    _bufnr = bufnr,
   }
   local overlay = setmetatable(tbl, Overlay)
 
@@ -57,7 +54,7 @@ function Overlay.update(self, input_line)
   end
   self._input_line = input_line
 
-  local targets = self._source_result:update(input_line, self._bufnr, self._cursor)
+  local targets = self._collector:collect(input_line)
   local highlighter = self._match_highlight:reset()
   for _, target in targets:iter() do
     target:highlight(highlighter, "ReacherMatch")

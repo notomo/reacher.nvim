@@ -7,17 +7,17 @@ local Translator = {}
 Translator.__index = Translator
 M.Translator = Translator
 
-function Translator.new(regex_matcher)
-  vim.validate({regex_matcher = {regex_matcher, "table"}})
-  local tbl = {_regex_matcher = regex_matcher}
+function Translator.new(matcher, regex_matcher)
+  vim.validate({matcher = {matcher, "table"}, regex_matcher = {regex_matcher, "table"}})
+  local tbl = {_matcher = matcher, _regex_matcher = regex_matcher}
   return setmetatable(tbl, Translator)
 end
 
-function Translator.to_targets_from_str(_, matcher, str, row, start_column, pattern)
+function Translator.to_targets_from_str(self, str, row, start_column, pattern)
   local targets = {}
   local column_offset = start_column
   repeat
-    local matched, s, e = matcher:match(str, pattern, column_offset)
+    local matched, s, e = self._matcher:match(str, pattern, column_offset)
     if not matched then
       break
     end
@@ -26,35 +26,6 @@ function Translator.to_targets_from_str(_, matcher, str, row, start_column, patt
     column_offset = target.column_end
   until matched == nil
   return targets
-end
-
-function Translator.to_targets_from_targets(_, matcher, targets, patterns)
-  local result_targets = {}
-  for _, target in ipairs(targets) do
-    local ok = true
-    local all_matches = {}
-    for _, pattern in ipairs(patterns) do
-      local matches = {}
-      local column_offset = 0
-      repeat
-        local matched, s, e = matcher:match(target.str, pattern, column_offset)
-        if not matched then
-          break
-        end
-        table.insert(matches, {s, e})
-        column_offset = target.column + e
-      until matched == nil
-      if #matches == 0 then
-        ok = false
-        break
-      end
-      vim.list_extend(all_matches, matches)
-    end
-    if ok then
-      table.insert(result_targets, target:with(all_matches))
-    end
-  end
-  return result_targets
 end
 
 function Translator.to_targets_from_position(self, str, row, column)

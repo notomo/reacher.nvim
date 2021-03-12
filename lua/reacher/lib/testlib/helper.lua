@@ -77,7 +77,7 @@ asserts.create("exists_message"):register(function(self)
     self:set_negative(("`%s` found message"):format(expected))
     local messages = vim.split(vim.api.nvim_exec("messages", true), "\n")
     for _, msg in ipairs(messages) do
-      if msg:match(expected) then
+      if msg:find(expected, 1, true) then
         return true
       end
     end

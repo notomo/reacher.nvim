@@ -17,7 +17,7 @@ hogec
 ]])
 
     vim.cmd("normal! j")
-    reacher.start("word")
+    reacher.start()
 
     helper.input("h")
     reacher.finish()
@@ -32,7 +32,7 @@ hogec
     hogec
 ]])
 
-    reacher.start("word")
+    reacher.start({input = "hoge"})
     reacher.next()
     reacher.finish()
 
@@ -46,14 +46,14 @@ hogec
     hogec
 ]])
 
-    reacher.start("word")
+    reacher.start({input = "hoge"})
     reacher.next()
     reacher.next()
     reacher.finish()
 
     assert.cursor_word("hogec")
 
-    reacher.start("word")
+    reacher.start({input = "hoge"})
     reacher.next()
     reacher.finish()
 
@@ -67,13 +67,13 @@ hogec
     hogec
 ]])
 
-    reacher.start("word")
+    reacher.start({input = "hoge"})
     reacher.next()
     reacher.finish()
 
     assert.cursor_word("hogeb")
 
-    reacher.start("word")
+    reacher.start({input = "hoge"})
     reacher.prev()
     reacher.finish()
 
@@ -87,7 +87,7 @@ hogec
     hogec
 ]])
 
-    reacher.start("word")
+    reacher.start({input = "hoge"})
     reacher.prev()
     reacher.finish()
 
@@ -101,14 +101,14 @@ hogec
     hogec
 ]])
 
-    reacher.start("word")
+    reacher.start({input = "hoge"})
     reacher.next()
     reacher.next()
     reacher.finish()
 
     assert.cursor_word("hogec")
 
-    reacher.start("word")
+    reacher.start({input = "hoge"})
     reacher.first()
     reacher.finish()
 
@@ -122,16 +122,16 @@ hogec
     hogec
 ]])
 
-    reacher.start("word")
+    reacher.start({input = "hoge"})
     reacher.last()
     reacher.finish()
 
     assert.cursor_word("hogec")
   end)
 
-  it("shows error if no source", function()
-    reacher.start("invalid")
-    assert.exists_message("not found source: invalid")
+  it("shows error if no matcher", function()
+    reacher.start({matcher_opts = {name = "invalid"}})
+    assert.exists_message("not found matcher: invalid")
   end)
 
   it("shows error if it is not started on moving", function()
@@ -149,7 +149,7 @@ hogec
 hoge
 ]])
 
-    reacher.start("word", {last_row = -1})
+    reacher.start({last_row = -1})
     assert.exists_message("no range")
   end)
 
@@ -159,12 +159,12 @@ hogea
 hogeb
 ]])
 
-    reacher.start("word")
+    reacher.start()
 
     helper.input("h")
     assert.window_count(3)
 
-    reacher.start("word")
+    reacher.start()
 
     assert.window_count(3)
   end)
@@ -176,7 +176,7 @@ foo
 ]])
     helper.search("foo")
 
-    reacher.start("word")
+    reacher.start()
 
     helper.input("hogea")
     assert.window_count(3)
@@ -193,7 +193,7 @@ hoge
 foo1
 foo2
 ]])
-    reacher.start("word")
+    reacher.start()
     helper.input("foo")
 
     reacher.cancel()
@@ -212,7 +212,7 @@ hoge4
     vim.cmd("2,4fold")
     vim.wo.foldenable = true
 
-    reacher.start("word")
+    reacher.start()
     helper.input("hoge")
     reacher.finish()
 
@@ -243,7 +243,7 @@ bar
     vim.bo.buftype = "nofile"
     vim.cmd("diffthis")
 
-    reacher.start("word")
+    reacher.start()
     helper.input("bar")
     reacher.finish()
 
@@ -301,7 +301,7 @@ buz
     vim.bo.buftype = "nofile"
     vim.cmd("diffthis")
 
-    reacher.start("word")
+    reacher.start()
     helper.input("buz")
     reacher.finish()
 
@@ -315,7 +315,7 @@ foo
 hoge
 ]])
 
-    reacher.start("word")
+    reacher.start()
     helper.input([[
 hoge
 foo
@@ -341,7 +341,7 @@ foo
 foo |hoge| bar (hogehoge)
 ]])
 
-    reacher.start("word")
+    reacher.start()
     helper.input("bar")
     reacher.finish()
 
@@ -355,7 +355,7 @@ foo |hoge| bar (hogehoge)
 あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああhoge foo bar]])
     vim.cmd("normal! $")
 
-    reacher.start("word")
+    reacher.start()
 
     helper.input("hoge")
     reacher.finish()
@@ -369,11 +369,11 @@ foo |hoge| bar (hogehoge)
   hoge
 ]])
 
-    reacher.start("word")
+    reacher.start({input = "hoge"})
     reacher.finish()
 
     -- NOTE: no stopinsert offset
-    assert.exists_message("jumped to %(2, 2%)")
+    assert.exists_message("jumped to (2, 2)")
   end)
 
   it("shows cancel message", function()
@@ -381,24 +381,10 @@ foo |hoge| bar (hogehoge)
 hoge
 ]])
 
-    reacher.start("word")
+    reacher.start()
     reacher.cancel()
 
     assert.exists_message("canceled")
-  end)
-
-  it("can change matcher by option", function()
-    helper.set_lines([[
-foo
-hoge
-]])
-
-    reacher.start("word", {source_opts = {matcher_opts = {method_name = "partial"}}})
-    helper.input("ge")
-    reacher.finish()
-
-    assert.column(1)
-    assert.cursor_word("hoge")
   end)
 
   it("can limit row range", function()
@@ -407,7 +393,7 @@ foo hoge_a hoge_b
 hoge
 ]])
 
-    reacher.start("pattern", {first_row = vim.fn.line("."), last_row = vim.fn.line(".")})
+    reacher.start({first_row = vim.fn.line("."), last_row = vim.fn.line(".")})
     helper.input("ge")
     reacher.next()
     reacher.next()
@@ -424,7 +410,7 @@ hoge_a
 hoge_b
 ]])
 
-    reacher.start("pattern", {input = "hoge"})
+    reacher.start({input = "hoge"})
     helper.input("_b")
     reacher.finish()
 
@@ -437,7 +423,7 @@ foo
 hoge
 ]])
 
-    reacher.start("pattern", {
+    reacher.start({
       input = [[
 hoge
 foo
@@ -455,7 +441,7 @@ history_a
 history_b
 ]])
 
-    reacher.start("word")
+    reacher.start()
     helper.input("history")
     reacher.finish()
 
@@ -469,7 +455,7 @@ register_a
 register_b
 ]])
 
-    reacher.start("word")
+    reacher.start()
     helper.input("register")
     reacher.finish()
     vim.cmd("silent! normal! n")
@@ -483,12 +469,12 @@ hoge
 foo
 ]])
 
-    reacher.start("word")
+    reacher.start()
     helper.input("foo")
     reacher.finish()
     vim.cmd("normal! gg")
 
-    reacher.start("word")
+    reacher.start()
     reacher.backward_history()
     reacher.finish()
 
@@ -502,22 +488,66 @@ foo
 bar
 ]])
 
-    reacher.start("word")
+    reacher.start()
     helper.input("foo")
     reacher.finish()
 
-    reacher.start("word")
+    reacher.start()
     helper.input("bar")
     reacher.finish()
     vim.cmd("normal! gg")
 
-    reacher.start("word")
+    reacher.start()
     reacher.backward_history()
     reacher.backward_history()
     reacher.forward_history()
     reacher.finish()
 
     assert.cursor_word("bar")
+  end)
+
+  it("can search by pattern", function()
+    helper.set_lines([[
+foo
+hoge
+]])
+
+    reacher.start()
+
+    helper.input("ge")
+    reacher.finish()
+
+    assert.current_line("hoge")
+    assert.column(3)
+  end)
+
+  it("has the current position target on init", function()
+    helper.set_lines([[
+foo
+hoge
+]])
+    helper.search("hoge")
+    vim.cmd("normal! $")
+
+    reacher.start()
+    reacher.finish()
+
+    assert.current_line("hoge")
+    assert.column(4)
+  end)
+
+  it("does not have current position target if it is in row range", function()
+    helper.set_lines([[
+hoge_a
+hoge_b
+bar
+]])
+
+    reacher.start({first_row = vim.fn.line(".") + 1})
+    helper.input("hoge")
+    reacher.finish()
+
+    assert.current_line("hoge_b")
   end)
 
 end)

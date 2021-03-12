@@ -2,8 +2,8 @@ local Command = require("reacher.command").Command
 
 local M = {}
 
-function M.start(name, opts)
-  Command.new("start", name, opts)
+function M.start(opts)
+  Command.new("start", opts)
 end
 
 function M.first()

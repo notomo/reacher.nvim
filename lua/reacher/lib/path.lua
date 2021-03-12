@@ -8,7 +8,7 @@ function M.find_root()
   if file == nil then
     error("project root directory not found by pattern: " .. root_pattern)
   end
-  return vim.split(M.adjust_sep(file), "/lua/", true)[1], nil
+  return vim.split(M.adjust_sep(file), "/lua/", true)[1]
 end
 
 if vim.fn.has("win32") == 1 then

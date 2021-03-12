@@ -2,24 +2,11 @@ local vim = vim
 
 local M = {}
 
-function M.startswith(self, str, pattern, column_offset)
-  if column_offset > 0 then
-    return
-  end
-  if pattern == "" then
-    pattern = "."
-  end
-  return self:_match(str, "^" .. pattern, column_offset)
-end
-
-function M.partial(self, str, pattern, column_offset)
+function M.match(_, str, pattern, column_offset)
   if pattern == "" then
     pattern = ".*"
   end
-  return self:_match(str, pattern, column_offset)
-end
 
-function M._match(_, str, pattern, column_offset)
   local ok, result = pcall(vim.fn.matchstrpos, str, pattern, column_offset)
   if not ok then
     return nil
