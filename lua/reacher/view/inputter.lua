@@ -80,10 +80,13 @@ function Inputter.recall_history(self, offset)
   self._history_offset = next_index
 end
 
-function Inputter.save_history(self)
+function Inputter.save_history(self, include_register)
+  vim.validate({include_register = {include_register, "boolean", true}})
   local input_line = vim.api.nvim_buf_get_lines(self._bufnr, 0, -1, true)[1]
   vim.fn.histadd("search", input_line)
-  vim.fn.setreg("/", input_line)
+  if include_register then
+    vim.fn.setreg("/", input_line)
+  end
 end
 
 function Inputter.close(self, is_cancel)
