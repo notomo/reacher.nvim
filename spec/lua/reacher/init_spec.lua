@@ -71,6 +71,18 @@ describe("reacher.next_line()", function()
     assert.cursor_word("hoge_a")
   end)
 
+  it("moves the cursor to the next match if there is no next line", function()
+    helper.set_lines([[
+    hoge_a hoge_b hoge_c
+]])
+
+    reacher.start({input = "hoge"})
+    reacher.next_line()
+    reacher.finish()
+
+    assert.cursor_word("hoge_b")
+  end)
+
 end)
 
 describe("reacher.previous()", function()
@@ -141,6 +153,19 @@ describe("reacher.previous_line()", function()
     reacher.finish()
 
     assert.cursor_word("hoge_f")
+  end)
+
+  it("moves the cursor to the previous match if there is no previous line", function()
+    helper.set_lines([[
+    hoge_a hoge_b hoge_c
+]])
+    helper.search("hoge_b")
+
+    reacher.start({input = "hoge"})
+    reacher.previous_line()
+    reacher.finish()
+
+    assert.cursor_word("hoge_a")
   end)
 
 end)

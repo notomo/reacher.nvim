@@ -85,7 +85,11 @@ function Targets.previous_line(self)
       return Targets.new(self._targets, #targets - i + 1)
     end
   end
-  return self:last()
+  local last_targets = self:last()
+  if last_targets:current().row == target.row then
+    return self:previous()
+  end
+  return last_targets
 end
 
 function Targets.next(self)
@@ -104,7 +108,11 @@ function Targets.next_line(self)
       return Targets.new(self._targets, i + self._index)
     end
   end
-  return self:first()
+  local first_targets = self:first()
+  if first_targets:current().row == target.row then
+    return self:next()
+  end
+  return first_targets
 end
 
 function Targets.last(self)
