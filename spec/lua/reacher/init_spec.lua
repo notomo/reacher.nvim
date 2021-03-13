@@ -8,12 +8,12 @@ describe("reacher.nvim", function()
 
   it("moves to the nearest", function()
     helper.set_lines([[
-              hogea hogeb
+              hoge_a hoge_b
 
 
 
 
-hogec
+hoge_c
 ]])
 
     vim.cmd("normal! j")
@@ -22,111 +22,152 @@ hogec
     helper.input("h")
     reacher.finish()
 
-    assert.cursor_word("hogea")
+    assert.cursor_word("hoge_a")
   end)
 
   it("can move the cursor to the next match", function()
     helper.set_lines([[
-    hogea
-    hogeb
-    hogec
+    hoge_a
+    hoge_b
+    hoge_c
 ]])
 
     reacher.start({input = "hoge"})
     reacher.next()
     reacher.finish()
 
-    assert.cursor_word("hogeb")
+    assert.cursor_word("hoge_b")
   end)
 
   it("can move the cursor to the wrapped next match", function()
     helper.set_lines([[
-    hogea
-    hogeb
-    hogec
+    hoge_a
+    hoge_b
+    hoge_c
+]])
+    helper.search("hoge_c")
+
+    reacher.start({input = "hoge"})
+    reacher.next()
+    reacher.finish()
+
+    assert.cursor_word("hoge_a")
+  end)
+
+  it("can move the cursor to the next line match", function()
+    helper.set_lines([[
+    hoge_a hoge_b
+    hoge_c hoge_d
+    hoge_e
 ]])
 
     reacher.start({input = "hoge"})
-    reacher.next()
-    reacher.next()
+    reacher.next_line()
     reacher.finish()
 
-    assert.cursor_word("hogec")
+    assert.cursor_word("hoge_c")
+  end)
+
+  it("can move the cursor to the wrapped next line match", function()
+    helper.set_lines([[
+    hoge_a hoge_b
+    hoge_c hoge_d
+    hoge_e
+]])
+    helper.search("hoge_e")
 
     reacher.start({input = "hoge"})
-    reacher.next()
+    reacher.next_line()
     reacher.finish()
 
-    assert.cursor_word("hogea")
+    assert.cursor_word("hoge_a")
   end)
 
   it("can move the cursor to the previous match", function()
     helper.set_lines([[
-    hogea
-    hogeb
-    hogec
+    hoge_a
+    hoge_b
+    hoge_c
 ]])
-
-    reacher.start({input = "hoge"})
-    reacher.next()
-    reacher.finish()
-
-    assert.cursor_word("hogeb")
+    helper.search("hoge_b")
 
     reacher.start({input = "hoge"})
     reacher.previous()
     reacher.finish()
 
-    assert.cursor_word("hogea")
+    assert.cursor_word("hoge_a")
+  end)
+
+  it("can move the cursor to the previous line match", function()
+    helper.set_lines([[
+    hoge_a hoge_b
+    hoge_c hoge_d
+    hoge_e
+]])
+    helper.search("hoge_d")
+
+    reacher.start({input = "hoge"})
+    reacher.previous_line()
+    reacher.finish()
+
+    assert.cursor_word("hoge_b")
+  end)
+
+  it("can move the cursor to the previous wrapped line match", function()
+    helper.set_lines([[
+    hoge_a hoge_b
+    hoge_c hoge_d
+    hoge_e hoge_f
+]])
+
+    reacher.start({input = "hoge"})
+    reacher.previous_line()
+    reacher.finish()
+
+    assert.cursor_word("hoge_f")
   end)
 
   it("can move the cursor to the wrapped previous match", function()
     helper.set_lines([[
-    hogea
-    hogeb
-    hogec
+    hoge_a
+    hoge_b
+    hoge_c
 ]])
 
     reacher.start({input = "hoge"})
     reacher.previous()
     reacher.finish()
 
-    assert.cursor_word("hogec")
+    assert.cursor_word("hoge_c")
   end)
 
   it("can move the cursor to the first match", function()
     helper.set_lines([[
-    hogea
-    hogeb
-    hogec
+    hoge_a
+    hoge_b
+    hoge_c
 ]])
-
-    reacher.start({input = "hoge"})
-    reacher.next()
-    reacher.next()
-    reacher.finish()
-
-    assert.cursor_word("hogec")
+    helper.search("hoge_c")
 
     reacher.start({input = "hoge"})
     reacher.first()
     reacher.finish()
 
-    assert.cursor_word("hogea")
+    assert.cursor_word("hoge_a")
   end)
 
   it("can move the cursor to the last match", function()
     helper.set_lines([[
-    hogea
-    hogeb
-    hogec
+    hoge_a
+    hoge_b
+    hoge_c
 ]])
 
     reacher.start({input = "hoge"})
     reacher.last()
     reacher.finish()
 
-    assert.cursor_word("hogec")
+    assert.cursor_word("hoge_c")
   end)
 
   it("shows error if no matcher", function()

@@ -10,12 +10,20 @@ function M.first()
   Command.new("move", "first")
 end
 
+function M.next()
+  Command.new("move", "next")
+end
+
+function M.next_line()
+  Command.new("move", "next_line")
+end
+
 function M.previous()
   Command.new("move", "previous")
 end
 
-function M.next()
-  Command.new("move", "next")
+function M.previous_line()
+  Command.new("move", "previous_line")
 end
 
 function M.last()

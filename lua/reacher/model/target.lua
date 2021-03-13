@@ -1,5 +1,6 @@
 local Position = require("reacher.model.position").Position
 local Distance = require("reacher.model.distance").Distance
+local listlib = require("reacher.lib.list")
 local vim = vim
 
 local M = {}
@@ -73,9 +74,37 @@ function Targets.previous(self)
   return Targets.new(self._targets, index)
 end
 
+function Targets.previous_line(self)
+  local target = self:current()
+  if not target then
+    return nil
+  end
+  local targets = listlib.reverse(vim.list_slice(self._targets, 1, self._index - 1))
+  for i, t in ipairs(targets) do
+    if t.row < target.row then
+      return Targets.new(self._targets, #targets - i + 1)
+    end
+  end
+  return self:last()
+end
+
 function Targets.next(self)
   local index = (self._index % #self._targets) + 1
   return Targets.new(self._targets, index)
+end
+
+function Targets.next_line(self)
+  local target = self:current()
+  if not target then
+    return nil
+  end
+  local targets = vim.list_slice(self._targets, self._index + 1)
+  for i, t in ipairs(targets) do
+    if t.row > target.row then
+      return Targets.new(self._targets, i + self._index)
+    end
+  end
+  return self:first()
 end
 
 function Targets.last(self)

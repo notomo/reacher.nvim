@@ -81,8 +81,16 @@ function Overlay.next(self)
   self:_update_cursor(self._targets:next())
 end
 
+function Overlay.next_line(self)
+  self:_update_cursor(self._targets:next_line())
+end
+
 function Overlay.previous(self)
   self:_update_cursor(self._targets:previous())
+end
+
+function Overlay.previous_line(self)
+  self:_update_cursor(self._targets:previous_line())
 end
 
 function Overlay.last(self)
