@@ -15,7 +15,7 @@ M.Origin = Origin
 function Origin.new(bufnr, row_range)
   local first_row = row_range:first()
   local last_row = row_range:last()
-  local win_first_row, height = M._view_position(first_row, last_row)
+  local win_first_row, height = M._view_position(first_row, last_row, row_range.given_range)
   if height <= 0 or last_row - first_row < 0 then
     return nil, "no range"
   end
@@ -142,7 +142,11 @@ function Origin.jump(self, row, column, mode)
 end
 
 -- HACK
-function M._view_position(first_row, last_row)
+function M._view_position(first_row, last_row, given_range)
+  if not given_range then
+    return 1, vim.api.nvim_win_get_height(0)
+  end
+
   local saved = vim.fn.winsaveview()
 
   local scrolloff = vim.api.nvim_exec("silent! echo &scrolloff", true)

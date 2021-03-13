@@ -6,7 +6,7 @@ M.RowRange = RowRange
 
 function RowRange.new(first_row, last_row)
   vim.validate({first_row = {first_row, "number", true}, last_row = {last_row, "number", true}})
-  local tbl = {_first = first_row, _last = last_row}
+  local tbl = {_first = first_row, _last = last_row, given_range = (first_row or last_row) ~= nil}
   return setmetatable(tbl, RowRange)
 end
 
