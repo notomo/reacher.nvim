@@ -435,17 +435,27 @@ foo
   end)
 
   it("adds search history on finish", function()
-    helper.set_lines([[
-foo
-history_a
-history_b
-]])
-
     reacher.start()
-    helper.input("history")
+    helper.input("finish_history")
     reacher.finish()
 
-    assert.equals("history", vim.fn.histget("/"))
+    assert.equals("finish_history", vim.fn.histget("/"))
+  end)
+
+  it("adds search history on cancel", function()
+    reacher.start()
+    helper.input("cancel_history")
+    reacher.cancel()
+
+    assert.equals("cancel_history", vim.fn.histget("/"))
+  end)
+
+  it("adds search history on recall history", function()
+    reacher.start()
+    helper.input("recall_history")
+    reacher.backward_history()
+
+    assert.equals("recall_history", vim.fn.histget("/"))
   end)
 
   it("set search register on finish", function()

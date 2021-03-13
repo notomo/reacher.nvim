@@ -65,6 +65,10 @@ function Inputter.open(callback, default_input)
 end
 
 function Inputter.recall_history(self, offset)
+  if self._history_offset == 0 then
+    self:save_history()
+  end
+
   local next_index = self._history_offset + offset
   next_index = math.min(next_index, 0)
   next_index = math.max(next_index, -vim.fn.histnr("search"))
@@ -74,6 +78,12 @@ function Inputter.recall_history(self, offset)
   cursorlib.set_column(#history + 1)
 
   self._history_offset = next_index
+end
+
+function Inputter.save_history(self)
+  local input_line = vim.api.nvim_buf_get_lines(self._bufnr, 0, -1, true)[1]
+  vim.fn.histadd("search", input_line)
+  vim.fn.setreg("/", input_line)
 end
 
 function Inputter.close(self, is_cancel)

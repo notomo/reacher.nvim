@@ -33,6 +33,10 @@ function View.recall_history(self, offset)
   self._inputter:recall_history(offset)
 end
 
+function View.save_history(self)
+  self._inputter:save_history()
+end
+
 function View.close(self, is_cancel)
   self._inputter:close(is_cancel)
   self._overlay:close()
@@ -41,6 +45,7 @@ function View.close(self, is_cancel)
 end
 
 function View.finish(self)
+  self:save_history()
   local jump = self._overlay:finish()
 
   local is_cancel = jump == nil

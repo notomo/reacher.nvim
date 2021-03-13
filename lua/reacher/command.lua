@@ -79,6 +79,7 @@ function Command.cancel()
   if view == nil then
     return
   end
+  view:save_history()
   view:close(true)
   messagelib.info("canceled")
 end
