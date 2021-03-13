@@ -1,31 +1,12 @@
 local helper = require("reacher.lib.testlib.helper")
 local reacher = require("reacher")
 
-describe("reacher.nvim", function()
+describe("reacher.next()", function()
 
   before_each(helper.before_each)
   after_each(helper.after_each)
 
-  it("moves to the nearest", function()
-    helper.set_lines([[
-              hoge_a hoge_b
-
-
-
-
-hoge_c
-]])
-
-    vim.cmd("normal! j")
-    reacher.start()
-
-    helper.input("h")
-    reacher.finish()
-
-    assert.cursor_word("hoge_a")
-  end)
-
-  it("can move the cursor to the next match", function()
+  it("moves the cursor to the next match", function()
     helper.set_lines([[
     hoge_a
     hoge_b
@@ -39,7 +20,7 @@ hoge_c
     assert.cursor_word("hoge_b")
   end)
 
-  it("can move the cursor to the wrapped next match", function()
+  it("moves the cursor to the wrapped next match", function()
     helper.set_lines([[
     hoge_a
     hoge_b
@@ -54,7 +35,14 @@ hoge_c
     assert.cursor_word("hoge_a")
   end)
 
-  it("can move the cursor to the next line match", function()
+end)
+
+describe("reacher.next_line()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("moves the cursor to the next line match", function()
     helper.set_lines([[
     hoge_a hoge_b
     hoge_c hoge_d
@@ -68,7 +56,7 @@ hoge_c
     assert.cursor_word("hoge_c")
   end)
 
-  it("can move the cursor to the wrapped next line match", function()
+  it("moves the cursor to the wrapped next line match", function()
     helper.set_lines([[
     hoge_a hoge_b
     hoge_c hoge_d
@@ -83,7 +71,14 @@ hoge_c
     assert.cursor_word("hoge_a")
   end)
 
-  it("can move the cursor to the previous match", function()
+end)
+
+describe("reacher.previous()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("moves the cursor to the previous match", function()
     helper.set_lines([[
     hoge_a
     hoge_b
@@ -98,7 +93,28 @@ hoge_c
     assert.cursor_word("hoge_a")
   end)
 
-  it("can move the cursor to the previous line match", function()
+  it("moves the cursor to the wrapped previous match", function()
+    helper.set_lines([[
+    hoge_a
+    hoge_b
+    hoge_c
+]])
+
+    reacher.start({input = "hoge"})
+    reacher.previous()
+    reacher.finish()
+
+    assert.cursor_word("hoge_c")
+  end)
+
+end)
+
+describe("reacher.previous_line()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("moves the cursor to the previous line match", function()
     helper.set_lines([[
     hoge_a hoge_b
     hoge_c hoge_d
@@ -113,7 +129,7 @@ hoge_c
     assert.cursor_word("hoge_b")
   end)
 
-  it("can move the cursor to the previous wrapped line match", function()
+  it("moves the cursor to the wrapped previous line match", function()
     helper.set_lines([[
     hoge_a hoge_b
     hoge_c hoge_d
@@ -127,21 +143,14 @@ hoge_c
     assert.cursor_word("hoge_f")
   end)
 
-  it("can move the cursor to the wrapped previous match", function()
-    helper.set_lines([[
-    hoge_a
-    hoge_b
-    hoge_c
-]])
+end)
 
-    reacher.start({input = "hoge"})
-    reacher.previous()
-    reacher.finish()
+describe("reacher.first()", function()
 
-    assert.cursor_word("hoge_c")
-  end)
+  before_each(helper.before_each)
+  after_each(helper.after_each)
 
-  it("can move the cursor to the first match", function()
+  it("moves the cursor to the first match", function()
     helper.set_lines([[
     hoge_a
     hoge_b
@@ -156,7 +165,19 @@ hoge_c
     assert.cursor_word("hoge_a")
   end)
 
-  it("can move the cursor to the last match", function()
+  it("shows error if it is not started on moving", function()
+    reacher.first()
+    assert.exists_message("is not started")
+  end)
+
+end)
+
+describe("reacher.last()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("moves the cursor to the last match", function()
     helper.set_lines([[
     hoge_a
     hoge_b
@@ -170,47 +191,165 @@ hoge_c
     assert.cursor_word("hoge_c")
   end)
 
-  it("shows error if no matcher", function()
-    reacher.start({matcher_opts = {name = "invalid"}})
-    assert.exists_message("not found matcher: invalid")
+end)
+
+describe("reacher.cancel()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("cancels", function()
+    helper.set_lines([[
+hoge
+foo1
+foo2
+]])
+    reacher.start()
+    helper.input("foo")
+
+    reacher.cancel()
+
+    assert.cursor_word("hoge")
   end)
 
-  it("shows error if it is not started on moving", function()
-    reacher.first()
-    assert.exists_message("is not started")
-  end)
-
-  it("shows error if it is not started on finishing", function()
-    reacher.finish()
-    assert.exists_message("is not started")
-  end)
-
-  it("shows error if there is no range", function()
+  it("shows cancel message", function()
     helper.set_lines([[
 hoge
 ]])
 
-    reacher.start({last_row = -1})
-    assert.exists_message("no range")
+    reacher.start()
+    reacher.cancel()
+
+    assert.exists_message("canceled")
   end)
 
-  it("cannot open the multiple", function()
+  it("adds search history", function()
+    reacher.start()
+    helper.input("cancel_history")
+    reacher.cancel()
+
+    assert.equals("cancel_history", vim.fn.histget("/"))
+  end)
+
+end)
+
+describe("reacher.forward_history()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("recalls forward history", function()
     helper.set_lines([[
-hogea
-hogeb
+hoge
+foo
+bar
 ]])
 
     reacher.start()
-
-    helper.input("h")
-    assert.window_count(3)
+    helper.input("foo")
+    reacher.finish()
 
     reacher.start()
+    helper.input("bar")
+    reacher.finish()
+    vim.cmd("normal! gg")
 
-    assert.window_count(3)
+    reacher.start()
+    reacher.backward_history()
+    reacher.backward_history()
+    reacher.forward_history()
+    reacher.finish()
+
+    assert.cursor_word("bar")
   end)
 
-  it("`finish` does nothing if there is no targets", function()
+end)
+
+describe("reacher.backward_history()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("recalls backward history", function()
+    helper.set_lines([[
+hoge
+foo
+]])
+
+    reacher.start()
+    helper.input("foo")
+    reacher.finish()
+    vim.cmd("normal! gg")
+
+    reacher.start()
+    reacher.backward_history()
+    reacher.finish()
+
+    assert.cursor_word("foo")
+  end)
+
+  it("adds search history", function()
+    reacher.start()
+    helper.input("recall_history")
+    reacher.backward_history()
+
+    assert.equals("recall_history", vim.fn.histget("/"))
+  end)
+
+end)
+
+describe("reacher.finish()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("moves the cursor to the nearest match", function()
+    helper.set_lines([[
+              hoge_a hoge_b
+
+
+
+
+hoge_c
+]])
+    vim.cmd("normal! j")
+
+    reacher.start()
+    helper.input("h")
+    reacher.finish()
+
+    assert.cursor_word("hoge_a")
+  end)
+
+  it("adds search history", function()
+    reacher.start()
+    helper.input("finish_history")
+    reacher.finish()
+
+    assert.equals("finish_history", vim.fn.histget("/"))
+  end)
+
+  it("sets search register", function()
+    helper.set_lines([[
+foo
+register_a
+register_b
+]])
+
+    reacher.start()
+    helper.input("register")
+    reacher.finish()
+    vim.cmd("silent! normal! n")
+
+    assert.cursor_word("register_b")
+  end)
+
+  it("shows error if it is not started", function()
+    reacher.finish()
+    assert.exists_message("is not started")
+  end)
+
+  it("does nothing if there is no targets", function()
     helper.set_lines([[
 hoge
 foo
@@ -228,19 +367,168 @@ foo
     assert.cursor_word("foo")
   end)
 
-  it("can cancel", function()
+  it("shows jump info message", function()
     helper.set_lines([[
-hoge
-foo1
-foo2
-]])
-    reacher.start()
-    helper.input("foo")
 
-    reacher.cancel()
+  hoge
+]])
+
+    reacher.start({input = "hoge"})
+    reacher.finish()
+
+    -- NOTE: no stopinsert offset
+    assert.exists_message("jumped to (2, 2)")
+  end)
+
+end)
+
+describe("reacher.start()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("shows the current position match", function()
+    helper.set_lines([[
+foo
+hoge
+]])
+    helper.search("hoge")
+    vim.cmd("normal! $")
+
+    reacher.start()
+    reacher.finish()
+
+    assert.current_line("hoge")
+    assert.column(4)
+  end)
+
+  it("does not show the current position target if it is not in row range", function()
+    helper.set_lines([[
+hoge_a
+hoge_b
+bar
+]])
+
+    reacher.start({first_row = vim.fn.line(".") + 1})
+    helper.input("hoge")
+    reacher.finish()
+
+    assert.current_line("hoge_b")
+  end)
+
+  it("can pass input", function()
+    helper.set_lines([[
+foo
+hoge_a
+hoge_b
+]])
+
+    reacher.start({input = "hoge"})
+    helper.input("_b")
+    reacher.finish()
+
+    assert.cursor_word("hoge_b")
+  end)
+
+  it("trims multiline input", function()
+    helper.set_lines([[
+foo
+hoge
+]])
+
+    reacher.start({
+      input = [[
+hoge
+foo
+]],
+    })
+    reacher.finish()
 
     assert.cursor_word("hoge")
   end)
+
+  it("can limit row range", function()
+    helper.set_lines([[
+foo hoge_a hoge_b
+hoge
+]])
+
+    reacher.start({first_row = vim.fn.line("."), last_row = vim.fn.line(".")})
+    helper.input("ge")
+    reacher.next()
+    reacher.next()
+    reacher.finish()
+
+    assert.cursor_word("hoge_a")
+    assert.current_line("foo hoge_a hoge_b")
+  end)
+
+  it("shows error if no matcher", function()
+    reacher.start({matcher_opts = {name = "invalid"}})
+    assert.exists_message("not found matcher: invalid")
+  end)
+
+  it("shows error if there is no range", function()
+    helper.set_lines([[
+hoge
+]])
+
+    reacher.start({last_row = -1})
+    assert.exists_message("no range")
+  end)
+
+  it("does not start multiple", function()
+    helper.set_lines([[
+hogea
+hogeb
+]])
+
+    reacher.start()
+
+    helper.input("h")
+    assert.window_count(3)
+
+    reacher.start()
+
+    assert.window_count(3)
+  end)
+
+end)
+
+describe("reacher.nvim inputter", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("removes extra lines", function()
+    helper.set_lines([[
+foo
+foo
+hoge
+]])
+
+    reacher.start()
+    helper.input([[
+hoge
+foo
+]])
+
+    local ok = vim.wait(1000, function()
+      return vim.fn.line("$") == 1
+    end)
+    assert.is_true(ok)
+
+    reacher.finish()
+
+    assert.current_line("hoge")
+  end)
+
+end)
+
+describe("reacher.nvim view", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
 
   it("ignores folded texts", function()
     helper.set_lines([[
@@ -260,7 +548,7 @@ hoge4
     assert.current_line("hoge4")
   end)
 
-  it("shows diff fillers", function()
+  it("shows diff fillers as empty line", function()
     vim.bo.buftype = "nofile"
     helper.set_lines([[
 hoge
@@ -349,29 +637,6 @@ buz
     assert.current_line("buz")
   end)
 
-  it("removes extra input lines", function()
-    helper.set_lines([[
-foo
-foo
-hoge
-]])
-
-    reacher.start()
-    helper.input([[
-hoge
-foo
-]])
-
-    local ok = vim.wait(1000, function()
-      return vim.fn.line("$") == 1
-    end)
-    assert.is_true(ok)
-
-    reacher.finish()
-
-    assert.current_line("hoge")
-  end)
-
   it("shows concealed texts", function()
     vim.wo.conceallevel = 3
     vim.wo.concealcursor = "nvic"
@@ -404,201 +669,5 @@ foo |hoge| bar (hogehoge)
     assert.cursor_word("hoge")
   end)
 
-  it("shows jump info message", function()
-    helper.set_lines([[
-
-  hoge
-]])
-
-    reacher.start({input = "hoge"})
-    reacher.finish()
-
-    -- NOTE: no stopinsert offset
-    assert.exists_message("jumped to (2, 2)")
-  end)
-
-  it("shows cancel message", function()
-    helper.set_lines([[
-hoge
-]])
-
-    reacher.start()
-    reacher.cancel()
-
-    assert.exists_message("canceled")
-  end)
-
-  it("can limit row range", function()
-    helper.set_lines([[
-foo hoge_a hoge_b
-hoge
-]])
-
-    reacher.start({first_row = vim.fn.line("."), last_row = vim.fn.line(".")})
-    helper.input("ge")
-    reacher.next()
-    reacher.next()
-    reacher.finish()
-
-    assert.cursor_word("hoge_a")
-    assert.current_line("foo hoge_a hoge_b")
-  end)
-
-  it("can pass input", function()
-    helper.set_lines([[
-foo
-hoge_a
-hoge_b
-]])
-
-    reacher.start({input = "hoge"})
-    helper.input("_b")
-    reacher.finish()
-
-    assert.cursor_word("hoge_b")
-  end)
-
-  it("trims multiline input", function()
-    helper.set_lines([[
-foo
-hoge
-]])
-
-    reacher.start({
-      input = [[
-hoge
-foo
-]],
-    })
-    reacher.finish()
-
-    assert.cursor_word("hoge")
-  end)
-
-  it("adds search history on finish", function()
-    reacher.start()
-    helper.input("finish_history")
-    reacher.finish()
-
-    assert.equals("finish_history", vim.fn.histget("/"))
-  end)
-
-  it("adds search history on cancel", function()
-    reacher.start()
-    helper.input("cancel_history")
-    reacher.cancel()
-
-    assert.equals("cancel_history", vim.fn.histget("/"))
-  end)
-
-  it("adds search history on recall history", function()
-    reacher.start()
-    helper.input("recall_history")
-    reacher.backward_history()
-
-    assert.equals("recall_history", vim.fn.histget("/"))
-  end)
-
-  it("set search register on finish", function()
-    helper.set_lines([[
-foo
-register_a
-register_b
-]])
-
-    reacher.start()
-    helper.input("register")
-    reacher.finish()
-    vim.cmd("silent! normal! n")
-
-    assert.cursor_word("register_b")
-  end)
-
-  it("can recall backward history", function()
-    helper.set_lines([[
-hoge
-foo
-]])
-
-    reacher.start()
-    helper.input("foo")
-    reacher.finish()
-    vim.cmd("normal! gg")
-
-    reacher.start()
-    reacher.backward_history()
-    reacher.finish()
-
-    assert.cursor_word("foo")
-  end)
-
-  it("can recall forward history", function()
-    helper.set_lines([[
-hoge
-foo
-bar
-]])
-
-    reacher.start()
-    helper.input("foo")
-    reacher.finish()
-
-    reacher.start()
-    helper.input("bar")
-    reacher.finish()
-    vim.cmd("normal! gg")
-
-    reacher.start()
-    reacher.backward_history()
-    reacher.backward_history()
-    reacher.forward_history()
-    reacher.finish()
-
-    assert.cursor_word("bar")
-  end)
-
-  it("can search by pattern", function()
-    helper.set_lines([[
-foo
-hoge
-]])
-
-    reacher.start()
-
-    helper.input("ge")
-    reacher.finish()
-
-    assert.current_line("hoge")
-    assert.column(3)
-  end)
-
-  it("has the current position target on init", function()
-    helper.set_lines([[
-foo
-hoge
-]])
-    helper.search("hoge")
-    vim.cmd("normal! $")
-
-    reacher.start()
-    reacher.finish()
-
-    assert.current_line("hoge")
-    assert.column(4)
-  end)
-
-  it("does not have current position target if it is in row range", function()
-    helper.set_lines([[
-hoge_a
-hoge_b
-bar
-]])
-
-    reacher.start({first_row = vim.fn.line(".") + 1})
-    helper.input("hoge")
-    reacher.finish()
-
-    assert.current_line("hoge_b")
-  end)
-
 end)
+
