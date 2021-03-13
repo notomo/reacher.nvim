@@ -10,8 +10,8 @@ function M.first()
   Command.new("move", "first")
 end
 
-function M.prev()
-  Command.new("move", "prev")
+function M.previous()
+  Command.new("move", "previous")
 end
 
 function M.next()

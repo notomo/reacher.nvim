@@ -60,7 +60,7 @@ hogec
     assert.cursor_word("hogea")
   end)
 
-  it("can move the cursor to the prev match", function()
+  it("can move the cursor to the previous match", function()
     helper.set_lines([[
     hogea
     hogeb
@@ -74,13 +74,13 @@ hogec
     assert.cursor_word("hogeb")
 
     reacher.start({input = "hoge"})
-    reacher.prev()
+    reacher.previous()
     reacher.finish()
 
     assert.cursor_word("hogea")
   end)
 
-  it("can move the cursor to the wrapped prev match", function()
+  it("can move the cursor to the wrapped previous match", function()
     helper.set_lines([[
     hogea
     hogeb
@@ -88,7 +88,7 @@ hogec
 ]])
 
     reacher.start({input = "hoge"})
-    reacher.prev()
+    reacher.previous()
     reacher.finish()
 
     assert.cursor_word("hogec")

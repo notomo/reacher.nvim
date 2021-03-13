@@ -68,7 +68,7 @@ function Targets.first(self)
   return Targets.new(self._targets, 1)
 end
 
-function Targets.prev(self)
+function Targets.previous(self)
   local index = ((self._index - 1) % #self._targets - 1) % #self._targets + 1
   return Targets.new(self._targets, index)
 end
