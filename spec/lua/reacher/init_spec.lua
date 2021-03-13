@@ -523,6 +523,21 @@ foo
     assert.current_line("hoge")
   end)
 
+  it("reacognizes smartcase option", function()
+    helper.set_lines([[
+foo
+hoge
+Hoge
+]])
+    vim.o.ignorecase = true
+    vim.o.smartcase = true
+
+    reacher.start({input = "Hoge"})
+    reacher.finish()
+
+    assert.current_line("Hoge")
+  end)
+
 end)
 
 describe("reacher.nvim view", function()

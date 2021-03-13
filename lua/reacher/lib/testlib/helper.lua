@@ -4,6 +4,8 @@ M.root = require("reacher.lib.path").find_root()
 
 function M.before_each()
   vim.cmd("set wrap")
+  vim.o.ignorecase = false
+  vim.o.smartcase = false
   require("reacher.lib.module").cleanup()
   vim.cmd("filetype on")
   vim.cmd("syntax enable")

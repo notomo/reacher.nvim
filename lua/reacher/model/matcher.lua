@@ -14,7 +14,7 @@ function Matcher.new(name)
     return nil, "not found matcher: " .. name
   end
 
-  local tbl = {name = name, _matcher = matcher}
+  local tbl = {name = name, _matcher = matcher, smartcase = vim.o.smartcase}
   return setmetatable(tbl, Matcher)
 end
 
