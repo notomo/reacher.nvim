@@ -24,6 +24,13 @@ function Overlay.open(matcher, source_bufnr, row_range)
   vim.bo[bufnr].modifiable = false
   vim.wo[window_id].winhighlight = "Normal:ReacherBackground"
 
+  highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
+  highlightlib.set_background("ReacherBackground", origin.window_id, {
+    fg_hl_group = "Comment",
+    fg_default = "#8d9eb2",
+    bg_default = "#334152",
+  })
+
   local collector, initial_targets = Collector.new(matcher, origin.lines, origin.cursor)
 
   local tbl = {
@@ -34,27 +41,13 @@ function Overlay.open(matcher, source_bufnr, row_range)
     _cursor_highlight = HlFactory.new("reacher_cursor", bufnr),
     _collector = collector,
     _targets = initial_targets,
-    _input_line = nil,
   }
-  local overlay = setmetatable(tbl, Overlay)
-
-  highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
-  highlightlib.set_background("ReacherBackground", origin.window_id, {
-    fg_hl_group = "Comment",
-    fg_default = "#8d9eb2",
-    bg_default = "#334152",
-  })
-
-  return overlay, nil
+  return setmetatable(tbl, Overlay), nil
 end
 
 function Overlay.update(self, input_line)
-  if input_line == self._input_line then
-    return
-  end
-  self._input_line = input_line
-
   local targets = self._collector:collect(input_line)
+
   local highlighter = self._match_highlight:reset()
   for _, target in targets:iter() do
     target:highlight(highlighter, "ReacherMatch")
@@ -68,8 +61,8 @@ function Overlay.close(self)
   windowlib.close(self._window_id)
 end
 
-function Overlay.finish(self, target)
-  target = target or self._targets:current()
+function Overlay.finish(self)
+  local target = self._targets:current()
   if target == nil then
     return
   end
