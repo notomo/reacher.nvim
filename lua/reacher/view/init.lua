@@ -44,6 +44,11 @@ function View.close(self, is_cancel)
   repository:delete(self._inputter.window_id)
 end
 
+function View.cancel(self)
+  self:save_history()
+  self:close(true)
+end
+
 function View.finish(self)
   self:save_history(true)
   local jump = self._overlay:finish()

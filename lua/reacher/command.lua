@@ -79,20 +79,17 @@ function Command.cancel()
   if view == nil then
     return
   end
-  view:save_history()
-  view:close(true)
+  view:cancel()
   messagelib.info("canceled")
 end
 
-function Command.close(id, is_cancel)
-  vim.validate({id = {id, "number"}, is_cancel = {is_cancel, "boolean"}})
-
+function Command.close(id)
+  vim.validate({id = {id, "number"}})
   local view = View.get(id)
   if view == nil then
     return
   end
-
-  view:close(is_cancel)
+  view:cancel()
 end
 
 return M

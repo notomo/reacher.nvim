@@ -1,5 +1,9 @@
 local helper = require("reacher.lib.testlib.helper")
-local reacher = require("reacher")
+local reacher = setmetatable({}, {
+  __index = function(_, k)
+    return require("reacher")[k]
+  end,
+})
 
 describe("reacher.next()", function()
 
@@ -561,6 +565,13 @@ Hoge
     reacher.finish()
 
     assert.current_line("Hoge")
+  end)
+
+  it("is closed on leaving", function()
+    reacher.start({})
+    vim.cmd("wincmd w")
+
+    assert.window_count(1)
   end)
 
 end)
