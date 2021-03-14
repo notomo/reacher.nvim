@@ -260,6 +260,21 @@ hoge
     assert.equals("cancel_history", vim.fn.histget("/"))
   end)
 
+  it("can go back to visual mode", function()
+    helper.set_lines([[
+hoge
+foo
+]])
+
+    vim.cmd("normal! v")
+    vim.cmd("normal! $")
+    reacher.start({input = "foo"})
+    reacher.cancel()
+
+    assert.mode("v")
+    assert.current_line("hoge")
+  end)
+
 end)
 
 describe("reacher.forward_history()", function()
@@ -407,6 +422,42 @@ foo
 
     -- NOTE: no stopinsert offset
     assert.exists_message("jumped to (2, 2)")
+  end)
+
+  it("can go back to linewise visual mode", function()
+    helper.set_lines([[
+hoge
+foo
+]])
+
+    vim.cmd("normal! V")
+    reacher.start({input = "foo"})
+    reacher.finish()
+
+    assert.mode("V")
+    assert.current_line("foo")
+
+    vim.cmd("normal! o")
+    assert.current_line("hoge")
+  end)
+
+  it("can go back to blockwise visual mode", function()
+    local ctrl_v = vim.api.nvim_eval("\"\\<C-v>\"")
+
+    helper.set_lines([[
+hoge
+foo
+]])
+    helper.search("oge")
+    vim.cmd("normal! " .. ctrl_v)
+    reacher.start({input = "oo"})
+    reacher.finish()
+
+    assert.mode(ctrl_v)
+    assert.current_line("foo")
+
+    vim.cmd("normal! d")
+    assert.current_line("hge")
   end)
 
 end)

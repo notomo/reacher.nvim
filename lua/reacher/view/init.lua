@@ -2,6 +2,7 @@ local repository = require("reacher.lib.repository").Repository.new("view")
 local Overlay = require("reacher.view.overlay").Overlay
 local Inputter = require("reacher.view.inputter").Inputter
 local RowRange = require("reacher.view.row_range").RowRange
+local modelib = require("reacher.lib.mode")
 local vim = vim
 
 local M = {}
@@ -11,8 +12,9 @@ View.__index = View
 M.View = View
 
 function View.open(matcher, opts)
-  local source_bufnr = vim.api.nvim_get_current_buf()
+  local was_visual_mode = modelib.leave_visual_mode()
 
+  local source_bufnr = vim.api.nvim_get_current_buf()
   local row_range = RowRange.new(opts.first_row, opts.last_row)
   local overlay, err = Overlay.open(matcher, source_bufnr, row_range)
   if err ~= nil then
@@ -23,7 +25,12 @@ function View.open(matcher, opts)
     overlay:update(input_line)
   end, opts.input)
 
-  local tbl = {_overlay = overlay, _inputter = inputter}
+  local tbl = {
+    _overlay = overlay,
+    _inputter = inputter,
+    _was_visual_mode = was_visual_mode,
+    _deleted = false,
+  }
   local view = setmetatable(tbl, View)
 
   repository:set(inputter.window_id, view)
@@ -45,8 +52,19 @@ function View.close(self, is_cancel)
 end
 
 function View.cancel(self)
+  -- HACK: guard for firing autocmd many times
+  if self._deleted then
+    return
+  end
+  self._deleted = true
+
   self:save_history()
   self:close(true)
+
+  if self._was_visual_mode then
+    local mode = vim.api.nvim_get_mode().mode
+    modelib.restore_visual_mode(mode)
+  end
 end
 
 function View.finish(self)
@@ -55,6 +73,10 @@ function View.finish(self)
 
   local is_cancel = jump == nil
   self:close(is_cancel)
+
+  if self._was_visual_mode then
+    modelib.restore_visual_mode()
+  end
 
   if jump ~= nil then
     return jump()

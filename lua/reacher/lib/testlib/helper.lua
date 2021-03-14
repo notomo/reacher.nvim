@@ -91,4 +91,8 @@ asserts.create("column"):register_eq(function()
   return vim.fn.col(".")
 end)
 
+asserts.create("mode"):register_eq(function()
+  return vim.api.nvim_get_mode().mode
+end)
+
 return M
