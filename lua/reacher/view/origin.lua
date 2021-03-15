@@ -35,15 +35,15 @@ function Origin.new(bufnr, row_range)
   local cursor = Position.cursor(window_id)
   local saved = vim.fn.winsaveview()
   vim.api.nvim_win_set_cursor(window_id, {cursor.row, 0})
-  local number_sign_width = vim.fn.wincol()
+  local number_sign_width = vim.fn.wincol() - 1
   vim.fn.winrestview(saved)
 
-  local width = vim.api.nvim_win_get_width(window_id) - number_sign_width + 1
+  local width = vim.api.nvim_win_get_width(window_id) - number_sign_width
 
   local row = win_first_row
   local column = 0
   if saved.leftcol >= number_sign_width then
-    column = number_sign_width + 1
+    column = number_sign_width + 2
   elseif saved.leftcol >= 1 then
     column = saved.leftcol
   end
