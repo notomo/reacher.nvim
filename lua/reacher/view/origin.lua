@@ -62,14 +62,16 @@ function Origin.new(bufnr, row_range)
   local conceals = Conceals.new(bufnr, first_row, last_row, fillers)
   local lines = Lines.new(first_column, last_column, conceals, folds, fillers, options.wrap)
 
-  local offset = lines:offset(first_row)
-  local cursor_pos = Position.new(cursor.row + fillers:offset(cursor.row) - offset.row, cursor.column - offset.column - conceals:offset_from_origin(cursor.row, cursor.column + 1))
+  local row_offset = first_row - 1
+  local cursor_row = cursor.row + fillers:offset(cursor.row) - row_offset
+  local corsor_column = cursor.column - lines:column_offset(cursor_row) - conceals:offset_from_origin(cursor.row, cursor.column + 1)
+  local cursor_pos = Position.new(cursor_row, corsor_column)
   local tbl = {
     window_id = window_id,
     lines = lines,
     cursor = cursor_pos,
-    _offset = offset,
     _row = row,
+    _row_offset = row_offset,
     _column = column,
     _width = width,
     _height = height,
@@ -128,13 +130,13 @@ function Origin.enter(self)
 end
 
 function Origin.jump(self, row, column, mode)
-  local origin_row = row + self._offset.row - self._fillers:offset_from_origin(row)
+  local origin_row = row + self._row_offset - self._fillers:offset_from_origin(row)
 
   local insert_offset = 1 -- for stopinsert
   if mode == "n" then
     insert_offset = 0
   end
-  column = column + self._offset.column + insert_offset
+  column = column + self.lines:column_offset(row) + insert_offset
   local origin_column = column + self._conceals:offset(origin_row, column)
 
   windowlib.jump(self.window_id, origin_row, origin_column)

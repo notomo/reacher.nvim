@@ -4,7 +4,29 @@ local ColumnRange = {}
 ColumnRange.__index = ColumnRange
 M.ColumnRange = ColumnRange
 
-function ColumnRange.trim(strs, virtual_s, virtual_e, wrap)
+function ColumnRange.new(str, virtual_s, virtual_e)
+  local trimmed = str
+  local matched, s, e = unpack(vim.fn.matchstrpos(str, "\\%>" .. virtual_s .. "v.*\\%<" .. virtual_e .. "v"))
+  if s == e then
+    return nil
+  end
+  trimmed = matched
+
+  local s_matched = unpack(vim.fn.matchstrpos(str, "\\%" .. virtual_s + 1 .. "v."))
+  if s_matched == "" then
+    trimmed = " " .. matched
+    s = s - 1
+  end
+  -- TODO: for extends
+
+  local tbl = {str = trimmed, s = s, e = e}
+  return setmetatable(tbl, ColumnRange)
+end
+
+local ColumnRanges = {}
+M.ColumnRanges = ColumnRanges
+
+function ColumnRanges.new(strs, virtual_s, virtual_e, wrap)
   vim.validate({
     strs = {strs, "table"},
     virtual_s = {virtual_s, "number"},
@@ -12,45 +34,32 @@ function ColumnRange.trim(strs, virtual_s, virtual_e, wrap)
     wrap = {wrap, "boolean"},
   })
 
-  local tbl = {s = virtual_s, e = virtual_e}
-  local self = setmetatable(tbl, ColumnRange)
+  local tbl = {_column_ranges = {}, strs = vim.deepcopy(strs)}
+  local self = setmetatable(tbl, ColumnRanges)
+
   if wrap then
-    return strs, self
+    return self
   end
 
-  local result_strs = {}
   local vs = virtual_s - 1
   local ve = virtual_e + 2
-  for _, str in ipairs(strs) do
-    table.insert(result_strs, self:_trim(str, vs, ve))
+  for row, str in ipairs(strs) do
+    local column_range = ColumnRange.new(str, vs, ve)
+    if column_range then
+      self._column_ranges[row] = ColumnRange.new(str, vs, ve)
+      self.strs[row] = column_range.str
+    else
+      self.strs[row] = ""
+    end
   end
-
-  return result_strs, self
+  return self
 end
 
-function ColumnRange._trim(self, str, virtual_s, virtual_e)
-  local trimmed = str
-  local matched, s, e = unpack(vim.fn.matchstrpos(str, "\\%>" .. virtual_s .. "v.*\\%<" .. virtual_e .. "v"))
-  if s == e then
-    return ""
+function ColumnRanges.__index(self, k)
+  if type(k) == "number" then
+    return self._column_ranges[k]
   end
-  trimmed = matched
-
-  if self.s < s then
-    self.s = s
-  end
-
-  if self.e < e then
-    self.e = e
-  end
-
-  local s_matched = unpack(vim.fn.matchstrpos(str, "\\%" .. virtual_s + 1 .. "v."))
-  if s_matched == "" then
-    trimmed = " " .. matched
-  end
-  -- TODO: for extends
-
-  return trimmed
+  return ColumnRanges[k]
 end
 
 return M
