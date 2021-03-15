@@ -1,7 +1,7 @@
 local repository = require("reacher.lib.repository").Repository.new("view")
 local Overlay = require("reacher.view.overlay").Overlay
 local Inputter = require("reacher.view.inputter").Inputter
-local RowRange = require("reacher.view.row_range").RowRange
+local RowRange = require("reacher.model.row_range").RowRange
 local modelib = require("reacher.lib.mode")
 local vim = vim
 
@@ -29,7 +29,7 @@ function View.open(matcher, opts)
     _overlay = overlay,
     _inputter = inputter,
     _was_visual_mode = was_visual_mode,
-    _deleted = false,
+    _closed = false,
   }
   local view = setmetatable(tbl, View)
 
@@ -53,10 +53,10 @@ end
 
 function View.cancel(self)
   -- HACK: guard for firing autocmd many times
-  if self._deleted then
+  if self._closed then
     return
   end
-  self._deleted = true
+  self._closed = true
 
   self:save_history()
   self:close(true)

@@ -92,7 +92,7 @@ end
 function Inputter.close(self, is_cancel)
   vim.validate({is_cancel = {is_cancel, "boolean", true}})
 
-  -- NOTICE: bacause sometimes the buffer is not deleted.
+  -- NOTICE: because sometimes the buffer is not deleted.
   vim.api.nvim_buf_delete(self._bufnr, {force = true})
   windowlib.close(self.window_id)
 
