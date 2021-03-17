@@ -17,7 +17,6 @@ function ColumnRange.new(str, virtual_s, virtual_e)
     trimmed = " " .. matched
     s = s - 1
   end
-  -- TODO: for extends
 
   local tbl = {str = trimmed, s = s, e = e}
   return setmetatable(tbl, ColumnRange)

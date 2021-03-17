@@ -18,7 +18,7 @@ function ConcealLine.new(row)
   local concealed_count = 0
   for i, conceal in ipairs(syn_conceals) do
     local next_conceal = syn_conceals[i + 1]
-    local is_edge = next_conceal and conceal[3] ~= next_conceal[3]
+    local is_edge = (next_conceal and conceal[3] ~= next_conceal[3]) or (not next_conceal)
     local text = conceal[2]
 
     local concealed = conceal[1] == 1
