@@ -1,7 +1,6 @@
 local windowlib = require("reacher.lib.window")
 local highlightlib = require("reacher.lib.highlight")
 local HlFactory = require("reacher.lib.highlight").HlFactory
-local Origin = require("reacher.view.origin").Origin
 local Collector = require("reacher.model.collector").Collector
 local vim = vim
 
@@ -11,12 +10,7 @@ local Overlay = {}
 Overlay.__index = Overlay
 M.Overlay = Overlay
 
-function Overlay.open(matcher, source_bufnr, row_range)
-  local origin, err = Origin.new(source_bufnr, row_range)
-  if err ~= nil then
-    return nil, err
-  end
-
+function Overlay.open(matcher, origin)
   local bufnr = vim.api.nvim_create_buf(false, true)
   local window_id = origin:copy_to_floating_win(bufnr)
 

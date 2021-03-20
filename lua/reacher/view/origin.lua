@@ -12,7 +12,7 @@ local Origin = {}
 Origin.__index = Origin
 M.Origin = Origin
 
-function Origin.new(bufnr, row_range)
+function Origin.new(old_mode, bufnr, row_range)
   local first_row = row_range:first()
   local last_row = row_range:last()
   local win_first_row, height = M._view_position(first_row, last_row, row_range.given_range)
@@ -59,7 +59,7 @@ function Origin.new(bufnr, row_range)
 
   local fillers = Fillers.new(first_row, last_row)
   local folds = Folds.new(first_row, last_row, fillers)
-  local conceals = Conceals.new(bufnr, first_row, last_row, fillers)
+  local conceals = Conceals.new(bufnr, first_row, last_row, fillers, old_mode)
   local lines = Lines.new(first_column, last_column, conceals, folds, fillers, options.wrap)
 
   local row_offset = first_row - 1

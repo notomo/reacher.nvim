@@ -6,9 +6,9 @@ function M.leave_visual_mode()
   local mode = vim.api.nvim_get_mode().mode
   if mode == "v" or mode == "V" or mode == CTRL_V then
     vim.cmd("normal! " .. ESC)
-    return true
+    return true, mode
   end
-  return false
+  return false, mode
 end
 
 function M.restore_visual_mode(mode)

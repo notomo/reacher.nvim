@@ -2,6 +2,8 @@ local repository = require("reacher.lib.repository").Repository.new("view")
 local Overlay = require("reacher.view.overlay").Overlay
 local Inputter = require("reacher.view.inputter").Inputter
 local RowRange = require("reacher.model.row_range").RowRange
+local Origin = require("reacher.view.origin").Origin
+local OldMode = require("reacher.model.old_mode").OldMode
 local modelib = require("reacher.lib.mode")
 local vim = vim
 
@@ -12,15 +14,15 @@ View.__index = View
 M.View = View
 
 function View.open(matcher, opts)
-  local was_visual_mode = modelib.leave_visual_mode()
-
+  local old_mode = OldMode.to_normal_mode()
   local source_bufnr = vim.api.nvim_get_current_buf()
   local row_range = RowRange.new(opts.first_row, opts.last_row)
-  local overlay, err = Overlay.open(matcher, source_bufnr, row_range)
+  local origin, err = Origin.new(old_mode, source_bufnr, row_range)
   if err ~= nil then
     return err
   end
 
+  local overlay = Overlay.open(matcher, origin)
   local inputter = Inputter.open(function(input_line)
     overlay:update(input_line)
   end, opts.input)
@@ -28,7 +30,7 @@ function View.open(matcher, opts)
   local tbl = {
     _overlay = overlay,
     _inputter = inputter,
-    _was_visual_mode = was_visual_mode,
+    _was_visual_mode = old_mode.is_visual,
     _closed = false,
   }
   local view = setmetatable(tbl, View)
