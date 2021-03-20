@@ -42,7 +42,7 @@ function Origin.new(old_mode, bufnr, row_range)
 
   local row = win_first_row
   local column = 0
-  if saved.leftcol >= number_sign_width + 2 then
+  if saved.leftcol > number_sign_width then
     column = number_sign_width + 2
   elseif saved.leftcol >= 1 then
     column = saved.leftcol
