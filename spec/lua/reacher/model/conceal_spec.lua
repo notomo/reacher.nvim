@@ -31,15 +31,22 @@ describe("reacher.model.conceal", function()
       cmd = [[syntax match reacherTestSyntax "ほげ" conceal cchar=あ]],
       level = 2,
     },
+    {
+      expected = "|hoge|",
+      line = "|hoge|",
+      cmd = [[syntax match reacherTestSyntax "|hoge|" conceal cchar=&]],
+      level = 3,
+      disable = true,
+    },
   }) do
-    it(("`%s` = `%s`, conceallevel = %d"):format(c.line, c.expected, c.level), function()
+    it(("`%s` = `%s`, conceallevel = %d , disable = %s"):format(c.line, c.expected, c.level, c.disable), function()
       vim.wo.concealcursor = "nvic"
       vim.wo.conceallevel = c.level
       vim.cmd(c.cmd)
       helper.set_lines(c.line)
 
       local row = 1
-      local conceal_line = require("reacher.model.conceal").ConcealLine.new(row)
+      local conceal_line = require("reacher.model.conceal").ConcealLine.new(row, c.disable)
       assert.equals(c.expected, conceal_line.str)
     end)
   end

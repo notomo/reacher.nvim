@@ -6,8 +6,13 @@ local ConcealLine = {}
 ConcealLine.__index = ConcealLine
 M.ConcealLine = ConcealLine
 
-function ConcealLine.new(row)
+function ConcealLine.new(row, disable)
   local line = vim.fn.getline(row)
+
+  if disable then
+    local tbl = {str = line, _offsets = {}}
+    return setmetatable(tbl, ConcealLine)
+  end
 
   local syn_conceals = vim.tbl_map(function(col)
     return vim.fn.synconcealed(row, col)
@@ -67,23 +72,25 @@ local Conceals = {}
 Conceals.__index = Conceals
 M.Conceals = Conceals
 
-function Conceals.new(bufnr, s, e, fillers)
+function Conceals.new(bufnr, s, e, fillers, old_mode)
   vim.validate({
     bufnr = {bufnr, "number"},
     s = {s, "number"},
     e = {e, "number"},
     fillers = {fillers, "table"},
+    old_mode = {old_mode, "table"},
   })
   local tbl = {_bufnr = bufnr, _conceals = {}, _lookup = {}, _first_row = s, _last_row = e}
   local self = setmetatable(tbl, Conceals)
 
-  if not vim.wo.conceallevel == 0 then
+  if vim.wo.conceallevel == 0 then
     return self
   end
 
+  local has_no_conceal_range = not old_mode:is_in(vim.wo.concealcursor)
   local row = s
   while row <= e do
-    local conceal = ConcealLine.new(row)
+    local conceal = ConcealLine.new(row, has_no_conceal_range and old_mode:in_range(row))
     self._lookup[row] = conceal
     table.insert(self._conceals, conceal)
     row = row + 1
