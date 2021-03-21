@@ -9,19 +9,13 @@ local Target = setmetatable({}, Position)
 Target.__index = Target
 M.Target = Target
 
-function Target.new(row, column, column_end, str, is_virtual, matches)
+function Target.new(row, column, column_end, str, is_virtual)
   vim.validate({
     str = {str, "string"},
     column_end = {column_end, "number"},
     is_virtual = {is_virtual, "boolean", true},
-    matches = {matches, "table", true},
   })
-  local tbl = {
-    str = str,
-    column_end = column_end,
-    _is_virtual = is_virtual or false,
-    _matches = matches or {},
-  }
+  local tbl = {str = str, column_end = column_end, _is_virtual = is_virtual or false}
   local position = Position.new(row, column)
   position.__index = position
   return setmetatable(tbl, setmetatable(position, Target))
@@ -31,17 +25,9 @@ function Target.new_virtual(row, column, str)
   return Target.new(row, column, column + #str - 1, str, true)
 end
 
-function Target.with(self, matches)
-  return Target.new(self.row, self.column, self.column_end, self.str, false, matches)
-end
-
 function Target.highlight(self, highlighter, hl_group)
-  if not self._is_virtual and #self._matches == 0 then
+  if not self._is_virtual then
     highlighter:add(hl_group, self.row - 1, self.column, self.column_end)
-  elseif not self._is_virtual then
-    for _, range in ipairs(self._matches) do
-      highlighter:add(hl_group, self.row - 1, self.column + range[1], self.column + range[2])
-    end
   else
     highlighter:add_virtual(hl_group, self.row - 1, self.column, self.column_end - 1, self.str)
   end
