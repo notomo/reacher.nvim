@@ -213,6 +213,58 @@ function Targets.previous_column(self)
   return Targets.new(self._targets, columns[1].index)
 end
 
+function Targets.side_next(self)
+  local current = self:current()
+  if not current then
+    return self
+  end
+
+  local columns = {}
+  for i, target in ipairs(self._targets) do
+    if target.column > current.column or (target.column == current.column and i > self._index) then
+      table.insert(columns, {index = i, column = target.column})
+    end
+  end
+
+  if #columns == 0 then
+    return self:first_column()
+  end
+
+  table.sort(columns, function(a, b)
+    if a.column ~= b.column then
+      return a.column < b.column
+    end
+    return a.index < b.index
+  end)
+  return Targets.new(self._targets, columns[1].index)
+end
+
+function Targets.side_previous(self)
+  local current = self:current()
+  if not current then
+    return self
+  end
+
+  local columns = {}
+  for i, target in ipairs(self._targets) do
+    if target.column < current.column or (target.column == current.column and i < self._index) then
+      table.insert(columns, {index = i, column = target.column})
+    end
+  end
+
+  if #columns == 0 then
+    return self:last_column()
+  end
+
+  table.sort(columns, function(a, b)
+    if a.column ~= b.column then
+      return a.column > b.column
+    end
+    return a.index > b.index
+  end)
+  return Targets.new(self._targets, columns[1].index)
+end
+
 function Targets.match(self, position)
   local current_target = self:current()
   if not current_target then

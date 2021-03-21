@@ -46,6 +46,14 @@ function M.previous_column()
   Command.new("move_cursor", "previous_column")
 end
 
+function M.side_next()
+  Command.new("move_cursor", "side_next")
+end
+
+function M.side_previous()
+  Command.new("move_cursor", "side_previous")
+end
+
 function M.forward_history()
   Command.new("recall_history", 1)
 end
