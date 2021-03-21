@@ -44,7 +44,7 @@ function Collector._collect(self, input_line)
 
   local targets = {}
   for row, line in ipairs(self._raw_lines) do
-    targets = vim.list_extend(targets, self._translator:to_targets_from_str(line.str, row, 0, input_line))
+    targets = vim.list_extend(targets, self._translator:to_targets_from_str(line.str, row, line.column_offset, input_line))
   end
   return targets
 end

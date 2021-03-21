@@ -6,59 +6,54 @@ M.ColumnRange = ColumnRange
 
 function ColumnRange.new(str, virtual_s, virtual_e)
   local trimmed = str
-  local matched, s, e = unpack(vim.fn.matchstrpos(str, "\\%>" .. virtual_s .. "v.*\\%<" .. virtual_e .. "v"))
+  local _, s, e = unpack(vim.fn.matchstrpos(str, "\\%>" .. virtual_s .. "v.*\\%<" .. virtual_e .. "v"))
   if s == e then
-    return nil
+    return ColumnRange.new_default("")
   end
-  trimmed = matched
+  trimmed = str:sub(1, e)
 
-  local s_matched = unpack(vim.fn.matchstrpos(str, "\\%" .. virtual_s + 1 .. "v."))
-  if s_matched == "" then
-    trimmed = " " .. matched
-    s = s - 1
-  end
+  local tbl = {str = trimmed, s = s}
+  return setmetatable(tbl, ColumnRange)
+end
 
-  local tbl = {str = trimmed, s = s, e = e}
+function ColumnRange.new_default(str)
+  local tbl = {str = str, s = 0}
   return setmetatable(tbl, ColumnRange)
 end
 
 local ColumnRanges = {}
+ColumnRanges.__index = ColumnRanges
 M.ColumnRanges = ColumnRanges
 
-function ColumnRanges.new(strs, virtual_s, virtual_e, wrap)
+function ColumnRanges.new(line_strs, virtual_s, virtual_e, wrap)
   vim.validate({
-    strs = {strs, "table"},
+    line_strs = {line_strs, "table"},
     virtual_s = {virtual_s, "number"},
     virtual_e = {virtual_e, "number"},
     wrap = {wrap, "boolean"},
   })
 
-  local tbl = {_column_ranges = {}, strs = vim.deepcopy(strs)}
+  local tbl = {_column_ranges = {}}
   local self = setmetatable(tbl, ColumnRanges)
 
+  local strs = vim.deepcopy(line_strs)
   if wrap then
+    self._column_ranges = vim.tbl_map(function(str)
+      return ColumnRange.new_default(str)
+    end, strs)
     return self
   end
 
   local vs = virtual_s - 1
   local ve = virtual_e + 2
-  for row, str in ipairs(strs) do
-    local column_range = ColumnRange.new(str, vs, ve)
-    if column_range then
-      self._column_ranges[row] = ColumnRange.new(str, vs, ve)
-      self.strs[row] = column_range.str
-    else
-      self.strs[row] = ""
-    end
+  for _, str in ipairs(strs) do
+    table.insert(self._column_ranges, ColumnRange.new(str, vs, ve))
   end
   return self
 end
 
-function ColumnRanges.__index(self, k)
-  if type(k) == "number" then
-    return self._column_ranges[k]
-  end
-  return ColumnRanges[k]
+function ColumnRanges.iter(self)
+  return ipairs(self._column_ranges)
 end
 
 return M

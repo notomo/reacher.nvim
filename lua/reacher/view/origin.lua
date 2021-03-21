@@ -64,7 +64,7 @@ function Origin.new(old_mode, bufnr, row_range)
 
   local row_offset = first_row - 1
   local cursor_row = cursor.row + fillers:offset(cursor.row) - row_offset
-  local corsor_column = cursor.column - lines:column_offset(cursor_row) - conceals:offset_from_origin(cursor.row, cursor.column + 1)
+  local corsor_column = cursor.column - conceals:offset_from_origin(cursor.row, cursor.column + 1)
   local cursor_pos = Position.new(cursor_row, corsor_column)
   local tbl = {
     window_id = window_id,
@@ -136,7 +136,7 @@ function Origin.jump(self, row, column, mode)
   if mode == "n" then
     insert_offset = 0
   end
-  column = column + self.lines:column_offset(row) + insert_offset
+  column = column + insert_offset
   local origin_column = column + self._conceals:offset(origin_row, column)
 
   windowlib.jump(self.window_id, origin_row, origin_column)

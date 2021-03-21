@@ -57,7 +57,7 @@ function Fillers.add_to(self, lines)
   for _, filler in ipairs(vim.fn.reverse(self._fillers)) do
     for _ = 1, filler.diff_count, 1 do
       local i = filler.row - self._first_row + 1
-      table.insert(lines, i, Line.new(""))
+      table.insert(lines, i, Line.new("", 0))
     end
   end
   return lines

@@ -8,9 +8,9 @@ local Line = {}
 Line.__index = Line
 M.Line = Line
 
-function Line.new(str)
-  vim.validate({str = {str, "string"}})
-  local tbl = {str = str}
+function Line.new(str, column_offset)
+  vim.validate({str = {str, "string"}, column_offset = {column_offset, "number"}})
+  local tbl = {str = str, column_offset = column_offset}
   return setmetatable(tbl, Line)
 end
 
@@ -21,13 +21,13 @@ function Lines.new(first_column, last_column, conceals, folds, fillers, wrap)
   local lines = {}
 
   local column_ranges = ColumnRanges.new(conceals:lines(), first_column, last_column, wrap)
-  for _, str in ipairs(column_ranges.strs) do
-    table.insert(lines, Line.new(str))
+  for _, range in column_ranges:iter() do
+    table.insert(lines, Line.new(range.str, range.s))
   end
   lines = fillers:add_to(lines)
   lines = folds:apply_to(lines)
 
-  local tbl = {_lines = lines, _folds = folds, _column_ranges = column_ranges}
+  local tbl = {_lines = lines, _folds = folds, _first_column = first_column}
   return setmetatable(tbl, Lines)
 end
 
@@ -44,15 +44,11 @@ function Lines.copy_to(self, bufnr)
     return line.str
   end, self._lines))
   self._folds:execute()
-end
-
-function Lines.column_offset(self, row)
-  local column_range = self._column_ranges[row] or {s = 0}
-  return column_range.s
+  vim.fn.winrestview({leftcol = self._first_column - 1})
 end
 
 function Lines.iter(self)
-  return next, self._lines, nil
+  return ipairs(self._lines)
 end
 
 return M
