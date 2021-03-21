@@ -162,8 +162,14 @@ function Targets.next_column(self)
       table.insert(columns, {index = i, column = target.column})
     end
   end
+
   if #columns == 0 then
-    return self:first_column()
+    local first_targets = self:first_column()
+    local next_targets = self:next()
+    if first_targets:current().column == next_targets:current().column then
+      return next_targets
+    end
+    return first_targets
   end
 
   table.sort(columns, function(a, b)
@@ -188,8 +194,14 @@ function Targets.previous_column(self)
       table.insert(columns, {index = i, column = target.column})
     end
   end
+
   if #columns == 0 then
-    return self:last_column()
+    local last_targets = self:last_column()
+    local previous_targets = self:previous()
+    if last_targets:current().column == previous_targets:current().column then
+      return previous_targets
+    end
+    return last_targets
   end
 
   table.sort(columns, function(a, b)
