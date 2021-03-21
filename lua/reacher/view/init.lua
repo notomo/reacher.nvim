@@ -85,8 +85,8 @@ function View.finish(self)
   end
 end
 
-function View.move(self, name)
-  self._overlay[name](self._overlay)
+function View.move_cursor(self, action_name)
+  self._overlay:move_cursor(action_name)
 end
 
 function View.get(id)

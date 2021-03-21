@@ -42,7 +42,7 @@ function Command.start(raw_opts)
   return View.open(matcher, opts)
 end
 
-function Command.move(action_name)
+function Command.move_cursor(action_name)
   vim.validate({action_name = {action_name, "string"}})
 
   local view = View.current()
@@ -50,7 +50,7 @@ function Command.move(action_name)
     return IsNotStartedErr
   end
 
-  view:move(action_name)
+  view:move_cursor(action_name)
 end
 
 function Command.finish()

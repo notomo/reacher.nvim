@@ -67,36 +67,9 @@ function Overlay.finish(self)
   end
 end
 
-function Overlay.first(self)
-  self:_update_cursor(self._targets:first())
-end
-
-function Overlay.next(self)
-  self:_update_cursor(self._targets:next())
-end
-
-function Overlay.next_line(self)
-  self:_update_cursor(self._targets:next_line())
-end
-
-function Overlay.previous(self)
-  self:_update_cursor(self._targets:previous())
-end
-
-function Overlay.previous_line(self)
-  self:_update_cursor(self._targets:previous_line())
-end
-
-function Overlay.last(self)
-  self:_update_cursor(self._targets:last())
-end
-
-function Overlay.first_column(self)
-  self:_update_cursor(self._targets:first_column())
-end
-
-function Overlay.last_column(self)
-  self:_update_cursor(self._targets:last_column())
+function Overlay.move_cursor(self, action_name)
+  local targets = self._targets[action_name](self._targets)
+  self:_update_cursor(targets)
 end
 
 function Overlay._update_cursor(self, targets)
