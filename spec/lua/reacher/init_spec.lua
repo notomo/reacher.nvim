@@ -222,6 +222,50 @@ describe("reacher.last()", function()
 
 end)
 
+describe("reacher.first_column()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("moves the cursor to the first column match", function()
+    helper.set_lines([[
+        hoge_a
+          hoge_b
+  hoge_c
+      hoge_d
+]])
+
+    reacher.start({input = "hoge"})
+    reacher.first_column()
+    reacher.finish()
+
+    assert.cursor_word("hoge_c")
+  end)
+
+end)
+
+describe("reacher.last_column()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("moves the cursor to the last column match", function()
+    helper.set_lines([[
+        hoge_a
+          hoge_b
+  hoge_c
+      hoge_d
+]])
+
+    reacher.start({input = "hoge"})
+    reacher.last_column()
+    reacher.finish()
+
+    assert.cursor_word("hoge_b")
+  end)
+
+end)
+
 describe("reacher.cancel()", function()
 
   before_each(helper.before_each)

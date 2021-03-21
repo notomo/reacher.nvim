@@ -30,6 +30,14 @@ function M.last()
   Command.new("move", "last")
 end
 
+function M.first_column()
+  Command.new("move", "first_column")
+end
+
+function M.last_column()
+  Command.new("move", "last_column")
+end
+
 function M.forward_history()
   Command.new("recall_history", 1)
 end

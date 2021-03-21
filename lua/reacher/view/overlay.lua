@@ -91,6 +91,14 @@ function Overlay.last(self)
   self:_update_cursor(self._targets:last())
 end
 
+function Overlay.first_column(self)
+  self:_update_cursor(self._targets:first_column())
+end
+
+function Overlay.last_column(self)
+  self:_update_cursor(self._targets:last_column())
+end
+
 function Overlay._update_cursor(self, targets)
   local highlighter = self._cursor_highlight:reset()
 

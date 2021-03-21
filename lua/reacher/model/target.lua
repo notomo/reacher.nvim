@@ -77,7 +77,7 @@ end
 function Targets.previous_line(self)
   local target = self:current()
   if not target then
-    return nil
+    return self
   end
   local targets = listlib.reverse(vim.list_slice(self._targets, 1, self._index - 1))
   for i, t in ipairs(targets) do
@@ -100,7 +100,7 @@ end
 function Targets.next_line(self)
   local target = self:current()
   if not target then
-    return nil
+    return self
   end
   local targets = vim.list_slice(self._targets, self._index + 1)
   for i, t in ipairs(targets) do
@@ -117,6 +117,36 @@ end
 
 function Targets.last(self)
   return Targets.new(self._targets, #self._targets)
+end
+
+function Targets.first_column(self)
+  if not self:current() then
+    return self
+  end
+  local min = self._targets[1].column
+  local index = 1
+  for i, target in ipairs(self._targets) do
+    if target.column < min then
+      min = target.column
+      index = i
+    end
+  end
+  return Targets.new(self._targets, index)
+end
+
+function Targets.last_column(self)
+  if not self:current() then
+    return self
+  end
+  local max = self._targets[1].column
+  local index = 1
+  for i, target in ipairs(self._targets) do
+    if target.column > max then
+      max = target.column
+      index = i
+    end
+  end
+  return Targets.new(self._targets, index)
 end
 
 function Targets.match(self, position)

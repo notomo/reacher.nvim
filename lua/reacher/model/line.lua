@@ -1,4 +1,3 @@
-local Position = require("reacher.model.position").Position
 local ColumnRanges = require("reacher.model.column_range").ColumnRanges
 
 local vim = vim
