@@ -8,16 +8,17 @@ local Fillers = {}
 Fillers.__index = Fillers
 M.Fillers = Fillers
 
-function Fillers.new(s, e)
-  vim.validate({s = {s, "number"}, e = {e, "number"}})
-  local tbl = {_fillers = {}, _first_row = s, _offsets = {}}
+function Fillers.new(first_row, last_row)
+  vim.validate({first_row = {first_row, "number"}, last_row = {last_row, "number"}})
+  local tbl = {_fillers = {}, _first_row = first_row, _offsets = {}}
   local self = setmetatable(tbl, Fillers)
 
   if not vim.wo.diff then
     return self
   end
 
-  for row = s, e, 1 do
+  -- NOTE: fillers on first_row is not between first_row and last_row
+  for row = first_row + 1, last_row, 1 do
     local diff_count = vim.fn.diff_filler(row)
     if diff_count ~= 0 then
       table.insert(self._fillers, {row = row, diff_count = diff_count})

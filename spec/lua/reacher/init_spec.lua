@@ -939,6 +939,34 @@ buz
     assert.current_line("buz")
   end)
 
+  it("ignores diff fillers above the first row", function()
+    vim.bo.buftype = "nofile"
+    helper.set_lines(vim.fn["repeat"]("deleted\n", 50) .. [[
+hoge
+foo
+bar
+]])
+    vim.bo.buftype = "nofile"
+    vim.cmd("diffthis")
+
+    vim.cmd("vnew")
+    helper.set_lines([[
+hoge
+foo
+bar
+]])
+    vim.bo.buftype = "nofile"
+    vim.cmd("diffthis")
+    vim.cmd("normal! G")
+    vim.cmd("normal! gg")
+
+    reacher.start()
+    helper.input("bar")
+    reacher.finish()
+
+    assert.current_line("bar")
+  end)
+
   it("shows concealed texts", function()
     vim.wo.conceallevel = 3
     vim.wo.concealcursor = "nvic"

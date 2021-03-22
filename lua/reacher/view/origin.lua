@@ -145,7 +145,7 @@ end
 
 -- HACK
 function M._view_position(first_row, last_row, given_range)
-  if not given_range then
+  if not given_range and not vim.wo.diff then
     return 1, vim.api.nvim_win_get_height(0)
   end
 
