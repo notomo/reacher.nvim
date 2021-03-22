@@ -33,7 +33,8 @@ function Translator.to_targets_from_position(self, str, row, column)
   if matched then
     return {Target.new(row, s, e, matched)}
   end
-  return {Target.new_virtual(row, column, " ")}
+  -- NOTE: for empty line
+  return {Target.new_virtual(row, 0, " ")}
 end
 
 return M
