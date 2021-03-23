@@ -6,6 +6,8 @@ function M.before_each()
   vim.cmd("set wrap")
   vim.o.ignorecase = false
   vim.o.smartcase = false
+  vim.o.lines = 24
+  vim.o.columns = 80
   require("reacher.lib.module").cleanup()
   vim.cmd("filetype on")
   vim.cmd("syntax enable")
