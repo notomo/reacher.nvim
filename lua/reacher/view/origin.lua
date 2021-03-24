@@ -13,6 +13,10 @@ Origin.__index = Origin
 M.Origin = Origin
 
 function Origin.new(old_mode, bufnr, row_range)
+  if vim.wo.rightleft then
+    return nil, "`rightleft` is not supported"
+  end
+
   local first_row = row_range:first()
   local last_row = row_range:last()
   local win_first_row, height = M._view_position(first_row, last_row, row_range.given_range)

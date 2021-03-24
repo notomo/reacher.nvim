@@ -773,6 +773,12 @@ hogeb
     assert.window_count(3)
   end)
 
+  it("shows error if `rightleft`", function()
+    vim.cmd("setlocal rightleft")
+    reacher.start()
+    assert.exists_message("`rightleft` is not supported")
+  end)
+
 end)
 
 describe("reacher.nvim inputter", function()

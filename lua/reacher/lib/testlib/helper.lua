@@ -4,6 +4,7 @@ M.root = require("reacher.lib.path").find_root()
 
 function M.before_each()
   vim.cmd("set wrap")
+  vim.cmd("set norightleft")
   vim.o.ignorecase = false
   vim.o.smartcase = false
   vim.o.lines = 24
