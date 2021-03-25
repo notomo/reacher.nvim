@@ -26,7 +26,10 @@ function Command.new(name, ...)
 end
 
 function Command.start(raw_opts)
-  vim.validate({raw_opts = {raw_opts, "table", true}})
+  local msg = messagelib.validate({opts = {raw_opts, "table", true}})
+  if msg then
+    return msg
+  end
 
   local old = View.current()
   if old ~= nil then

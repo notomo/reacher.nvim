@@ -779,6 +779,11 @@ hogeb
     assert.exists_message("`rightleft` is not supported")
   end)
 
+  it("shows error if opts is invalid", function()
+    reacher.start("invalid_opts")
+    assert.exists_message([[opts: expected table, got string: "invalid_opts"]])
+  end)
+
 end)
 
 describe("reacher.nvim inputter", function()
