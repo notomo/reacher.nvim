@@ -60,45 +60,9 @@ function Targets.previous(self)
   return Targets.new(self._targets, index)
 end
 
-function Targets.previous_line(self)
-  local target = self:current()
-  if not target then
-    return self
-  end
-  local targets = listlib.reverse(vim.list_slice(self._targets, 1, self._index - 1))
-  for i, t in ipairs(targets) do
-    if t.row < target.row then
-      return Targets.new(self._targets, #targets - i + 1)
-    end
-  end
-  local last_targets = self:last()
-  if last_targets:current().row == target.row then
-    return self:previous()
-  end
-  return last_targets
-end
-
 function Targets.next(self)
   local index = (self._index % #self._targets) + 1
   return Targets.new(self._targets, index)
-end
-
-function Targets.next_line(self)
-  local target = self:current()
-  if not target then
-    return self
-  end
-  local targets = vim.list_slice(self._targets, self._index + 1)
-  for i, t in ipairs(targets) do
-    if t.row > target.row then
-      return Targets.new(self._targets, i + self._index)
-    end
-  end
-  local first_targets = self:first()
-  if first_targets:current().row == target.row then
-    return self:next()
-  end
-  return first_targets
 end
 
 function Targets.last(self)
@@ -133,70 +97,6 @@ function Targets.last_column(self)
     end
   end
   return Targets.new(self._targets, index)
-end
-
-function Targets.next_column(self)
-  local current = self:current()
-  if not current then
-    return self
-  end
-
-  local columns = {}
-  local current_column = current.column
-  for i, target in ipairs(self._targets) do
-    if target.column > current_column then
-      table.insert(columns, {index = i, column = target.column})
-    end
-  end
-
-  if #columns == 0 then
-    local first_targets = self:first_column()
-    local next_targets = self:next()
-    if first_targets:current().column == next_targets:current().column then
-      return next_targets
-    end
-    return first_targets
-  end
-
-  table.sort(columns, function(a, b)
-    if a.column ~= b.column then
-      return a.column < b.column
-    end
-    return a.index < b.index
-  end)
-  return Targets.new(self._targets, columns[1].index)
-end
-
-function Targets.previous_column(self)
-  local current = self:current()
-  if not current then
-    return self
-  end
-
-  local columns = {}
-  local current_column = current.column
-  for i, target in ipairs(self._targets) do
-    if target.column < current_column then
-      table.insert(columns, {index = i, column = target.column})
-    end
-  end
-
-  if #columns == 0 then
-    local last_targets = self:last_column()
-    local previous_targets = self:previous()
-    if last_targets:current().column == previous_targets:current().column then
-      return previous_targets
-    end
-    return last_targets
-  end
-
-  table.sort(columns, function(a, b)
-    if a.column ~= b.column then
-      return a.column > b.column
-    end
-    return a.index < b.index
-  end)
-  return Targets.new(self._targets, columns[1].index)
 end
 
 function Targets.side_next(self)

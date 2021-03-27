@@ -41,54 +41,6 @@ describe("reacher.next()", function()
 
 end)
 
-describe("reacher.next_line()", function()
-
-  before_each(helper.before_each)
-  after_each(helper.after_each)
-
-  it("moves the cursor to the next line match", function()
-    helper.set_lines([[
-    hoge_a hoge_b
-    hoge_c hoge_d
-    hoge_e
-]])
-
-    reacher.start({input = "hoge"})
-    reacher.next_line()
-    reacher.finish()
-
-    assert.cursor_word("hoge_c")
-  end)
-
-  it("moves the cursor to the wrapped next line match", function()
-    helper.set_lines([[
-    hoge_a hoge_b
-    hoge_c hoge_d
-    hoge_e
-]])
-    helper.search("hoge_e")
-
-    reacher.start({input = "hoge"})
-    reacher.next_line()
-    reacher.finish()
-
-    assert.cursor_word("hoge_a")
-  end)
-
-  it("moves the cursor to the next match if there is no next line", function()
-    helper.set_lines([[
-    hoge_a hoge_b hoge_c
-]])
-
-    reacher.start({input = "hoge"})
-    reacher.next_line()
-    reacher.finish()
-
-    assert.cursor_word("hoge_b")
-  end)
-
-end)
-
 describe("reacher.previous()", function()
 
   before_each(helper.before_each)
@@ -121,55 +73,6 @@ describe("reacher.previous()", function()
     reacher.finish()
 
     assert.cursor_word("hoge_c")
-  end)
-
-end)
-
-describe("reacher.previous_line()", function()
-
-  before_each(helper.before_each)
-  after_each(helper.after_each)
-
-  it("moves the cursor to the previous line match", function()
-    helper.set_lines([[
-    hoge_a hoge_b
-    hoge_c hoge_d
-    hoge_e
-]])
-    helper.search("hoge_d")
-
-    reacher.start({input = "hoge"})
-    reacher.previous_line()
-    reacher.finish()
-
-    assert.cursor_word("hoge_b")
-  end)
-
-  it("moves the cursor to the wrapped previous line match", function()
-    helper.set_lines([[
-    hoge_a hoge_b
-    hoge_c hoge_d
-    hoge_e hoge_f
-]])
-
-    reacher.start({input = "hoge"})
-    reacher.previous_line()
-    reacher.finish()
-
-    assert.cursor_word("hoge_f")
-  end)
-
-  it("moves the cursor to the previous match if there is no previous line", function()
-    helper.set_lines([[
-    hoge_a hoge_b hoge_c
-]])
-    helper.search("hoge_b")
-
-    reacher.start({input = "hoge"})
-    reacher.previous_line()
-    reacher.finish()
-
-    assert.cursor_word("hoge_a")
   end)
 
 end)
@@ -259,82 +162,6 @@ describe("reacher.last_column()", function()
 
     reacher.start({input = "hoge"})
     reacher.last_column()
-    reacher.finish()
-
-    assert.cursor_word("hoge_b")
-  end)
-
-end)
-
-describe("reacher.next_column()", function()
-
-  before_each(helper.before_each)
-  after_each(helper.after_each)
-
-  it("moves the cursor to the next column match", function()
-    helper.set_lines([[
-hoge_a
-          hoge_b
-  hoge_c
-      hoge_d
-]])
-
-    reacher.start({input = "hoge"})
-    reacher.next_column()
-    reacher.finish()
-
-    assert.cursor_word("hoge_c")
-  end)
-
-  it("moves the cursor to the wrapped next column match", function()
-    helper.set_lines([[
-hoge_a
-          hoge_b
-  hoge_c
-      hoge_d
-]])
-    helper.search("hoge_b")
-
-    reacher.start({input = "hoge"})
-    reacher.next_column()
-    reacher.finish()
-
-    assert.cursor_word("hoge_a")
-  end)
-
-end)
-
-describe("reacher.previous_column()", function()
-
-  before_each(helper.before_each)
-  after_each(helper.after_each)
-
-  it("moves the cursor to the previous column match", function()
-    helper.set_lines([[
-    hoge_a
-          hoge_b
-  hoge_c
-      hoge_d
-]])
-
-    reacher.start({input = "hoge"})
-    reacher.previous_column()
-    reacher.finish()
-
-    assert.cursor_word("hoge_c")
-  end)
-
-  it("moves the cursor to the wrapped previous column match", function()
-    helper.set_lines([[
-    hoge_a
-          hoge_b
-  hoge_c
-      hoge_d
-]])
-    helper.search("hoge_c")
-
-    reacher.start({input = "hoge"})
-    reacher.previous_column()
     reacher.finish()
 
     assert.cursor_word("hoge_b")
