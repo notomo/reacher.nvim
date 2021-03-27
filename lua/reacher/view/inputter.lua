@@ -10,6 +10,23 @@ local Inputter = {}
 Inputter.__index = Inputter
 M.Inputter = Inputter
 
+Inputter.key_mapping_script = [[
+inoremap <buffer> <C-n> <Cmd>lua require("reacher").forward_history()<CR>
+inoremap <buffer> <C-p> <Cmd>lua require("reacher").backward_history()<CR>
+inoremap <buffer> <CR> <Cmd>lua require("reacher").finish()<CR>
+inoremap <buffer> <ESC> <Cmd>lua require("reacher").cancel()<CR>
+inoremap <buffer> <Tab> <Cmd>lua require("reacher").next()<CR>
+inoremap <buffer> <S-Tab> <Cmd>lua require("reacher").previous()<CR>
+
+nnoremap <nowait> <buffer> <ESC> <Cmd>lua require("reacher").cancel()<CR>
+nnoremap <buffer> gg <Cmd>lua require("reacher").first()<CR>
+nnoremap <buffer> G <Cmd>lua require("reacher").last()<CR>
+nnoremap <buffer> h <Cmd>lua require("reacher").side_previous()<CR>
+nnoremap <buffer> j <Cmd>lua require("reacher").next()<CR>
+nnoremap <buffer> k <Cmd>lua require("reacher").previous()<CR>
+nnoremap <buffer> l <Cmd>lua require("reacher").side_next()<CR>
+nnoremap <buffer> <CR> <Cmd>lua require("reacher").finish()<CR>]]
+
 function Inputter.open(callback, default_input)
   vim.validate({callback = {callback, "function"}, default_input = {default_input, "string", true}})
   default_input = default_input or ""
@@ -29,6 +46,7 @@ function Inputter.open(callback, default_input)
   if old ~= -1 then
     vim.api.nvim_buf_delete(old, {force = true})
   end
+  vim.api.nvim_exec(Inputter.key_mapping_script, false)
   vim.api.nvim_buf_set_name(bufnr, "reacher://REACHER")
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].filetype = "reacher"
