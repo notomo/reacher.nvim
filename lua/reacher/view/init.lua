@@ -47,6 +47,8 @@ function View.save_history(self, ...)
 end
 
 function View.close(self, is_cancel)
+  self._closed = true
+
   self._inputter:close(is_cancel)
   self._overlay:close()
 
@@ -58,14 +60,13 @@ function View.cancel(self)
   if self._closed then
     return
   end
-  self._closed = true
 
   self:save_history()
   self:close(true)
 
   if self._was_visual_mode then
     local mode = vim.api.nvim_get_mode().mode
-    modelib.restore_visual_mode(mode)
+    modelib.restore_visual_mode(true, mode)
   end
 end
 
@@ -77,7 +78,7 @@ function View.finish(self)
   self:close(is_cancel)
 
   if self._was_visual_mode then
-    modelib.restore_visual_mode()
+    modelib.restore_visual_mode(is_cancel)
   end
 
   if jump ~= nil then
