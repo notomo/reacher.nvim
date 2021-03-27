@@ -9,3 +9,8 @@ diff_screenshot:
 	cat ${RESULT_DIR}/replay.vim
 	test ! -s ${RESULT_DIR}/replay.vim
 .PHONY: diff_screenshot
+
+doc:
+	nvim --headless -i NONE -n +"lua dofile('./spec/lua/reacher/doc.lua')" +"quitall!"
+	cat ./doc/reacher.nvim.txt
+.PHONY: doc

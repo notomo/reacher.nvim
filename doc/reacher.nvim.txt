@@ -1,0 +1,81 @@
+*reacher.nvim.txt*
+
+==============================================================================
+Lua module: reacher                                     *reacher.nvim-reacher*
+
+start({opts})                                                *reacher.start()*
+  Start reacher mode.
+
+  Parameters: ~
+    {opts} (table) default {input = ""}
+
+first()                                                      *reacher.first()*
+  Move cursor to the first target.
+
+next()                                                        *reacher.next()*
+  Move cursor to the next target.
+
+previous()                                                *reacher.previous()*
+  Move cursor to the previous target.
+
+last()                                                        *reacher.last()*
+  Move cursor to the last target.
+
+first_column()                                        *reacher.first_column()*
+  Move cursor to the target in the first column.
+
+last_column()                                          *reacher.last_column()*
+  Move cursor to the target in the last column.
+
+side_next()                                              *reacher.side_next()*
+  Move cursor to the target in the side next.
+
+side_previous()                                      *reacher.side_previous()*
+  Move cursor to the target in the side previous.
+
+forward_history()                                  *reacher.forward_history()*
+  Recall the forward search history.
+
+backward_history()                                *reacher.backward_history()*
+  Recall the backword search history.
+
+finish()                                                    *reacher.finish()*
+  Finish reacher mode and jump to the current target.
+
+cancel()                                                    *reacher.cancel()*
+  Quit reacher mode.
+
+==============================================================================
+USAGE                                                     *reacher.nvim-USAGE*
+
+>
+  nnoremap gs <Cmd>lua require("reacher").start()<CR>
+  xnoremap gs <Cmd>lua require("reacher").start()<CR>
+
+  augroup reacher_setting
+    autocmd!
+    autocmd Filetype reacher call s:reacher()
+  augroup END
+  function! s:reacher() abort
+    " default mappings
+
+    inoremap <buffer> <C-n> <Cmd>lua require("reacher").forward_history()<CR>
+    inoremap <buffer> <C-p> <Cmd>lua require("reacher").backward_history()<CR>
+    inoremap <buffer> <CR> <Cmd>lua require("reacher").finish()<CR>
+    inoremap <buffer> <ESC> <Cmd>lua require("reacher").cancel()<CR>
+    inoremap <buffer> <Tab> <Cmd>lua require("reacher").next()<CR>
+    inoremap <buffer> <S-Tab> <Cmd>lua require("reacher").previous()<CR>
+
+    nnoremap <nowait> <buffer> <ESC> <Cmd>lua require("reacher").cancel()<CR>
+    nnoremap <buffer> gg <Cmd>lua require("reacher").first()<CR>
+    nnoremap <buffer> G <Cmd>lua require("reacher").last()<CR>
+    nnoremap <buffer> h <Cmd>lua require("reacher").side_previous()<CR>
+    nnoremap <buffer> j <Cmd>lua require("reacher").next()<CR>
+    nnoremap <buffer> k <Cmd>lua require("reacher").previous()<CR>
+    nnoremap <buffer> l <Cmd>lua require("reacher").side_next()<CR>
+    nnoremap <buffer> <CR> <Cmd>lua require("reacher").finish()<CR>
+  endfunction
+<
+
+==============================================================================
+vim:tw=78:ts=8:ft=help
