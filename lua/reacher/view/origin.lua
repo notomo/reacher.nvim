@@ -134,7 +134,8 @@ function Origin.enter(self)
 end
 
 function Origin.jump(self, row, column, mode)
-  local origin_row = row + self._row_offset - self._fillers:offset_from_origin(row)
+  row = row + self._row_offset
+  local origin_row = row - self._fillers:offset_from_origin(row)
 
   local insert_offset = 1 -- for stopinsert
   if mode == "n" then
