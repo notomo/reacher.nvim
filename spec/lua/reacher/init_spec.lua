@@ -156,15 +156,16 @@ describe("reacher.last_column()", function()
     helper.set_lines([[
         hoge_a
           hoge_b
-  hoge_c
-      hoge_d
+          hoge_c
+  hoge_d
+      hoge_e
 ]])
 
     reacher.start({input = "hoge"})
     reacher.last_column()
     reacher.finish()
 
-    assert.cursor_word("hoge_b")
+    assert.cursor_word("hoge_c")
   end)
 
 end)

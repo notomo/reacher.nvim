@@ -90,10 +90,10 @@ function Targets.last_column(self)
   end
   local max = self._targets[1].column
   local index = 1
-  for i, target in ipairs(self._targets) do
+  for i, target in ipairs(listlib.reverse(self._targets)) do
     if target.column > max then
       max = target.column
-      index = i
+      index = #self._targets - i + 1
     end
   end
   return Targets.new(self._targets, index)
