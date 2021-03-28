@@ -2,6 +2,8 @@
 
 This plugin introduces displayed range search buffer.
 
+<img src="https://raw.github.com/wiki/notomo/reacher.nvim/image/demo.gif" width="1280">
+
 ## Usage
 
 ```vim
