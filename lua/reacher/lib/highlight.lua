@@ -58,11 +58,13 @@ function M.set_background(name, window_id, opts)
 end
 
 function M.link(from, to, force)
-  local cmd = "highlight default"
+  local hl = "highlight default"
   if force then
-    cmd = "highlight!"
+    hl = "highlight!"
   end
-  vim.cmd(("%s link %s %s"):format(cmd, from, to))
+  local cmd = ("%s link %s %s"):format(hl, from, to)
+  vim.cmd(cmd)
+  return cmd
 end
 
 return M

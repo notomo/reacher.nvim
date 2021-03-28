@@ -39,4 +39,9 @@ function! s:reacher() abort
   nnoremap <buffer> l <Cmd>lua require("reacher").side_next()<CR>
   nnoremap <buffer> h <Cmd>lua require("reacher").side_previous()<CR>
 endfunction
+
+" default highlight groups
+highlight default link ReacherMatch Directory
+highlight default link ReacherCurrentMatchInsert IncSearch
+highlight default link ReacherCurrentMatchNormal Search
 ```

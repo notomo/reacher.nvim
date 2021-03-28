@@ -83,8 +83,10 @@ function Overlay._update_cursor(self, targets)
   target:highlight(highlighter, "ReacherCurrentMatch")
 end
 
-highlightlib.link("ReacherMatch", "Directory")
-highlightlib.link("ReacherCurrentMatchInsert", "IncSearch")
-highlightlib.link("ReacherCurrentMatchNormal", "Search")
+Overlay.hl_group_script = table.concat({
+  highlightlib.link("ReacherMatch", "Directory"),
+  highlightlib.link("ReacherCurrentMatchInsert", "IncSearch"),
+  highlightlib.link("ReacherCurrentMatchNormal", "Search"),
+}, "\n")
 
 return M

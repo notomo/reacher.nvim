@@ -16,3 +16,6 @@ function! s:reacher() abort
 
   " {mappings}
 endfunction
+
+" default highlight groups
+" {hl_groups}
