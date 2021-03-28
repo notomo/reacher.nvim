@@ -13,4 +13,5 @@ diff_screenshot:
 doc:
 	nvim --headless -i NONE -n +"lua dofile('./spec/lua/reacher/doc.lua')" +"quitall!"
 	cat ./doc/reacher.nvim.txt
+	cat ./README.md
 .PHONY: doc

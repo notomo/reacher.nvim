@@ -3,7 +3,7 @@ local Command = require("reacher.command").Command
 local reacher = {}
 
 ---Start reacher mode.
----@param opts table: default {input = ""}
+---@param opts table: default {input = "", first_row = nil, last_row = nil}
 function reacher.start(opts)
   Command.new("start", opts)
 end

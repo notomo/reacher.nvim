@@ -25,3 +25,27 @@ require("genvdoc").generate("reacher.nvim", {
     },
   },
 })
+
+local gen_readme = function()
+  local f = io.open(usage_path, "r")
+  local usage = f:read("*a")
+  local mappings = require("reacher.view.inputter").Inputter.key_mapping_script
+  local indented = require("genvdoc.util").indent(mappings, 2)
+  local body = usage:gsub([[  " {mappings}]], indented)
+  f:close()
+
+  local content = ([[
+# reacher.nvim
+
+This plugin introduces displayed range search buffer.
+
+## Usage
+
+```vim
+%s```]]):format(body)
+
+  local readme = io.open("README.md", "w")
+  readme:write(content)
+  readme:close()
+end
+gen_readme()
