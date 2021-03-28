@@ -9,20 +9,26 @@ local Target = setmetatable({}, Position)
 Target.__index = Target
 M.Target = Target
 
-function Target.new(row, column, column_end, str, is_virtual)
+function Target.new(row, column, column_end, display_column, str, is_virtual)
   vim.validate({
     str = {str, "string"},
     column_end = {column_end, "number"},
+    display_column = {display_column, "number"},
     is_virtual = {is_virtual, "boolean", true},
   })
-  local tbl = {str = str, column_end = column_end, _is_virtual = is_virtual or false}
+  local tbl = {
+    str = str,
+    column_end = column_end,
+    display_column = display_column,
+    _is_virtual = is_virtual or false,
+  }
   local position = Position.new(row, column)
   position.__index = position
   return setmetatable(tbl, setmetatable(position, Target))
 end
 
 function Target.new_virtual(row, column, str)
-  return Target.new(row, column, column + #str - 1, str, true)
+  return Target.new(row, column, column + #str - 1, column, str, true)
 end
 
 function Target.highlight(self, highlighter, hl_group)
@@ -73,11 +79,11 @@ function Targets.first_column(self)
   if not self:current() then
     return self
   end
-  local min = self._targets[1].column
+  local min = self._targets[1].display_column
   local index = 1
   for i, target in ipairs(self._targets) do
-    if target.column < min then
-      min = target.column
+    if target.display_column < min then
+      min = target.display_column
       index = i
     end
   end
@@ -88,11 +94,11 @@ function Targets.last_column(self)
   if not self:current() then
     return self
   end
-  local max = self._targets[1].column
+  local max = self._targets[1].display_column
   local index = 1
   for i, target in ipairs(listlib.reverse(self._targets)) do
-    if target.column > max then
-      max = target.column
+    if target.display_column > max then
+      max = target.display_column
       index = #self._targets - i + 1
     end
   end
@@ -107,8 +113,8 @@ function Targets.side_next(self)
 
   local columns = {}
   for i, target in ipairs(self._targets) do
-    if target.column > current.column or (target.column == current.column and i > self._index) then
-      table.insert(columns, {index = i, column = target.column})
+    if target.display_column > current.display_column or (target.display_column == current.display_column and i > self._index) then
+      table.insert(columns, {index = i, display_column = target.display_column})
     end
   end
 
@@ -117,8 +123,8 @@ function Targets.side_next(self)
   end
 
   table.sort(columns, function(a, b)
-    if a.column ~= b.column then
-      return a.column < b.column
+    if a.display_column ~= b.display_column then
+      return a.display_column < b.display_column
     end
     return a.index < b.index
   end)
@@ -133,8 +139,8 @@ function Targets.side_previous(self)
 
   local columns = {}
   for i, target in ipairs(self._targets) do
-    if target.column < current.column or (target.column == current.column and i < self._index) then
-      table.insert(columns, {index = i, column = target.column})
+    if target.display_column < current.display_column or (target.display_column == current.display_column and i < self._index) then
+      table.insert(columns, {index = i, display_column = target.display_column})
     end
   end
 
@@ -143,8 +149,8 @@ function Targets.side_previous(self)
   end
 
   table.sort(columns, function(a, b)
-    if a.column ~= b.column then
-      return a.column > b.column
+    if a.display_column ~= b.display_column then
+      return a.display_column > b.display_column
     end
     return a.index > b.index
   end)

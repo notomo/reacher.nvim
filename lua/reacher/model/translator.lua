@@ -21,7 +21,8 @@ function Translator.to_targets_from_str(self, str, row, start_column, pattern)
     if not matched then
       break
     end
-    local target = Target.new(row, s, e, matched)
+    local display_column = vim.fn.strdisplaywidth(str:sub(1, s))
+    local target = Target.new(row, s, e, display_column, matched)
     table.insert(targets, target)
     column_offset = target.column_end
   until matched == nil
@@ -31,7 +32,7 @@ end
 function Translator.to_targets_from_position(self, str, row, column)
   local matched, s, e = self._regex_matcher:match(str, ".", column)
   if matched then
-    return {Target.new(row, s, e, matched)}
+    return {Target.new(row, s, e, s, matched)}
   end
   -- NOTE: for empty line
   return {Target.new_virtual(row, 0, " ")}

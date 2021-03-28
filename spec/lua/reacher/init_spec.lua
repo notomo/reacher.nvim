@@ -155,8 +155,8 @@ describe("reacher.last_column()", function()
   it("moves the cursor to the last column match", function()
     helper.set_lines([[
         hoge_a
-          hoge_b
-          hoge_c
+		      hoge_b
+					hoge_c
   hoge_d
       hoge_e
 ]])
