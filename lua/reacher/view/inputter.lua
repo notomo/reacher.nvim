@@ -36,7 +36,7 @@ function Inputter.open(callback, default_input)
     width = vim.o.columns,
     height = 1,
     relative = "editor",
-    row = 10000,
+    row = vim.o.lines - vim.o.cmdheight - 1,
     col = 0,
     external = false,
     style = "minimal",
