@@ -1,4 +1,5 @@
 local modulelib = require("reacher.lib.module")
+local vim = vim
 
 local M = {}
 

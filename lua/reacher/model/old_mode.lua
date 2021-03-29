@@ -1,4 +1,5 @@
 local modelib = require("reacher.lib.mode")
+local vim = vim
 
 local M = {}
 
