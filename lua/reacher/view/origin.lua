@@ -29,7 +29,9 @@ function Origin.new(old_mode, bufnr, row_range)
     wrap = vim.wo.wrap,
     listchars = vim.o.listchars,
     tabstop = vim.bo.tabstop,
+    vartabstop = vim.bo.vartabstop,
     softtabstop = vim.bo.softtabstop,
+    varsofttabstop = vim.bo.varsofttabstop,
     breakindent = vim.wo.breakindent,
     breakindentopt = vim.wo.breakindentopt,
     linebreak = vim.wo.linebreak,
@@ -112,6 +114,8 @@ function Origin.copy_to_floating_win(self, bufnr)
 
   vim.bo[bufnr].tabstop = self._options.tabstop
   vim.bo[bufnr].softtabstop = self._options.softtabstop
+  vim.bo[bufnr].vartabstop = self._options.vartabstop
+  vim.bo[bufnr].varsofttabstop = self._options.varsofttabstop
   vim.wo[window_id].list = self._options.list
   vim.wo[window_id].wrap = self._options.wrap
   vim.wo[window_id].breakindent = self._options.breakindent
