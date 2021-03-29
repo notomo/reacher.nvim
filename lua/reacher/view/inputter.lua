@@ -36,7 +36,7 @@ function Inputter.open(callback, default_input)
     width = vim.o.columns,
     height = 1,
     relative = "editor",
-    row = vim.o.lines - vim.o.cmdheight - 1,
+    row = vim.o.lines - vim.o.cmdheight - 1, -- HACK: over statusline
     col = 0,
     external = false,
     style = "minimal",
@@ -46,6 +46,7 @@ function Inputter.open(callback, default_input)
   if old ~= -1 then
     vim.api.nvim_buf_delete(old, {force = true})
   end
+  vim.api.nvim_echo({}, false, {}) -- NOTE: for clear command-line
   vim.api.nvim_exec(Inputter.key_mapping_script, false)
   vim.api.nvim_buf_set_name(bufnr, "reacher://REACHER")
   vim.bo[bufnr].bufhidden = "wipe"
