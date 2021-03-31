@@ -21,10 +21,10 @@ previous()                                                *reacher.previous()*
 last()                                                        *reacher.last()*
   Move cursor to the last target.
 
-first_column()                                        *reacher.first_column()*
+side_first()                                            *reacher.side_first()*
   Move cursor to the target in the first column.
 
-last_column()                                          *reacher.last_column()*
+side_last()                                              *reacher.side_last()*
   Move cursor to the target in the last column.
 
 side_next()                                              *reacher.side_next()*

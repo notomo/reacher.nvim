@@ -29,13 +29,13 @@ function reacher.last()
 end
 
 ---Move cursor to the target in the first column.
-function reacher.first_column()
-  Command.new("move_cursor", "first_column")
+function reacher.side_first()
+  Command.new("move_cursor", "side_first")
 end
 
 ---Move cursor to the target in the last column.
-function reacher.last_column()
-  Command.new("move_cursor", "last_column")
+function reacher.side_last()
+  Command.new("move_cursor", "side_last")
 end
 
 ---Move cursor to the target in the side next.

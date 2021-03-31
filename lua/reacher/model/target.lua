@@ -75,7 +75,7 @@ function Targets.last(self)
   return Targets.new(self._targets, #self._targets)
 end
 
-function Targets.first_column(self)
+function Targets.side_first(self)
   if not self:current() then
     return self
   end
@@ -90,7 +90,7 @@ function Targets.first_column(self)
   return Targets.new(self._targets, index)
 end
 
-function Targets.last_column(self)
+function Targets.side_last(self)
   if not self:current() then
     return self
   end
@@ -119,7 +119,7 @@ function Targets.side_next(self)
   end
 
   if #columns == 0 then
-    return self:first_column()
+    return self:side_first()
   end
 
   table.sort(columns, function(a, b)
@@ -145,7 +145,7 @@ function Targets.side_previous(self)
   end
 
   if #columns == 0 then
-    return self:last_column()
+    return self:side_last()
   end
 
   table.sort(columns, function(a, b)

@@ -125,7 +125,7 @@ describe("reacher.last()", function()
 
 end)
 
-describe("reacher.first_column()", function()
+describe("reacher.side_first()", function()
 
   before_each(helper.before_each)
   after_each(helper.after_each)
@@ -139,7 +139,7 @@ describe("reacher.first_column()", function()
 ]])
 
     reacher.start({input = "hoge"})
-    reacher.first_column()
+    reacher.side_first()
     reacher.finish()
 
     assert.cursor_word("hoge_c")
@@ -147,7 +147,7 @@ describe("reacher.first_column()", function()
 
 end)
 
-describe("reacher.last_column()", function()
+describe("reacher.side_last()", function()
 
   before_each(helper.before_each)
   after_each(helper.after_each)
@@ -162,7 +162,7 @@ describe("reacher.last_column()", function()
 ]])
 
     reacher.start({input = "hoge"})
-    reacher.last_column()
+    reacher.side_last()
     reacher.finish()
 
     assert.cursor_word("hoge_c")
