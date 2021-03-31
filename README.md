@@ -36,8 +36,6 @@ function! s:reacher() abort
   nnoremap <buffer> G <Cmd>lua require("reacher").last()<CR>
   nnoremap <buffer> j <Cmd>lua require("reacher").next()<CR>
   nnoremap <buffer> k <Cmd>lua require("reacher").previous()<CR>
-  nnoremap <buffer> l <Cmd>lua require("reacher").side_next()<CR>
-  nnoremap <buffer> h <Cmd>lua require("reacher").side_previous()<CR>
 endfunction
 
 " default highlight groups

@@ -23,9 +23,7 @@ nnoremap <nowait> <buffer> <ESC> <Cmd>lua require("reacher").cancel()<CR>
 nnoremap <buffer> gg <Cmd>lua require("reacher").first()<CR>
 nnoremap <buffer> G <Cmd>lua require("reacher").last()<CR>
 nnoremap <buffer> j <Cmd>lua require("reacher").next()<CR>
-nnoremap <buffer> k <Cmd>lua require("reacher").previous()<CR>
-nnoremap <buffer> l <Cmd>lua require("reacher").side_next()<CR>
-nnoremap <buffer> h <Cmd>lua require("reacher").side_previous()<CR>]]
+nnoremap <buffer> k <Cmd>lua require("reacher").previous()<CR>]]
 
 function Inputter.open(callback, default_input)
   vim.validate({callback = {callback, "function"}, default_input = {default_input, "string", true}})
