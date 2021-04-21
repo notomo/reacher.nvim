@@ -1,9 +1,5 @@
 local helper = require("reacher.lib.testlib.helper")
-local reacher = setmetatable({}, {
-  __index = function(_, k)
-    return require("reacher")[k]
-  end,
-})
+local reacher = helper.require("reacher")
 
 describe("reacher.next()", function()
 

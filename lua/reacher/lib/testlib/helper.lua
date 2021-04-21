@@ -1,6 +1,7 @@
-local M = {}
+local plugin_name = vim.split((...):gsub("%.", "/"), "/", true)[1]
+local M = require("vusted.helper")
 
-M.root = require("reacher.lib.path").find_root()
+M.root = M.find_plugin_root(plugin_name)
 
 function M.before_each()
   vim.cmd("set wrap")
@@ -9,7 +10,7 @@ function M.before_each()
   vim.o.smartcase = false
   vim.o.lines = 24
   vim.o.columns = 80
-  require("reacher.lib.module").cleanup()
+  M.cleanup_loaded_modules(plugin_name)
   vim.cmd("filetype on")
   vim.cmd("syntax enable")
 end
