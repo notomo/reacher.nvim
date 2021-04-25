@@ -16,7 +16,7 @@ function Overlay.open(matcher, origin)
 
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].modifiable = false
-  vim.wo[window_id].winhighlight = "Normal:ReacherBackground"
+  vim.wo[window_id].winhighlight = "Normal:ReacherBackground,Search:None"
 
   highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
   highlightlib.set_background("ReacherBackground", origin.window_id, {
