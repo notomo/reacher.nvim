@@ -17,10 +17,10 @@ end
 local Lines = {}
 M.Lines = Lines
 
-function Lines.new(first_column, last_column, conceals, folds, fillers, wrap)
+function Lines.new(window_id, first_column, last_column, conceals, folds, fillers, wrap)
   local lines = {}
 
-  local column_ranges = ColumnRanges.new(conceals:lines(), first_column, last_column, wrap)
+  local column_ranges = ColumnRanges.new(window_id, conceals:lines(), first_column, last_column, wrap)
   for _, range in column_ranges:iter() do
     table.insert(lines, Line.new(range.str, range.s))
   end
@@ -39,11 +39,11 @@ function Lines.__index(self, k)
   return Lines[k]
 end
 
-function Lines.copy_to(self, bufnr)
+function Lines.copy_to(self, bufnr, window_id)
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, vim.tbl_map(function(line)
     return line.str
   end, self._lines))
-  self._folds:execute()
+  self._folds:execute(window_id)
   vim.fn.winrestview({leftcol = self._first_column - 1})
 end
 

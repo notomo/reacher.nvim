@@ -8,22 +8,28 @@ local Fillers = {}
 Fillers.__index = Fillers
 M.Fillers = Fillers
 
-function Fillers.new(first_row, last_row)
-  vim.validate({first_row = {first_row, "number"}, last_row = {last_row, "number"}})
+function Fillers.new(window_id, first_row, last_row)
+  vim.validate({
+    window_id = {window_id, "number"},
+    first_row = {first_row, "number"},
+    last_row = {last_row, "number"},
+  })
   local tbl = {_fillers = {}, _first_row = first_row, _offsets = {}}
   local self = setmetatable(tbl, Fillers)
 
-  if not vim.wo.diff then
+  if not vim.wo[window_id].diff then
     return self
   end
 
-  -- NOTE: fillers on first_row is not between first_row and last_row
-  for row = first_row + 1, last_row, 1 do
-    local diff_count = vim.fn.diff_filler(row)
-    if diff_count ~= 0 then
-      table.insert(self._fillers, {row = row, diff_count = diff_count})
+  vim.api.nvim_win_call(window_id, function()
+    -- NOTE: fillers on first_row is not between first_row and last_row
+    for row = first_row + 1, last_row, 1 do
+      local diff_count = vim.fn.diff_filler(row)
+      if diff_count ~= 0 then
+        table.insert(self._fillers, {row = row, diff_count = diff_count})
+      end
     end
-  end
+  end)
 
   local offset = 0
   for _, filler in ipairs(self._fillers) do

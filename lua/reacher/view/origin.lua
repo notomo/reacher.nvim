@@ -13,36 +13,46 @@ Origin.__index = Origin
 M.Origin = Origin
 
 function Origin.new(old_mode, bufnr, row_range)
-  if vim.wo.rightleft then
+  local window_id = vim.api.nvim_get_current_win()
+
+  if vim.wo[window_id].rightleft then
     return nil, "`rightleft` is not supported"
   end
 
-  local first_row = row_range:first()
-  local last_row = row_range:last()
-  local win_first_row, height = M._view_position(first_row, last_row, row_range.given_range)
+  local first_row
+  local last_row
+  local win_first_row, height
+  vim.api.nvim_win_call(window_id, function()
+    first_row = row_range:first()
+    last_row = row_range:last()
+    win_first_row, height = M._view_position(first_row, last_row, row_range.given_range)
+  end)
   if height <= 0 or last_row - first_row < 0 then
     return nil, "no range"
   end
 
   local options = {
-    list = vim.wo.list,
-    wrap = vim.wo.wrap,
+    list = vim.wo[window_id].list,
+    wrap = vim.wo[window_id].wrap,
     listchars = vim.o.listchars,
     tabstop = vim.bo[bufnr].tabstop,
     vartabstop = vim.bo[bufnr].vartabstop,
     softtabstop = vim.bo[bufnr].softtabstop,
     varsofttabstop = vim.bo[bufnr].varsofttabstop,
-    breakindent = vim.wo.breakindent,
-    breakindentopt = vim.wo.breakindentopt,
-    linebreak = vim.wo.linebreak,
+    breakindent = vim.wo[window_id].breakindent,
+    breakindentopt = vim.wo[window_id].breakindentopt,
+    linebreak = vim.wo[window_id].linebreak,
   }
 
-  local window_id = vim.api.nvim_get_current_win()
   local cursor = Position.cursor(window_id)
-  local saved = vim.fn.winsaveview()
-  vim.api.nvim_win_set_cursor(window_id, {cursor.row, 0})
-  local number_sign_width = vim.fn.wincol() - 1
-  vim.fn.winrestview(saved)
+  local saved
+  local number_sign_width
+  vim.api.nvim_win_call(window_id, function()
+    saved = vim.fn.winsaveview()
+    vim.api.nvim_win_set_cursor(window_id, {cursor.row, 0})
+    number_sign_width = vim.fn.wincol() - 1
+    vim.fn.winrestview(saved)
+  end)
 
   local width = vim.api.nvim_win_get_width(window_id) - number_sign_width
 
@@ -63,10 +73,10 @@ function Origin.new(old_mode, bufnr, row_range)
   local first_column = saved.leftcol + 1
   local last_column = saved.leftcol + width
 
-  local fillers = Fillers.new(first_row, last_row)
-  local folds = Folds.new(first_row, last_row, fillers)
-  local conceals = Conceals.new(bufnr, first_row, last_row, old_mode)
-  local lines = Lines.new(first_column, last_column, conceals, folds, fillers, options.wrap)
+  local fillers = Fillers.new(window_id, first_row, last_row)
+  local folds = Folds.new(window_id, first_row, last_row, fillers)
+  local conceals = Conceals.new(bufnr, window_id, first_row, last_row, old_mode)
+  local lines = Lines.new(window_id, first_column, last_column, conceals, folds, fillers, options.wrap)
 
   local row_offset = first_row - 1
   local cursor_row = cursor.row + fillers:offset(cursor.row) - row_offset
@@ -110,7 +120,7 @@ function Origin.copy_to_floating_win(self, bufnr)
     focusable = false,
   })
 
-  self.lines:copy_to(bufnr)
+  self.lines:copy_to(bufnr, window_id)
 
   vim.bo[bufnr].tabstop = self._options.tabstop
   vim.bo[bufnr].softtabstop = self._options.softtabstop

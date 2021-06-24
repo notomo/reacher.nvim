@@ -45,8 +45,9 @@ describe("reacher.model.conceal", function()
       vim.cmd(c.cmd)
       helper.set_lines(c.line)
 
+      local window_id = vim.api.nvim_get_current_win()
       local row = 1
-      local conceal_line = require("reacher.model.conceal").ConcealLine.new(row, c.disable)
+      local conceal_line = require("reacher.model.conceal").ConcealLine.new(window_id, row, c.disable)
       assert.equals(c.expected, conceal_line.str)
     end)
   end

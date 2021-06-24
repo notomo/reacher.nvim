@@ -6,34 +6,43 @@ local Folds = {}
 Folds.__index = Folds
 M.Folds = Folds
 
-function Folds.new(s, e, fillers)
-  vim.validate({s = {s, "number"}, e = {e, "number"}, fillers = {fillers, "table"}})
+function Folds.new(window_id, s, e, fillers)
+  vim.validate({
+    window_id = {window_id, "number"},
+    s = {s, "number"},
+    e = {e, "number"},
+    fillers = {fillers, "table"},
+  })
   local tbl = {_folds = {}}
   local self = setmetatable(tbl, Folds)
 
-  if not vim.wo.foldenable then
+  if not vim.wo[window_id].foldenable then
     return self
   end
 
-  local row = s
-  while row <= e do
-    local end_row = vim.fn.foldclosedend(row)
-    if end_row ~= -1 then
-      local offset = fillers:offset(row)
-      table.insert(self._folds, {row + offset - s + 1, end_row + offset - s + 1})
-      row = end_row + 1
-    else
-      row = row + 1
+  vim.api.nvim_win_call(window_id, function()
+    local row = s
+    while row <= e do
+      local end_row = vim.fn.foldclosedend(row)
+      if end_row ~= -1 then
+        local offset = fillers:offset(row)
+        table.insert(self._folds, {row + offset - s + 1, end_row + offset - s + 1})
+        row = end_row + 1
+      else
+        row = row + 1
+      end
     end
-  end
+  end)
 
   return self
 end
 
-function Folds.execute(self)
-  for _, range in ipairs(self._folds) do
-    vim.cmd(("%d,%dfold"):format(range[1], range[2]))
-  end
+function Folds.execute(self, window_id)
+  vim.api.nvim_win_call(window_id, function()
+    for _, range in ipairs(self._folds) do
+      vim.cmd(("%d,%dfold"):format(range[1], range[2]))
+    end
+  end)
 end
 
 function Folds.apply_to(self, lines)

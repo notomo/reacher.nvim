@@ -27,8 +27,9 @@ local ColumnRanges = {}
 ColumnRanges.__index = ColumnRanges
 M.ColumnRanges = ColumnRanges
 
-function ColumnRanges.new(line_strs, virtual_s, virtual_e, wrap)
+function ColumnRanges.new(window_id, line_strs, virtual_s, virtual_e, wrap)
   vim.validate({
+    window_id = {window_id, "number"},
     line_strs = {line_strs, "table"},
     virtual_s = {virtual_s, "number"},
     virtual_e = {virtual_e, "number"},
@@ -43,7 +44,9 @@ function ColumnRanges.new(line_strs, virtual_s, virtual_e, wrap)
     self._column_ranges = vim.tbl_map(function(str)
       return ColumnRange.new_default(str)
     end, strs)
-    local last_line = M.calc_displayed_last_line()
+    local last_line = vim.api.nvim_win_call(window_id, function()
+      return M.calc_displayed_last_line()
+    end)
     if last_line then
       table.insert(self._column_ranges, ColumnRange.new_default(last_line))
     end
