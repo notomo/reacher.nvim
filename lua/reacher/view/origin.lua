@@ -28,10 +28,10 @@ function Origin.new(old_mode, bufnr, row_range)
     list = vim.wo.list,
     wrap = vim.wo.wrap,
     listchars = vim.o.listchars,
-    tabstop = vim.bo.tabstop,
-    vartabstop = vim.bo.vartabstop,
-    softtabstop = vim.bo.softtabstop,
-    varsofttabstop = vim.bo.varsofttabstop,
+    tabstop = vim.bo[bufnr].tabstop,
+    vartabstop = vim.bo[bufnr].vartabstop,
+    softtabstop = vim.bo[bufnr].softtabstop,
+    varsofttabstop = vim.bo[bufnr].varsofttabstop,
     breakindent = vim.wo.breakindent,
     breakindentopt = vim.wo.breakindentopt,
     linebreak = vim.wo.linebreak,
@@ -65,7 +65,7 @@ function Origin.new(old_mode, bufnr, row_range)
 
   local fillers = Fillers.new(first_row, last_row)
   local folds = Folds.new(first_row, last_row, fillers)
-  local conceals = Conceals.new(bufnr, first_row, last_row, fillers, old_mode)
+  local conceals = Conceals.new(bufnr, first_row, last_row, old_mode)
   local lines = Lines.new(first_column, last_column, conceals, folds, fillers, options.wrap)
 
   local row_offset = first_row - 1

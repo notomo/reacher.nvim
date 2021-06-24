@@ -72,12 +72,11 @@ local Conceals = {}
 Conceals.__index = Conceals
 M.Conceals = Conceals
 
-function Conceals.new(bufnr, s, e, fillers, old_mode)
+function Conceals.new(bufnr, s, e, old_mode)
   vim.validate({
     bufnr = {bufnr, "number"},
     s = {s, "number"},
     e = {e, "number"},
-    fillers = {fillers, "table"},
     old_mode = {old_mode, "table"},
   })
   local tbl = {_bufnr = bufnr, _conceals = {}, _lookup = {}, _first_row = s, _last_row = e}
