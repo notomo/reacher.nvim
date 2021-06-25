@@ -9,11 +9,12 @@ local Target = setmetatable({}, Position)
 Target.__index = Target
 M.Target = Target
 
-function Target.new(window_id, row, column, column_end, display_column, str, is_virtual)
+function Target.new(window_id, row, column, column_end, display_row, display_column, str, is_virtual)
   vim.validate({
     window_id = {window_id, "number"},
     str = {str, "string"},
     column_end = {column_end, "number"},
+    display_row = {display_row, "number"},
     display_column = {display_column, "number"},
     is_virtual = {is_virtual, "boolean", true},
   })
@@ -21,6 +22,7 @@ function Target.new(window_id, row, column, column_end, display_column, str, is_
     window_id = window_id,
     str = str,
     column_end = column_end,
+    display_row = display_row,
     display_column = display_column,
     _is_virtual = is_virtual or false,
   }
@@ -29,8 +31,8 @@ function Target.new(window_id, row, column, column_end, display_column, str, is_
   return setmetatable(tbl, setmetatable(position, Target))
 end
 
-function Target.new_virtual(window_id, row, column, str)
-  return Target.new(window_id, row, column, column + #str - 1, column, str, true)
+function Target.new_virtual(window_id, row, column, display_row, display_column, str)
+  return Target.new(window_id, row, column, column + #str - 1, display_row, display_column, str, true)
 end
 
 function Target.highlight(self, highlighter, hl_group)
@@ -60,29 +62,95 @@ function Targets.current(self)
 end
 
 function Targets.first(self)
-  return Targets.new(self._targets, 1)
+  if not self:current() then
+    return self
+  end
+
+  local index = 1
+  local first = self._targets[index]
+  for i, target in ipairs(self._targets) do
+    if target.display_row < first.display_row or (target.display_row == first.display_row and target.display_column <= first.display_column) then
+      first = target
+      index = i
+    end
+  end
+  return Targets.new(self._targets, index)
 end
 
 function Targets.previous(self)
-  local index = ((self._index - 1) % #self._targets - 1) % #self._targets + 1
-  return Targets.new(self._targets, index)
+  local current = self:current()
+  if not current then
+    return self
+  end
+
+  local targets = {}
+  for i, target in ipairs(self._targets) do
+    if target.display_row < current.display_row or (target.display_row == current.display_row and target.display_column < current.display_column) then
+      table.insert(targets, {index = i, target = target})
+    end
+  end
+
+  if #targets == 0 then
+    return self:last()
+  end
+
+  table.sort(targets, function(a, b)
+    if a.target.display_row ~= b.target.display_row then
+      return a.target.display_row > b.target.display_row
+    end
+    return a.target.display_column > b.target.display_column
+  end)
+  return Targets.new(self._targets, targets[1].index)
 end
 
 function Targets.next(self)
-  local index = (self._index % #self._targets) + 1
-  return Targets.new(self._targets, index)
+  local current = self:current()
+  if not current then
+    return self
+  end
+
+  local targets = {}
+  for i, target in ipairs(self._targets) do
+    if current.display_row < target.display_row or (current.display_row == target.display_row and current.display_column < target.display_column) then
+      table.insert(targets, {index = i, target = target})
+    end
+  end
+
+  if #targets == 0 then
+    return self:first()
+  end
+
+  table.sort(targets, function(a, b)
+    if a.target.display_row ~= b.target.display_row then
+      return a.target.display_row < b.target.display_row
+    end
+    return a.target.display_column < b.target.display_column
+  end)
+  return Targets.new(self._targets, targets[1].index)
 end
 
 function Targets.last(self)
-  return Targets.new(self._targets, #self._targets)
+  if not self:current() then
+    return self
+  end
+
+  local index = 1
+  local last = self._targets[index]
+  for i, target in ipairs(self._targets) do
+    if last.display_row < target.display_row or (last.display_row == target.display_row and last.display_column <= target.display_column) then
+      last = target
+      index = i
+    end
+  end
+  return Targets.new(self._targets, index)
 end
 
 function Targets.side_first(self)
   if not self:current() then
     return self
   end
-  local min = self._targets[1].display_column
   local index = 1
+  local min = self._targets[index].display_column
   for i, target in ipairs(self._targets) do
     if target.display_column < min then
       min = target.display_column
@@ -96,8 +164,8 @@ function Targets.side_last(self)
   if not self:current() then
     return self
   end
-  local max = self._targets[1].display_column
   local index = 1
+  local max = self._targets[index].display_column
   for i, target in ipairs(listlib.reverse(self._targets)) do
     if target.display_column > max then
       max = target.display_column
