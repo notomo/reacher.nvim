@@ -9,14 +9,16 @@ local Target = setmetatable({}, Position)
 Target.__index = Target
 M.Target = Target
 
-function Target.new(row, column, column_end, display_column, str, is_virtual)
+function Target.new(window_id, row, column, column_end, display_column, str, is_virtual)
   vim.validate({
+    window_id = {window_id, "number"},
     str = {str, "string"},
     column_end = {column_end, "number"},
     display_column = {display_column, "number"},
     is_virtual = {is_virtual, "boolean", true},
   })
   local tbl = {
+    window_id = window_id,
     str = str,
     column_end = column_end,
     display_column = display_column,
@@ -27,8 +29,8 @@ function Target.new(row, column, column_end, display_column, str, is_virtual)
   return setmetatable(tbl, setmetatable(position, Target))
 end
 
-function Target.new_virtual(row, column, str)
-  return Target.new(row, column, column + #str - 1, column, str, true)
+function Target.new_virtual(window_id, row, column, str)
+  return Target.new(window_id, row, column, column + #str - 1, column, str, true)
 end
 
 function Target.highlight(self, highlighter, hl_group)

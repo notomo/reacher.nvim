@@ -9,8 +9,13 @@ local Collector = {}
 Collector.__index = Collector
 M.Collector = Collector
 
-function Collector.new(matcher, lines, cursor)
-  vim.validate({matcher = {matcher, "table"}, lines = {lines, "table"}, cursor = {cursor, "table"}})
+function Collector.new(window_id, matcher, lines, cursor)
+  vim.validate({
+    window_id = {window_id, "number"},
+    matcher = {matcher, "table"},
+    lines = {lines, "table"},
+    cursor = {cursor, "table"},
+  })
 
   local raw_lines = {}
   for _, line in lines:iter() do
@@ -18,7 +23,7 @@ function Collector.new(matcher, lines, cursor)
   end
 
   local tbl = {
-    _translator = Translator.new(matcher, regex_matcher),
+    _translator = Translator.new(window_id, matcher, regex_matcher),
     _raw_lines = raw_lines,
     _cursor = cursor,
   }

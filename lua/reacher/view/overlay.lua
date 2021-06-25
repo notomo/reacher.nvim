@@ -25,7 +25,7 @@ function Overlay.open(matcher, origin)
     bg_default = "#334152",
   })
 
-  local collector, initial_targets = Collector.new(matcher, origin.lines, origin.cursor)
+  local collector, initial_targets = Collector.new(origin.window_id, matcher, origin.lines, origin.cursor)
 
   local tbl = {
     _window_id = window_id,
@@ -63,7 +63,7 @@ function Overlay.finish(self)
 
   local mode = vim.api.nvim_get_mode().mode
   return function()
-    return self._origin:jump(target.row, target.column, mode)
+    return self._origin:jump(target.window_id, target.row, target.column, mode)
   end
 end
 
