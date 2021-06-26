@@ -2,6 +2,7 @@ local windowlib = require("reacher.lib.window")
 local highlightlib = require("reacher.lib.highlight")
 local HlFactory = require("reacher.lib.highlight").HlFactory
 local Collector = require("reacher.model.collector").Collector
+local Position = require("reacher.model.position").Position
 local Targets = require("reacher.model.target").Targets
 local vim = vim
 
@@ -9,8 +10,15 @@ local M = {}
 
 local Overlay = {}
 Overlay.__index = Overlay
+M.Overlay = Overlay
 
-function Overlay.open(matcher, origin)
+function Overlay.open(matcher, origin, for_current_window)
+  vim.validate({
+    matcher = {matcher, "table"},
+    origin = {origin, "table"},
+    for_current_window = {for_current_window, "boolean"},
+  })
+
   local bufnr = vim.api.nvim_create_buf(false, true)
   local window_id = origin:copy_to_floating_win(bufnr)
 
@@ -18,17 +26,22 @@ function Overlay.open(matcher, origin)
   vim.bo[bufnr].modifiable = false
 
   local hl_bg_name = "ReacherBackgroundNormal"
-  if vim.api.nvim_win_get_config(origin.window_id).relative ~= "" then
+  if origin:is_floating() then
     hl_bg_name = "ReacherBackgroundNormalFloat"
   end
   vim.wo[window_id].winhighlight = ("Normal:%s,Search:None"):format(hl_bg_name)
+
+  local cursor
+  if for_current_window then
+    cursor = origin.cursor
+  end
 
   local tbl = {
     _window_id = window_id,
     _origin = origin,
     _match_highlight = HlFactory.new("reacher", bufnr),
     _cursor_highlight = HlFactory.new("reacher_cursor", bufnr),
-    _collector = Collector.new(origin.window_id, matcher, origin.lines, origin.cursor),
+    _collector = Collector.new(origin.window_id, matcher, origin.lines, cursor),
   }
   return setmetatable(tbl, Overlay), nil
 end
@@ -90,17 +103,18 @@ function Overlays.open(matcher, current_origin, other_origins)
     bg_default = "#334152",
   })
 
-  local current_overlay = Overlay.open(matcher, current_origin)
+  local current_overlay = Overlay.open(matcher, current_origin, true)
   local overlays = {[current_origin.window_id] = current_overlay}
   for _, origin in ipairs(other_origins) do
-    overlays[origin.window_id] = Overlay.open(matcher, origin)
+    overlays[origin.window_id] = Overlay.open(matcher, origin, false)
   end
 
+  local win_pos = vim.api.nvim_win_get_position(current_origin.window_id)
   local tbl = {
     _current_overlay = current_overlay,
     _overlays = overlays,
     _targets = Targets.new({}),
-    _cursor = current_origin.cursor,
+    _cursor = Position.new(current_origin.cursor.row + win_pos[1] - 1, current_origin.cursor.column + win_pos[2]),
   }
   return setmetatable(tbl, Overlays)
 end

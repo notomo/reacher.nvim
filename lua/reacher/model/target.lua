@@ -230,13 +230,13 @@ end
 function Targets.match(self, position)
   local current_target = self:current()
   if not current_target then
-    return Targets.new({})
+    return self
   end
 
-  local distance = Distance.new(position, current_target)
+  local distance = Distance.new(position, Position.new(current_target.display_row, current_target.display_column))
   local index = 1
   for i, target in self:iter() do
-    local d = Distance.new(position, target)
+    local d = Distance.new(position, Position.new(target.display_row, target.display_column))
     if d < distance then
       distance = d
       index = i

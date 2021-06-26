@@ -25,7 +25,7 @@ function Command.new(name, ...)
   end
 end
 
-function Command.start(raw_opts)
+function Command.start_one(raw_opts)
   local msg = messagelib.validate({opts = {raw_opts, "table", true}})
   if msg then
     return msg
@@ -42,7 +42,27 @@ function Command.start(raw_opts)
     return err
   end
 
-  return View.open(matcher, opts)
+  return View.open_one(matcher, opts)
+end
+
+function Command.start_multiple(raw_opts)
+  local msg = messagelib.validate({opts = {raw_opts, "table", true}})
+  if msg then
+    return msg
+  end
+
+  local old = View.current()
+  if old ~= nil then
+    old:close()
+  end
+
+  local opts = vim.tbl_deep_extend("force", {matcher_opts = {name = "regex"}}, raw_opts or {})
+  local matcher, err = Matcher.new(opts.matcher_opts.name)
+  if err ~= nil then
+    return err
+  end
+
+  return View.open_multiple(matcher, opts)
 end
 
 function Command.move_cursor(action_name)

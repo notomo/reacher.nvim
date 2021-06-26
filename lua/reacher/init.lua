@@ -5,7 +5,13 @@ local reacher = {}
 ---Start reacher mode.
 ---@param opts table: default {input = "", first_row = nil, last_row = nil}
 function reacher.start(opts)
-  Command.new("start", opts)
+  Command.new("start_one", opts)
+end
+
+---Start reacher mode for the multiple windows.
+---@param opts table: default {input = ""}
+function reacher.start_multiple(opts)
+  Command.new("start_multiple", opts)
 end
 
 ---Move cursor to the first target.

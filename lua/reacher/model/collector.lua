@@ -13,7 +13,7 @@ function Collector.new(window_id, matcher, lines, cursor)
     window_id = {window_id, "number"},
     matcher = {matcher, "table"},
     lines = {lines, "table"},
-    cursor = {cursor, "table"},
+    cursor = {cursor, "table", true},
   })
 
   local raw_lines = {}
@@ -31,6 +31,9 @@ end
 
 function Collector.collect(self, input_line)
   if #input_line == 0 then
+    if not self._cursor then
+      return {}
+    end
     local row = self._cursor.row
     local column = self._cursor.column
     local line = self._raw_lines[row]

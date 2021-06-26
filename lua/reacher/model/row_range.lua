@@ -4,14 +4,25 @@ local RowRange = {}
 RowRange.__index = RowRange
 M.RowRange = RowRange
 
-function RowRange.new(first_row, last_row)
-  vim.validate({first_row = {first_row, "number", true}, last_row = {last_row, "number", true}})
-  local tbl = {_first = first_row, _last = last_row, given_range = (first_row or last_row) ~= nil}
+function RowRange.new(window_id, first_row, last_row)
+  vim.validate({
+    window_id = {window_id, "number"},
+    first_row = {first_row, "number", true},
+    last_row = {last_row, "number", true},
+  })
+  local tbl = {
+    _window_id = window_id,
+    _first = first_row,
+    _last = last_row,
+    given_range = (first_row or last_row) ~= nil,
+  }
   return setmetatable(tbl, RowRange)
 end
 
 function RowRange.first(self)
-  local first_row = vim.fn.line("w0")
+  local first_row = vim.api.nvim_win_call(self._window_id, function()
+    return vim.fn.line("w0")
+  end)
   if not self._first then
     return first_row
   end
@@ -22,7 +33,9 @@ function RowRange.first(self)
 end
 
 function RowRange.last(self)
-  local last_row = vim.fn.line("w$")
+  local last_row = vim.api.nvim_win_call(self._window_id, function()
+    return vim.fn.line("w$")
+  end)
   if not self._last then
     return last_row
   end

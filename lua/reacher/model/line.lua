@@ -44,7 +44,9 @@ function Lines.copy_to(self, bufnr, window_id)
     return line.str
   end, self._lines))
   self._folds:execute(window_id)
-  vim.fn.winrestview({leftcol = self._first_column - 1})
+  vim.api.nvim_win_call(window_id, function()
+    vim.fn.winrestview({leftcol = self._first_column - 1})
+  end)
 end
 
 function Lines.iter(self)

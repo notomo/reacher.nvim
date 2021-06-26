@@ -12,19 +12,15 @@ local Origin = {}
 Origin.__index = Origin
 M.Origin = Origin
 
-function Origin.new(old_mode, bufnr, row_range)
-  local window_id = vim.api.nvim_get_current_win()
-
+function Origin.new(window_id, old_mode, bufnr, row_range)
   if vim.wo[window_id].rightleft then
     return nil, "`rightleft` is not supported"
   end
 
-  local first_row
-  local last_row
+  local first_row = row_range:first()
+  local last_row = row_range:last()
   local win_first_row, height
   vim.api.nvim_win_call(window_id, function()
-    first_row = row_range:first()
-    last_row = row_range:last()
     win_first_row, height = M._view_position(first_row, last_row, row_range.given_range)
   end)
   if height <= 0 or last_row - first_row < 0 then
@@ -99,25 +95,39 @@ function Origin.new(old_mode, bufnr, row_range)
   return setmetatable(tbl, Origin)
 end
 
+function Origin.is_floating(self)
+  return windowlib.is_floating(self.window_id)
+end
+
 function Origin.copy_to_floating_win(self, bufnr)
   local bufpos = {1, 0}
   local row = self._row
-  local first_row = vim.fn.line("w0")
+  local first_row = vim.api.nvim_win_call(self.window_id, function()
+    return vim.fn.line("w0")
+  end)
   -- HACK: ?
   if first_row <= 2 then
     bufpos = {first_row - 1, 0}
     row = row - 1
   end
-  local window_id = vim.api.nvim_open_win(bufnr, true, {
+
+  local zindex
+  if not self:is_floating() then
+    zindex = 49 -- == (default - 1)
+  end
+
+  local window_id = vim.api.nvim_open_win(bufnr, false, {
     width = self._width,
     height = self._height,
     relative = "win",
+    win = self.window_id,
     row = row,
     col = self._column,
     bufpos = bufpos,
     external = false,
     style = "minimal",
     focusable = false,
+    zindex = zindex,
   })
 
   self.lines:copy_to(bufnr, window_id)
@@ -137,8 +147,6 @@ function Origin.copy_to_floating_win(self, bufnr)
     return not vim.startswith(v, "extends:") and not vim.startswith(v, "precedes:")
   end, vim.fn.split(self._options.listchars, ",", true))
   vim.wo[window_id].listchars = table.concat(listchars, ",")
-
-  vim.api.nvim_set_current_win(self.window_id)
 
   return window_id
 end

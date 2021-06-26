@@ -6,6 +6,7 @@ M.root = M.find_plugin_root(plugin_name)
 function M.before_each()
   vim.cmd("set wrap")
   vim.cmd("set norightleft")
+  vim.cmd("set conceallevel=0")
   vim.o.ignorecase = false
   vim.o.smartcase = false
   vim.o.lines = 24

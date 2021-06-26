@@ -13,16 +13,8 @@ local View = {}
 View.__index = View
 M.View = View
 
-function View.open(matcher, opts)
-  local old_mode = OldMode.to_normal_mode()
-  local source_bufnr = vim.api.nvim_get_current_buf()
-  local row_range = RowRange.new(opts.first_row, opts.last_row)
-  local origin, err = Origin.new(old_mode, source_bufnr, row_range)
-  if err ~= nil then
-    return err
-  end
-
-  local overlays = Overlays.open(matcher, origin, {})
+function View.new(matcher, current_origin, other_origins, was_visual_mode, opts)
+  local overlays = Overlays.open(matcher, current_origin, other_origins)
   local inputter = Inputter.open(function(input_line)
     overlays:update(input_line)
   end, opts.input)
@@ -30,12 +22,50 @@ function View.open(matcher, opts)
   local tbl = {
     _overlays = overlays,
     _inputter = inputter,
-    _was_visual_mode = old_mode.is_visual,
+    _was_visual_mode = was_visual_mode,
     _closed = false,
   }
-  local view = setmetatable(tbl, View)
+  local self = setmetatable(tbl, View)
 
-  repository:set(inputter.window_id, view)
+  repository:set(inputter.window_id, self)
+end
+
+function View.open_one(matcher, opts)
+  local old_mode = OldMode.to_normal_mode()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local window_id = vim.api.nvim_get_current_win()
+  local row_range = RowRange.new(window_id, opts.first_row, opts.last_row)
+  local current_origin, err = Origin.new(window_id, old_mode, bufnr, row_range)
+  if err ~= nil then
+    return err
+  end
+  View.new(matcher, current_origin, {}, old_mode.is_visual, opts)
+end
+
+function View.open_multiple(matcher, opts)
+  local current_bufnr = vim.api.nvim_get_current_buf()
+  local current_window_id = vim.api.nvim_get_current_win()
+
+  local old_mode = OldMode.to_normal_mode()
+  local old_modes = {[current_bufnr] = old_mode}
+  local normal_mode = OldMode.normal()
+
+  local current_origin
+  local other_origins = {}
+  for _, window_id in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+    local bufnr = vim.api.nvim_win_get_buf(window_id)
+    local origin, err = Origin.new(window_id, old_modes[bufnr] or normal_mode, bufnr, RowRange.new(window_id))
+    if err ~= nil then
+      return err
+    end
+    if window_id == current_window_id then
+      current_origin = origin
+    else
+      table.insert(other_origins, origin)
+    end
+  end
+
+  View.new(matcher, current_origin, other_origins, old_mode.is_visual, opts)
 end
 
 function View.recall_history(self, offset)

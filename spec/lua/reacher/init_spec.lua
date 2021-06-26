@@ -610,6 +610,31 @@ hogeb
 
 end)
 
+describe("reacher.start_multiple()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("shows matches in the all windows", function()
+    helper.set_lines([[
+
+hoge
+]])
+
+    vim.cmd("vnew")
+    helper.set_lines([[
+foo
+]])
+
+    reacher.start_multiple()
+    helper.input("hoge")
+    reacher.finish()
+
+    assert.current_line("hoge")
+  end)
+
+end)
+
 describe("reacher.nvim inputter", function()
 
   before_each(helper.before_each)
@@ -638,7 +663,7 @@ foo
     assert.current_line("hoge")
   end)
 
-  it("reacognizes smartcase option", function()
+  it("recognizes smartcase option", function()
     helper.set_lines([[
 foo
 hoge

@@ -23,4 +23,9 @@ function M.jump(id, row, column)
   vim.api.nvim_win_set_cursor(id, {row, column})
 end
 
+function M.is_floating(id)
+  vim.validate({id = {id, "number"}})
+  return vim.api.nvim_win_get_config(id).relative ~= ""
+end
+
 return M
