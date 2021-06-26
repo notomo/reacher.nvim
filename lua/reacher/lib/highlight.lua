@@ -38,12 +38,8 @@ function HlFactory.reset(self, bufnr)
   return highlighter
 end
 
-function M.set_background(name, window_id, opts)
-  local bg_hl_group = "Normal"
-  if vim.api.nvim_win_get_config(window_id).relative ~= "" then
-    bg_hl_group = "NormalFloat"
-  end
-  local guibg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(bg_hl_group)), "bg", "gui")
+function M.define_from_src(name, src_hl_group, opts)
+  local guibg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(src_hl_group)), "bg", "gui")
   if guibg == "" then
     guibg = opts.bg_default
   end
@@ -53,8 +49,7 @@ function M.set_background(name, window_id, opts)
     guifg = opts.fg_default
   end
 
-  local cmd = ("highlight! %s guibg=%s guifg=%s"):format(name, guibg, guifg)
-  vim.cmd(cmd)
+  vim.cmd(("highlight! %s guibg=%s guifg=%s"):format(name, guibg, guifg))
 end
 
 function M.link(from, to, force)

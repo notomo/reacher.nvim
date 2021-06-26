@@ -147,7 +147,7 @@ function Origin.enter(self)
   windowlib.enter(self.window_id)
 end
 
-function Origin.jump(self, window_id, row, column, mode)
+function Origin.jump(self, row, column, mode)
   row = row + self._row_offset
   local origin_row = row - self._fillers:offset_from_origin(row)
 
@@ -158,7 +158,7 @@ function Origin.jump(self, window_id, row, column, mode)
   column = column + insert_offset
   local origin_column = column + self._conceals:offset(origin_row, column)
 
-  windowlib.jump(window_id, origin_row, origin_column)
+  windowlib.jump(self.window_id, origin_row, origin_column)
   return origin_row, origin_column
 end
 

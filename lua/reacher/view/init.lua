@@ -1,5 +1,5 @@
 local repository = require("reacher.lib.repository").Repository.new("view")
-local Overlay = require("reacher.view.overlay").Overlay
+local Overlays = require("reacher.view.overlay").Overlays
 local Inputter = require("reacher.view.inputter").Inputter
 local RowRange = require("reacher.model.row_range").RowRange
 local Origin = require("reacher.view.origin").Origin
@@ -22,13 +22,13 @@ function View.open(matcher, opts)
     return err
   end
 
-  local overlay = Overlay.open(matcher, origin)
+  local overlays = Overlays.open(matcher, origin, {})
   local inputter = Inputter.open(function(input_line)
-    overlay:update(input_line)
+    overlays:update(input_line)
   end, opts.input)
 
   local tbl = {
-    _overlay = overlay,
+    _overlays = overlays,
     _inputter = inputter,
     _was_visual_mode = old_mode.is_visual,
     _closed = false,
@@ -50,7 +50,7 @@ function View.close(self, is_cancel)
   self._closed = true
 
   self._inputter:close(is_cancel)
-  self._overlay:close()
+  self._overlays:close()
 
   repository:delete(self._inputter.window_id)
 end
@@ -72,7 +72,7 @@ end
 
 function View.finish(self)
   self:save_history(true)
-  local jump = self._overlay:finish()
+  local jump = self._overlays:finish()
 
   local is_cancel = jump == nil
   self:close(is_cancel)
@@ -87,7 +87,7 @@ function View.finish(self)
 end
 
 function View.move_cursor(self, action_name)
-  self._overlay:move_cursor(action_name)
+  self._overlays:move_cursor(action_name)
 end
 
 function View.get(id)
