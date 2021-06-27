@@ -42,7 +42,7 @@ local gen_readme = function()
 
 This plugin introduces displayed range search buffer.
 
-<img src="https://raw.github.com/wiki/notomo/reacher.nvim/image/demo2.gif" width="1280">
+<img src="https://raw.github.com/wiki/notomo/reacher.nvim/image/demo4.gif" width="1280">
 
 ## Usage
 
