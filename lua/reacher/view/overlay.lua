@@ -54,6 +54,10 @@ function Overlay.enter_origin(self)
   self._origin:enter()
 end
 
+function Overlay.origin_bufnr(self)
+  return vim.api.nvim_win_get_buf(self._origin.window_id)
+end
+
 function Overlay.jump(self, target, mode)
   return self._origin:jump(target.row, target.column, mode)
 end
@@ -134,12 +138,13 @@ end
 function Overlays.finish(self)
   local target = self._targets:current()
   if not target then
-    return
+    return self._current_overlay:origin_bufnr(), nil
   end
 
   local mode = vim.api.nvim_get_mode().mode
-  return function()
-    return self._overlays[target.window_id]:jump(target, mode)
+  local overlay = self._overlays[target.window_id]
+  return overlay:origin_bufnr(), function()
+    return overlay:jump(target, mode)
   end
 end
 

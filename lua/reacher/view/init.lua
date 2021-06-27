@@ -13,7 +13,8 @@ local View = {}
 View.__index = View
 M.View = View
 
-function View.new(matcher, current_origin, other_origins, was_visual_mode, opts)
+function View.new(matcher, current_origin, other_origins, old_visual_modes, opts)
+  local bufnr = vim.api.nvim_get_current_buf()
   local overlays = Overlays.open(matcher, current_origin, other_origins)
   local inputter = Inputter.open(function(input_line)
     overlays:update(input_line)
@@ -22,7 +23,8 @@ function View.new(matcher, current_origin, other_origins, was_visual_mode, opts)
   local tbl = {
     _overlays = overlays,
     _inputter = inputter,
-    _was_visual_mode = was_visual_mode,
+    _old_visual_modes = old_visual_modes,
+    _was_visual_mode = old_visual_modes[bufnr] ~= nil,
     _closed = false,
   }
   local self = setmetatable(tbl, View)
@@ -39,7 +41,7 @@ function View.open_one(matcher, opts)
   if err then
     return err
   end
-  View.new(matcher, current_origin, {}, old_mode.is_visual, opts)
+  View.new(matcher, current_origin, {}, {[bufnr] = old_mode}, opts)
 end
 
 function View.open_multiple(matcher, opts)
@@ -65,7 +67,7 @@ function View.open_multiple(matcher, opts)
     end
   end
 
-  View.new(matcher, current_origin, other_origins, old_mode.is_visual, opts)
+  View.new(matcher, current_origin, other_origins, old_modes, opts)
 end
 
 function View.recall_history(self, offset)
@@ -102,12 +104,12 @@ end
 
 function View.finish(self)
   self:save_history(true)
-  local jump = self._overlays:finish()
+  local bufnr, jump = self._overlays:finish()
 
   local is_cancel = jump == nil
   self:close(is_cancel)
 
-  if self._was_visual_mode then
+  if self._old_visual_modes[bufnr] then
     modelib.restore_visual_mode(is_cancel)
   end
 

@@ -633,6 +633,25 @@ foo
     assert.current_line("hoge")
   end)
 
+  it("stops visual mode if target buffer is different from current buffer", function()
+    helper.set_lines([[
+
+hoge
+]])
+
+    vim.cmd("vnew")
+    helper.set_lines([[
+foo
+]])
+
+    vim.cmd("normal! v")
+    reacher.start_multiple()
+    helper.input("hoge")
+    reacher.finish()
+
+    assert.mode("n")
+  end)
+
 end)
 
 describe("reacher.again()", function()
