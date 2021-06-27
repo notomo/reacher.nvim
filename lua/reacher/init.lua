@@ -14,6 +14,12 @@ function reacher.start_multiple(opts)
   Command.new("start_multiple", opts)
 end
 
+---Execute again the previous call: start() or start_multiple().
+---@param opts table: default {input = "", first_row = nil, last_row = nil}
+function reacher.again(opts)
+  Command.new("again", opts)
+end
+
 ---Move cursor to the first target.
 function reacher.first()
   Command.new("move_cursor", "first")

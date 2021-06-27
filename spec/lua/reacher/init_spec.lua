@@ -635,6 +635,51 @@ foo
 
 end)
 
+describe("reacher.again()", function()
+
+  before_each(helper.before_each)
+  after_each(helper.after_each)
+
+  it("reproduces the last call options", function()
+    helper.set_lines([[
+hoge foo bar
+bar
+]])
+
+    reacher.start({first_row = vim.fn.line("."), last_row = vim.fn.line(".")})
+    reacher.cancel()
+
+    vim.cmd("normal! j")
+    reacher.again()
+    helper.input("bar")
+    reacher.finish()
+
+    assert.current_line("hoge foo bar")
+  end)
+
+  it("executes the same with the last called", function()
+    helper.set_lines([[
+
+hoge
+]])
+
+    vim.cmd("vnew")
+    helper.set_lines([[
+foo
+]])
+
+    reacher.start_multiple()
+    reacher.cancel()
+
+    reacher.again()
+    helper.input("hoge")
+    reacher.finish()
+
+    assert.current_line("hoge")
+  end)
+
+end)
+
 describe("reacher.nvim inputter", function()
 
   before_each(helper.before_each)

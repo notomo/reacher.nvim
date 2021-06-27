@@ -25,6 +25,8 @@ function Command.new(name, ...)
   end
 end
 
+Command.last_call = nil
+
 function Command.start_one(raw_opts)
   local msg = messagelib.validate({opts = {raw_opts, "table", true}})
   if msg then
@@ -42,7 +44,12 @@ function Command.start_one(raw_opts)
     return err
   end
 
-  return View.open_one(matcher, opts)
+  local call = function(extend_opts)
+    return View.open_one(matcher, vim.tbl_deep_extend("force", opts, extend_opts or {}))
+  end
+  Command.last_call = call
+
+  return call()
 end
 
 function Command.start_multiple(raw_opts)
@@ -62,7 +69,30 @@ function Command.start_multiple(raw_opts)
     return err
   end
 
-  return View.open_multiple(matcher, opts)
+  local call = function(extend_opts)
+    return View.open_multiple(matcher, vim.tbl_deep_extend("force", opts, extend_opts or {}))
+  end
+  Command.last_call = call
+
+  return call()
+end
+
+function Command.again(extend_opts)
+  local msg = messagelib.validate({opts = {extend_opts, "table", true}})
+  if msg then
+    return msg
+  end
+
+  local old = View.current()
+  if old ~= nil then
+    old:close()
+  end
+
+  if not Command.last_call then
+    return Command.start_one(extend_opts)
+  end
+
+  return Command.last_call(extend_opts)
 end
 
 function Command.move_cursor(action_name)
