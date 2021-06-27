@@ -1,9 +1,9 @@
 local windowlib = require("reacher.lib.window")
 local highlightlib = require("reacher.lib.highlight")
 local HlFactory = require("reacher.lib.highlight").HlFactory
-local Collector = require("reacher.model.collector").Collector
-local Position = require("reacher.model.position").Position
-local Targets = require("reacher.model.target").Targets
+local Collector = require("reacher.core.collector").Collector
+local Position = require("reacher.core.position").Position
+local Targets = require("reacher.core.target").Targets
 local vim = vim
 
 local M = {}

@@ -1,6 +1,6 @@
 local helper = require("reacher.lib.testlib.helper")
 
-describe("reacher.model.column_range.calc_displayed_last_line()", function()
+describe("reacher.core.column_range.calc_displayed_last_line()", function()
 
   before_each(helper.before_each)
   after_each(helper.after_each)
@@ -75,7 +75,7 @@ hidden]],
       helper.set_lines(c.lines)
       vim.fn.winrestview({lnum = c.topline or 1, topline = c.topline or 1})
 
-      local line = require("reacher.model.column_range").calc_displayed_last_line()
+      local line = require("reacher.core.column_range").calc_displayed_last_line()
 
       assert.equals(c.expected, line)
     end)

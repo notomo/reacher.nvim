@@ -1,5 +1,5 @@
 local View = require("reacher.view").View
-local Matcher = require("reacher.model.matcher").Matcher
+local Matcher = require("reacher.core.matcher").Matcher
 local messagelib = require("reacher.lib.message")
 local vim = vim
 

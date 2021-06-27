@@ -1,5 +1,5 @@
-local Position = require("reacher.model.position").Position
-local Distance = require("reacher.model.distance").Distance
+local Position = require("reacher.core.position").Position
+local Distance = require("reacher.core.distance").Distance
 local listlib = require("reacher.lib.list")
 local vim = vim
 

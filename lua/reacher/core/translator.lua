@@ -1,4 +1,4 @@
-local Target = require("reacher.model.target").Target
+local Target = require("reacher.core.target").Target
 local vim = vim
 
 local M = {}

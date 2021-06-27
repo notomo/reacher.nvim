@@ -1,4 +1,4 @@
-local Line = require("reacher.model.line").Line
+local Line = require("reacher.core.line").Line
 
 local vim = vim
 

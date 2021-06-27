@@ -1,6 +1,6 @@
 local helper = require("reacher.lib.testlib.helper")
 
-describe("reacher.model.conceal", function()
+describe("reacher.core.conceal", function()
 
   before_each(helper.before_each)
   after_each(helper.after_each)
@@ -47,7 +47,7 @@ describe("reacher.model.conceal", function()
 
       local window_id = vim.api.nvim_get_current_win()
       local row = 1
-      local conceal_line = require("reacher.model.conceal").ConcealLine.new(window_id, row, c.disable)
+      local conceal_line = require("reacher.core.conceal").ConcealLine.new(window_id, row, c.disable)
       assert.equals(c.expected, conceal_line.str)
     end)
   end

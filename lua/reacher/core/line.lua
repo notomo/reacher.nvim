@@ -1,4 +1,4 @@
-local ColumnRanges = require("reacher.model.column_range").ColumnRanges
+local ColumnRanges = require("reacher.core.column_range").ColumnRanges
 
 local vim = vim
 

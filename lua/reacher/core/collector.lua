@@ -1,5 +1,5 @@
-local Translator = require("reacher.model.translator").Translator
-local regex_matcher = require("reacher.model.matcher").Matcher.must("regex")
+local Translator = require("reacher.core.translator").Translator
+local regex_matcher = require("reacher.core.matcher").Matcher.must("regex")
 local vim = vim
 
 local M = {}

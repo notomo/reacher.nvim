@@ -1,8 +1,8 @@
-local Position = require("reacher.model.position").Position
-local Folds = require("reacher.model.fold").Folds
-local Fillers = require("reacher.model.diff_filler").Fillers
-local Conceals = require("reacher.model.conceal").Conceals
-local Lines = require("reacher.model.line").Lines
+local Position = require("reacher.core.position").Position
+local Folds = require("reacher.core.fold").Folds
+local Fillers = require("reacher.core.diff_filler").Fillers
+local Conceals = require("reacher.core.conceal").Conceals
+local Lines = require("reacher.core.line").Lines
 local windowlib = require("reacher.lib.window")
 local vim = vim
 
