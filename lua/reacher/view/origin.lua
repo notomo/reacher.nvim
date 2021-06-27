@@ -1,6 +1,6 @@
 local Position = require("reacher.model.position").Position
 local Folds = require("reacher.model.fold").Folds
-local Fillers = require("reacher.model.diff").Fillers
+local Fillers = require("reacher.model.diff_filler").Fillers
 local Conceals = require("reacher.model.conceal").Conceals
 local Lines = require("reacher.model.line").Lines
 local windowlib = require("reacher.lib.window")
