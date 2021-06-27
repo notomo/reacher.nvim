@@ -7,7 +7,9 @@ ConcealLine.__index = ConcealLine
 M.ConcealLine = ConcealLine
 
 function ConcealLine.new(window_id, row, disable)
-  local line = vim.fn.getline(row)
+  local line = vim.api.nvim_win_call(window_id, function()
+    return vim.fn.getline(row)
+  end)
 
   if disable then
     local tbl = {str = line, _offsets = {}}
