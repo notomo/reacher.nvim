@@ -36,7 +36,7 @@ function View.open_one(matcher, opts)
   local window_id = vim.api.nvim_get_current_win()
   local row_range = RowRange.new(window_id, opts.first_row, opts.last_row)
   local current_origin, err = Origin.new(window_id, old_mode, bufnr, row_range)
-  if err ~= nil then
+  if err then
     return err
   end
   View.new(matcher, current_origin, {}, old_mode.is_visual, opts)
@@ -55,7 +55,7 @@ function View.open_multiple(matcher, opts)
   for _, window_id in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
     local bufnr = vim.api.nvim_win_get_buf(window_id)
     local origin, err = Origin.new(window_id, old_modes[bufnr] or normal_mode, bufnr, RowRange.new(window_id))
-    if err ~= nil then
+    if err then
       return err
     end
     if window_id == current_window_id then
@@ -111,7 +111,7 @@ function View.finish(self)
     modelib.restore_visual_mode(is_cancel)
   end
 
-  if jump ~= nil then
+  if jump then
     return jump()
   end
 end

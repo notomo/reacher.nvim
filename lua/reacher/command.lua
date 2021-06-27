@@ -34,13 +34,13 @@ function Command.start_one(raw_opts)
   end
 
   local old = View.current()
-  if old ~= nil then
+  if old then
     old:close()
   end
 
   local opts = vim.tbl_deep_extend("force", {matcher_opts = {name = "regex"}}, raw_opts or {})
   local matcher, err = Matcher.new(opts.matcher_opts.name)
-  if err ~= nil then
+  if err then
     return err
   end
 
@@ -59,13 +59,13 @@ function Command.start_multiple(raw_opts)
   end
 
   local old = View.current()
-  if old ~= nil then
+  if old then
     old:close()
   end
 
   local opts = vim.tbl_deep_extend("force", {matcher_opts = {name = "regex"}}, raw_opts or {})
   local matcher, err = Matcher.new(opts.matcher_opts.name)
-  if err ~= nil then
+  if err then
     return err
   end
 
@@ -84,7 +84,7 @@ function Command.again(extend_opts)
   end
 
   local old = View.current()
-  if old ~= nil then
+  if old then
     old:close()
   end
 
@@ -99,7 +99,7 @@ function Command.move_cursor(action_name)
   vim.validate({action_name = {action_name, "string"}})
 
   local view = View.current()
-  if view == nil then
+  if not view then
     return IsNotStartedErr
   end
 
@@ -108,12 +108,12 @@ end
 
 function Command.finish()
   local view = View.current()
-  if view == nil then
+  if not view then
     return IsNotStartedErr
   end
 
   local row, column = view:finish()
-  if row ~= nil then
+  if row then
     messagelib.info(("jumped to (%d, %d)"):format(row, column))
   end
 end
@@ -121,7 +121,7 @@ end
 function Command.recall_history(offset)
   vim.validate({offset = {offset, "number"}})
   local view = View.current()
-  if view == nil then
+  if not view then
     return IsNotStartedErr
   end
   view:recall_history(offset)
@@ -129,7 +129,7 @@ end
 
 function Command.cancel()
   local view = View.current()
-  if view == nil then
+  if not view then
     return
   end
   view:cancel()
@@ -139,7 +139,7 @@ end
 function Command.close(id)
   vim.validate({id = {id, "number"}})
   local view = View.get(id)
-  if view == nil then
+  if not view then
     return
   end
   view:cancel()

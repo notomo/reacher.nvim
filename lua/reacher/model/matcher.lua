@@ -11,7 +11,7 @@ function Matcher.new(name)
   vim.validate({name = {name, "string"}})
 
   local matcher = modulelib.find("reacher.matcher." .. name)
-  if matcher == nil then
+  if not matcher then
     return nil, "not found matcher: " .. name
   end
 
@@ -21,7 +21,7 @@ end
 
 function Matcher.must(name)
   local matcher, err = Matcher.new(name)
-  if err ~= nil then
+  if err then
     error(err)
   end
   return matcher
