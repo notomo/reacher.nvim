@@ -52,18 +52,16 @@ function Inputter.open(callback, default_input)
   vim.wo[window_id].winhighlight = "Normal:Normal,SignColumn:Normal"
   vim.wo[window_id].signcolumn = "yes:1"
 
-  local on_leave = ("autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout <buffer=%s> ++once lua require('reacher.command').Command.new('close', %s)"):format(bufnr, window_id)
-  vim.cmd(on_leave)
+  vim.cmd(("autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout <buffer=%s> ++once lua require('reacher.command').Command.new('close', %s)"):format(bufnr, window_id))
+  vim.cmd(("autocmd InsertLeave <buffer=%s> lua require('reacher.view.inputter').on_insert_leave()"):format(bufnr))
+  vim.cmd(("autocmd InsertEnter <buffer=%s> lua require('reacher.view.inputter').on_insert_enter()"):format(bufnr))
 
-  local on_insert_leave = ("autocmd InsertLeave <buffer=%s> lua require('reacher.view.inputter').on_insert_leave()"):format(bufnr)
-  vim.cmd(on_insert_leave)
-
-  local on_insert_enter = ("autocmd InsertEnter <buffer=%s> lua require('reacher.view.inputter').on_insert_enter()"):format(bufnr)
-  vim.cmd(on_insert_enter)
+  local tbl = {window_id = window_id, _bufnr = bufnr, _history_offset = 0}
+  local self = setmetatable(tbl, Inputter)
 
   vim.api.nvim_buf_attach(bufnr, false, {
     on_lines = wraplib.traceback(function()
-      local input_line = vim.api.nvim_buf_get_lines(bufnr, 0, -1, true)[1]
+      local input_line = self:_get_line()
       callback(input_line)
 
       if vim.api.nvim_buf_line_count(bufnr) == 1 then
@@ -74,11 +72,18 @@ function Inputter.open(callback, default_input)
       end)
     end),
   })
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, true, {vim.split(default_input, "\n", true)[1]})
+  self:_set_line(default_input)
   vim.cmd("startinsert!")
 
-  local tbl = {window_id = window_id, _bufnr = bufnr, _history_offset = 0}
-  return setmetatable(tbl, Inputter)
+  return self
+end
+
+function Inputter._set_line(self, line)
+  vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, true, {vim.split(line, "\n", true)[1]})
+end
+
+function Inputter._get_line(self)
+  return vim.api.nvim_buf_get_lines(self._bufnr, 0, -1, true)[1]
 end
 
 function Inputter.recall_history(self, offset)
@@ -91,7 +96,7 @@ function Inputter.recall_history(self, offset)
   next_index = math.max(next_index, -vim.fn.histnr("search"))
 
   local history = vim.fn.histget("search", next_index)
-  vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, true, {history})
+  self:_set_line(history)
   cursorlib.set_column(#history + 1)
 
   self._history_offset = next_index
@@ -99,7 +104,7 @@ end
 
 function Inputter.save_history(self, include_register)
   vim.validate({include_register = {include_register, "boolean", true}})
-  local input_line = vim.api.nvim_buf_get_lines(self._bufnr, 0, -1, true)[1]
+  local input_line = self:_get_line()
   vim.fn.histadd("search", input_line)
   if include_register then
     vim.fn.setreg("/", input_line)
