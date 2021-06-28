@@ -23,13 +23,20 @@ function View.new(matcher, current_origin, other_origins, old_visual_modes, opts
   local tbl = {
     _overlays = overlays,
     _inputter = inputter,
+    _origin_bufnr = bufnr,
     _old_visual_modes = old_visual_modes,
-    _was_visual_mode = old_visual_modes[bufnr] ~= nil,
     _closed = false,
   }
   local self = setmetatable(tbl, View)
 
   repository:set(inputter.window_id, self)
+end
+
+function View._was_visual_mode(self, bufnr)
+  if not self._old_visual_modes[bufnr] then
+    return false
+  end
+  return self._old_visual_modes[bufnr].is_visual
 end
 
 function View.open_one(matcher, opts)
@@ -96,7 +103,7 @@ function View.cancel(self)
   self:save_history()
   self:close(true)
 
-  if self._was_visual_mode then
+  if self:_was_visual_mode(self._origin_bufnr) then
     local mode = vim.api.nvim_get_mode().mode
     modelib.restore_visual_mode(true, mode)
   end
@@ -109,7 +116,7 @@ function View.finish(self)
   local is_cancel = jump == nil
   self:close(is_cancel)
 
-  if self._old_visual_modes[bufnr] then
+  if self:_was_visual_mode(bufnr) then
     modelib.restore_visual_mode(is_cancel)
   end
 
