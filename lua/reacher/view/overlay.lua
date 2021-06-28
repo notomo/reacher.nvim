@@ -1,6 +1,6 @@
 local windowlib = require("reacher.lib.window")
 local highlightlib = require("reacher.lib.highlight")
-local HlFactory = require("reacher.lib.highlight").HlFactory
+local HighlighterFactory = require("reacher.lib.highlight").HighlighterFactory
 local Collector = require("reacher.core.collector").Collector
 local Position = require("reacher.core.position").Position
 local Targets = require("reacher.core.target").Targets
@@ -40,8 +40,8 @@ function Overlay.open(matcher, origin, for_current_window)
   local tbl = {
     _window_id = window_id,
     _origin = origin,
-    _match_highlight = HlFactory.new("reacher", bufnr),
-    _cursor_highlight = HlFactory.new("reacher_cursor", bufnr),
+    _match_highlight = HighlighterFactory.new("reacher", bufnr),
+    _cursor_highlight = HighlighterFactory.new("reacher_cursor", bufnr),
     _collector = Collector.new(origin.window_id, matcher, origin.lines, cursor),
   }
   return setmetatable(tbl, Overlay), nil

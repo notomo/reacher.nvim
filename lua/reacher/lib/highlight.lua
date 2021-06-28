@@ -16,24 +16,24 @@ function Highlighter.add_virtual(self, hl_group, row, start_col, _, str)
   })
 end
 
-local HlFactory = {}
-HlFactory.__index = HlFactory
-M.HlFactory = HlFactory
+local HighlighterFactory = {}
+HighlighterFactory.__index = HighlighterFactory
+M.HighlighterFactory = HighlighterFactory
 
-function HlFactory.new(key, bufnr)
+function HighlighterFactory.new(key, bufnr)
   vim.validate({key = {key, "string"}, bufnr = {bufnr, "number", true}})
   local ns = vim.api.nvim_create_namespace(key)
   local tbl = {_ns = ns, _bufnr = bufnr}
-  return setmetatable(tbl, HlFactory)
+  return setmetatable(tbl, HighlighterFactory)
 end
 
-function HlFactory.create(self, bufnr)
+function HighlighterFactory.create(self, bufnr)
   bufnr = bufnr or self._bufnr
   local highlighter = {_bufnr = bufnr, _ns = self._ns}
   return setmetatable(highlighter, Highlighter)
 end
 
-function HlFactory.reset(self, bufnr)
+function HighlighterFactory.reset(self, bufnr)
   bufnr = bufnr or self._bufnr
   local highlighter = self:create(bufnr)
   vim.api.nvim_buf_clear_namespace(bufnr, self._ns, 0, -1)
