@@ -25,11 +25,12 @@ function Overlay.open(matcher, origin, for_current_window)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].modifiable = false
 
-  local hl_bg_name = "ReacherBackgroundNormal"
-  if origin:is_floating() then
-    hl_bg_name = "ReacherBackgroundNormalFloat"
-  end
-  vim.wo[window_id].winhighlight = ("Normal:%s,Search:None"):format(hl_bg_name)
+  local hl_group = highlightlib.define_from_background("ReacherBackground", origin.window_id, {
+    fg_hl_group = "Comment",
+    fg_default = "#8d9eb2",
+    bg_default = "#334152",
+  })
+  vim.wo[window_id].winhighlight = ("Normal:%s,Search:None"):format(hl_group)
 
   local cursor
   if for_current_window then
@@ -96,16 +97,6 @@ M.Overlays = Overlays
 
 function Overlays.open(matcher, current_origin, other_origins)
   highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
-  highlightlib.define_from_src("ReacherBackgroundNormal", "Normal", {
-    fg_hl_group = "Comment",
-    fg_default = "#8d9eb2",
-    bg_default = "#334152",
-  })
-  highlightlib.define_from_src("ReacherBackgroundNormalFloat", "NormalFloat", {
-    fg_hl_group = "Comment",
-    fg_default = "#8d9eb2",
-    bg_default = "#334152",
-  })
 
   local current_overlay = Overlay.open(matcher, current_origin, true)
   local overlays = {[current_origin.window_id] = current_overlay}

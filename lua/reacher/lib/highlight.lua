@@ -1,3 +1,5 @@
+local windowlib = require("reacher.lib.window")
+
 local M = {}
 
 local Highlighter = {}
@@ -38,8 +40,21 @@ function HlFactory.reset(self, bufnr)
   return highlighter
 end
 
-function M.define_from_src(name, src_hl_group, opts)
-  local guibg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(src_hl_group)), "bg", "gui")
+function M.define_from_background(prefix, window_id, opts)
+  local winhighlight = {}
+  for _, hl in ipairs(vim.split(vim.wo[window_id].winhighlight, ",", true)) do
+    local k, v = unpack(vim.split(hl, ":", true))
+    winhighlight[k] = v
+  end
+
+  local bg_hl_group
+  if windowlib.is_floating(window_id) then
+    bg_hl_group = winhighlight["NormalFloat"] or winhighlight["Normal"] or "NormalFloat"
+  else
+    bg_hl_group = winhighlight["Normal"] or "Normal"
+  end
+
+  local guibg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(bg_hl_group)), "bg", "gui")
   if guibg == "" then
     guibg = opts.bg_default
   end
@@ -49,7 +64,9 @@ function M.define_from_src(name, src_hl_group, opts)
     guifg = opts.fg_default
   end
 
+  local name = prefix .. bg_hl_group
   vim.cmd(("highlight! %s guibg=%s guifg=%s"):format(name, guibg, guifg))
+  return name
 end
 
 function M.link(from, to, force)
