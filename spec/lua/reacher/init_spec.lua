@@ -296,6 +296,7 @@ foo
     reacher.cancel()
 
     assert.mode("v")
+    assert.restored_visual(true)
     assert.current_line("hoge")
   end)
 
@@ -504,6 +505,7 @@ hoge
 
     assert.current_line("hoge")
     assert.column(4)
+    assert.restored_visual(false)
   end)
 
   it("does not show the current position target if it is not in row range", function()

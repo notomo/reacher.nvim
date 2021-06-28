@@ -105,7 +105,7 @@ function View.cancel(self)
 
   if self:_was_visual_mode(self._origin_bufnr) then
     local mode = vim.api.nvim_get_mode().mode
-    modelib.restore_visual_mode(true, mode)
+    self:_restore_visual_mode(true, mode)
   end
 end
 
@@ -117,7 +117,7 @@ function View.finish(self)
   self:close(is_cancel)
 
   if self:_was_visual_mode(bufnr) then
-    modelib.restore_visual_mode(is_cancel)
+    self:_restore_visual_mode(is_cancel)
   end
 
   if jump then
@@ -136,6 +136,13 @@ end
 function View.current()
   local id = vim.api.nvim_get_current_win()
   return View.get(id)
+end
+
+-- HACK: for testing
+View._visual_mode = false
+function View._restore_visual_mode(_, ...)
+  modelib.restore_visual_mode(...)
+  View._visual_mode = true
 end
 
 return M
