@@ -4,6 +4,7 @@ local HighlighterFactory = require("reacher.lib.highlight").HighlighterFactory
 local Collector = require("reacher.core.collector").Collector
 local Position = require("reacher.core.position").Position
 local Targets = require("reacher.core.target").Targets
+local FloatingMasks = require("reacher.view.floating_mask").FloatingMasks
 local vim = vim
 
 local M = {}
@@ -42,7 +43,7 @@ function Overlay.open(matcher, origin, for_current_window)
     _origin = origin,
     _match_highlight = HighlighterFactory.new("reacher", bufnr),
     _cursor_highlight = HighlighterFactory.new("reacher_cursor", bufnr),
-    _collector = Collector.new(origin.window_id, matcher, origin.lines, cursor),
+    _collector = Collector.new(origin.window_id, matcher, origin.lines, origin.number_sign_width, cursor),
   }
   return setmetatable(tbl, Overlay), nil
 end
@@ -98,6 +99,7 @@ M.Overlays = Overlays
 function Overlays.open(matcher, current_origin, other_origins)
   highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
 
+  local floating_masks = FloatingMasks.new()
   local current_overlay = Overlay.open(matcher, current_origin, true)
   local overlays = {[current_origin.window_id] = current_overlay}
   for _, origin in ipairs(other_origins) do
@@ -105,11 +107,14 @@ function Overlays.open(matcher, current_origin, other_origins)
   end
 
   local win_pos = vim.api.nvim_win_get_position(current_origin.window_id)
+  local config = vim.api.nvim_win_get_config(current_origin.window_id)
+  local row_offset, col_offset = windowlib.one_side_border_offsets(config)
   local tbl = {
     _current_overlay = current_overlay,
     _overlays = overlays,
     _targets = Targets.new({}),
-    _cursor = Position.new(current_origin.cursor.row + win_pos[1] - 1, current_origin.cursor.column + win_pos[2]),
+    _cursor = Position.new(current_origin.cursor.row + win_pos[1] + row_offset - 1, current_origin.cursor.column + win_pos[2] + col_offset),
+    _floating_masks = floating_masks,
   }
   return setmetatable(tbl, Overlays)
 end
@@ -144,7 +149,7 @@ function Overlays.update(self, input_line)
   for _, overlay in pairs(self._overlays) do
     raw_targets = vim.list_extend(raw_targets, overlay:collect_targets(input_line))
   end
-  local targets = Targets.new(raw_targets)
+  local targets = Targets.new(self._floating_masks:filter(raw_targets))
 
   self:_reset_match_highlight()
   for _, target in targets:iter() do

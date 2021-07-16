@@ -82,6 +82,7 @@ function Origin.new(window_id, old_mode, bufnr, row_range)
     window_id = window_id,
     lines = lines,
     cursor = cursor_pos,
+    number_sign_width = number_sign_width,
     _row = row,
     _row_offset = row_offset,
     _column = column,

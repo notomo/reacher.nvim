@@ -34,7 +34,7 @@ local main = function(comparison, result_dir)
     result_dir = result_dir,
     cleanup = function()
       vim.cmd("silent! %bwipeout!")
-      require("reacher.lib.module").cleanup()
+      require("vusted.helper").cleanup_loaded_modules("reacher")
     end,
   })
   local before = test:run({hash = comparison})

@@ -1,6 +1,5 @@
 local Position = require("reacher.core.position").Position
 local Distance = require("reacher.core.distance").Distance
-local listlib = require("reacher.lib.list")
 local vim = vim
 
 local M = {}
@@ -9,10 +8,11 @@ local Target = setmetatable({}, Position)
 Target.__index = Target
 M.Target = Target
 
-function Target.new(window_id, row, column, column_end, display_row, display_column, str, is_virtual)
+function Target.new(window_id, row, column, column_end, display_row, display_column, zindex, str, is_virtual)
   vim.validate({
     window_id = {window_id, "number"},
     str = {str, "string"},
+    zindex = {zindex, "number"},
     column_end = {column_end, "number"},
     display_row = {display_row, "number"},
     display_column = {display_column, "number"},
@@ -21,6 +21,7 @@ function Target.new(window_id, row, column, column_end, display_row, display_col
   local tbl = {
     window_id = window_id,
     str = str,
+    zindex = zindex,
     column_end = column_end,
     display_row = display_row,
     display_column = display_column,
@@ -31,8 +32,8 @@ function Target.new(window_id, row, column, column_end, display_row, display_col
   return setmetatable(tbl, setmetatable(position, Target))
 end
 
-function Target.new_virtual(window_id, row, column, display_row, display_column, str)
-  return Target.new(window_id, row, column, column + #str - 1, display_row, display_column, str, true)
+function Target.new_virtual(window_id, row, column, display_row, display_column, zindex, str)
+  return Target.new(window_id, row, column, column + #str - 1, display_row, display_column, zindex, str, true)
 end
 
 function Target.highlight(self, highlighter, hl_group)
@@ -150,10 +151,10 @@ function Targets.side_first(self)
     return self
   end
   local index = 1
-  local min = self._targets[index].display_column
+  local first = self._targets[index]
   for i, target in ipairs(self._targets) do
-    if target.display_column < min then
-      min = target.display_column
+    if target.display_column < first.display_column or (target.display_column == first.display_column and target.display_row <= first.display_row) then
+      first = target
       index = i
     end
   end
@@ -165,11 +166,11 @@ function Targets.side_last(self)
     return self
   end
   local index = 1
-  local max = self._targets[index].display_column
-  for i, target in ipairs(listlib.reverse(self._targets)) do
-    if target.display_column > max then
-      max = target.display_column
-      index = #self._targets - i + 1
+  local last = self._targets[index]
+  for i, target in ipairs(self._targets) do
+    if last.display_column < target.display_column or (last.display_column == target.display_column and last.display_row <= target.display_row) then
+      last = target
+      index = i
     end
   end
   return Targets.new(self._targets, index)
@@ -181,24 +182,24 @@ function Targets.side_next(self)
     return self
   end
 
-  local columns = {}
+  local targets = {}
   for i, target in ipairs(self._targets) do
-    if target.display_column > current.display_column or (target.display_column == current.display_column and i > self._index) then
-      table.insert(columns, {index = i, display_column = target.display_column})
+    if current.display_column < target.display_column or (current.display_column == target.display_column and current.display_row < target.display_row) then
+      table.insert(targets, {index = i, target = target})
     end
   end
 
-  if #columns == 0 then
+  if #targets == 0 then
     return self:side_first()
   end
 
-  table.sort(columns, function(a, b)
-    if a.display_column ~= b.display_column then
-      return a.display_column < b.display_column
+  table.sort(targets, function(a, b)
+    if a.target.display_column ~= b.target.display_column then
+      return a.target.display_column < b.target.display_column
     end
-    return a.index < b.index
+    return a.target.display_row < b.target.display_row
   end)
-  return Targets.new(self._targets, columns[1].index)
+  return Targets.new(self._targets, targets[1].index)
 end
 
 function Targets.side_previous(self)
@@ -207,24 +208,24 @@ function Targets.side_previous(self)
     return self
   end
 
-  local columns = {}
+  local targets = {}
   for i, target in ipairs(self._targets) do
-    if target.display_column < current.display_column or (target.display_column == current.display_column and i < self._index) then
-      table.insert(columns, {index = i, display_column = target.display_column})
+    if target.display_column < current.display_column or (target.display_column == current.display_column and target.display_row < current.display_row) then
+      table.insert(targets, {index = i, target = target})
     end
   end
 
-  if #columns == 0 then
+  if #targets == 0 then
     return self:side_last()
   end
 
-  table.sort(columns, function(a, b)
-    if a.display_column ~= b.display_column then
-      return a.display_column > b.display_column
+  table.sort(targets, function(a, b)
+    if a.target.display_column ~= b.target.display_column then
+      return a.target.display_column > b.target.display_column
     end
-    return a.index > b.index
+    return a.target.display_row > b.target.display_row
   end)
-  return Targets.new(self._targets, columns[1].index)
+  return Targets.new(self._targets, targets[1].index)
 end
 
 function Targets.match(self, position)

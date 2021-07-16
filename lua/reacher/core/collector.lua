@@ -8,11 +8,12 @@ local Collector = {}
 Collector.__index = Collector
 M.Collector = Collector
 
-function Collector.new(window_id, matcher, lines, cursor)
+function Collector.new(window_id, matcher, lines, number_sign_width, cursor)
   vim.validate({
     window_id = {window_id, "number"},
     matcher = {matcher, "table"},
     lines = {lines, "table"},
+    number_sign_width = {number_sign_width, "number"},
     cursor = {cursor, "table", true},
   })
 
@@ -22,7 +23,7 @@ function Collector.new(window_id, matcher, lines, cursor)
   end
 
   local tbl = {
-    _translator = Translator.new(window_id, matcher, regex_matcher),
+    _translator = Translator.new(window_id, matcher, regex_matcher, number_sign_width),
     _raw_lines = raw_lines,
     _cursor = cursor,
   }

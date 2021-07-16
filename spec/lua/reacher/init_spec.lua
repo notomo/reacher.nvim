@@ -654,6 +654,28 @@ foo
     assert.mode("n")
   end)
 
+  it("can mask targets by floating windows", function()
+    helper.set_lines([[
+foo
+hoge
+]])
+
+    local bufnr = vim.api.nvim_create_buf(false, true)
+    vim.api.nvim_open_win(bufnr, false, {
+      width = 10,
+      height = 10,
+      relative = "editor",
+      row = 0,
+      col = 0,
+      style = "minimal",
+    })
+    reacher.start_multiple()
+    helper.input("hoge")
+    reacher.finish()
+
+    assert.current_line("foo")
+  end)
+
 end)
 
 describe("reacher.again()", function()
