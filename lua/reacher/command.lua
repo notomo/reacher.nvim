@@ -9,8 +9,6 @@ local Command = {}
 Command.__index = Command
 M.Command = Command
 
-local IsNotStartedErr = "is not started"
-
 function Command.new(name, ...)
   local args = {...}
   local f = function()
@@ -98,18 +96,18 @@ end
 function Command.move_cursor(action_name)
   vim.validate({action_name = {action_name, "string"}})
 
-  local view = View.current()
-  if not view then
-    return IsNotStartedErr
+  local view, err = View.current()
+  if err then
+    return err
   end
 
   view:move_cursor(action_name)
 end
 
 function Command.finish()
-  local view = View.current()
-  if not view then
-    return IsNotStartedErr
+  local view, err = View.current()
+  if err then
+    return err
   end
 
   local row, column = view:finish()
@@ -120,16 +118,16 @@ end
 
 function Command.recall_history(offset)
   vim.validate({offset = {offset, "number"}})
-  local view = View.current()
-  if not view then
-    return IsNotStartedErr
+  local view, err = View.current()
+  if err then
+    return err
   end
   view:recall_history(offset)
 end
 
 function Command.cancel()
-  local view = View.current()
-  if not view then
+  local view, err = View.current()
+  if err then
     return
   end
   view:cancel()

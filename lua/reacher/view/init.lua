@@ -135,7 +135,11 @@ end
 
 function View.current()
   local id = vim.api.nvim_get_current_win()
-  return View.get(id)
+  local view = View.get(id)
+  if not view then
+    return nil, "is not started"
+  end
+  return view, nil
 end
 
 -- HACK: for testing
