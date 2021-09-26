@@ -60,12 +60,6 @@ function Origin.new(window_id, old_mode, bufnr, row_range)
     column = saved.leftcol
   end
 
-  local config = vim.api.nvim_win_get_config(window_id)
-  if config.relative ~= "" then
-    row = row + config.row[false]
-    column = column + config.col[false]
-  end
-
   local first_column = saved.leftcol + 1
   local last_column = saved.leftcol + width
 
