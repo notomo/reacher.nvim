@@ -42,13 +42,10 @@ function Origin.new(window_id, old_mode, bufnr, row_range)
 
   local cursor = Position.cursor(window_id)
   local saved
-  local number_sign_width
   vim.api.nvim_win_call(window_id, function()
     saved = vim.fn.winsaveview()
-    vim.api.nvim_win_set_cursor(window_id, {cursor.row, 0})
-    number_sign_width = vim.fn.wincol() - 1
-    vim.fn.winrestview(saved)
   end)
+  local number_sign_width = vim.fn.getwininfo(window_id)[1].textoff
 
   local width = vim.api.nvim_win_get_width(window_id) - number_sign_width
 
