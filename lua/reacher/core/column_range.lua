@@ -74,10 +74,10 @@ function M.calc_displayed_last_line()
   end
 
   local saved = vim.fn.winsaveview()
-  local scrolloff = vim.api.nvim_exec("silent! echo &scrolloff", true)
-  vim.cmd("silent! noautocmd setlocal scrolloff=0")
+  local scrolloff = vim.api.nvim_get_option_value("scrolloff", {scope = "local"})
+  vim.api.nvim_set_option_value("scrolloff", 0, {scope = "local"})
   local reset = function()
-    vim.cmd("silent! noautocmd setlocal scrolloff=" .. tostring(scrolloff))
+    vim.api.nvim_set_option_value("scrolloff", scrolloff, {scope = "local"})
     vim.fn.winrestview(saved)
   end
 

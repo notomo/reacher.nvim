@@ -170,8 +170,8 @@ function M._view_position(first_row, last_row, given_range)
 
   local saved = vim.fn.winsaveview()
 
-  local scrolloff = vim.api.nvim_exec("silent! echo &scrolloff", true)
-  vim.cmd("silent! noautocmd setlocal scrolloff=0")
+  local scrolloff = vim.api.nvim_get_option_value("scrolloff", {scope = "local"})
+  vim.api.nvim_set_option_value("scrolloff", 0, {scope = "local"})
 
   vim.cmd(("silent! noautocmd %d"):format(first_row))
   local win_first_row = vim.fn.winline()
@@ -179,7 +179,7 @@ function M._view_position(first_row, last_row, given_range)
 
   vim.cmd(("silent! noautocmd %d"):format(last_row))
   local win_last_row = vim.fn.winline()
-  vim.cmd("silent! noautocmd setlocal scrolloff=" .. tostring(scrolloff))
+  vim.api.nvim_set_option_value("scrolloff", scrolloff, {scope = "local"})
   vim.fn.winrestview(saved)
 
   return win_first_row, win_last_row - win_first_row + 1

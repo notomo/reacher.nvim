@@ -4,9 +4,9 @@ local M = require("vusted.helper")
 M.root = M.find_plugin_root(plugin_name)
 
 function M.before_each()
-  vim.cmd("set wrap")
-  vim.cmd("set norightleft")
-  vim.cmd("set conceallevel=0")
+  vim.api.nvim_set_option_value("wrap", true, {scope = "global"})
+  vim.api.nvim_set_option_value("rightleft", false, {scope = "global"})
+  vim.api.nvim_set_option_value("conceallevel", 0, {scope = "global"})
   vim.o.ignorecase = false
   vim.o.smartcase = false
   vim.o.lines = 24

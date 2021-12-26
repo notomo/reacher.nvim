@@ -600,7 +600,7 @@ hogeb
   end)
 
   it("shows error if `rightleft`", function()
-    vim.cmd("setlocal rightleft")
+    vim.api.nvim_set_option_value("rightleft", true, {scope = "local"})
     reacher.start()
     assert.exists_message("`rightleft` is not supported")
   end)
