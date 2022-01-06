@@ -1,12 +1,11 @@
 local helper = require("reacher.lib.testlib.helper")
 
 describe("reacher.core.column_range.calc_displayed_last_line()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
   for _, c in ipairs({
-    {lines = [[]], expected = nil},
+    { lines = [[]], expected = nil },
     {
       lines = [[
 hoge]],
@@ -73,12 +72,11 @@ hidden]],
       vim.o.lines = (c.height or 9) + 1 + 1 -- statusline, commandline
       vim.o.columns = 20
       helper.set_lines(c.lines)
-      vim.fn.winrestview({lnum = c.topline or 1, topline = c.topline or 1})
+      vim.fn.winrestview({ lnum = c.topline or 1, topline = c.topline or 1 })
 
       local line = require("reacher.core.column_range").calc_displayed_last_line()
 
       assert.equals(c.expected, line)
     end)
   end
-
 end)

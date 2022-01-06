@@ -9,13 +9,23 @@ local scenario = function(ctx)
   vim.o.background = "dark"
   vim.o.hlsearch = false
 
-  vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split([[
+  vim.api.nvim_buf_set_lines(
+    0,
+    0,
+    -1,
+    false,
+    vim.split(
+      [[
 hoge
 hoge
 hoge
-]], "\n", true))
+]],
+      "\n",
+      true
+    )
+  )
 
-  reacher.start({input = "hoge"})
+  reacher.start({ input = "hoge" })
   ctx:screenshot()
 
   reacher.next()
@@ -37,10 +47,10 @@ local main = function(comparison, result_dir)
       require("vusted.helper").cleanup_loaded_modules("reacher")
     end,
   })
-  local before = test:run({hash = comparison})
+  local before = test:run({ hash = comparison })
   before:write_replay_script()
 
-  local after = test:run({hash = nil})
+  local after = test:run({ hash = nil })
   after:write_replay_script()
 
   before:diff(after):write_replay_script()

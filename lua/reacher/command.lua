@@ -10,7 +10,7 @@ Command.__index = Command
 M.Command = Command
 
 function Command.new(name, ...)
-  local args = {...}
+  local args = { ... }
   local f = function()
     return Command[name](unpack(args))
   end
@@ -26,7 +26,7 @@ end
 Command.last_call = nil
 
 function Command.start_one(raw_opts)
-  local msg = messagelib.validate({opts = {raw_opts, "table", true}})
+  local msg = messagelib.validate({ opts = { raw_opts, "table", true } })
   if msg then
     return msg
   end
@@ -36,7 +36,7 @@ function Command.start_one(raw_opts)
     old:close()
   end
 
-  local opts = vim.tbl_deep_extend("force", {matcher_opts = {name = "regex"}}, raw_opts or {})
+  local opts = vim.tbl_deep_extend("force", { matcher_opts = { name = "regex" } }, raw_opts or {})
   local matcher, err = Matcher.new(opts.matcher_opts.name)
   if err then
     return err
@@ -51,7 +51,7 @@ function Command.start_one(raw_opts)
 end
 
 function Command.start_multiple(raw_opts)
-  local msg = messagelib.validate({opts = {raw_opts, "table", true}})
+  local msg = messagelib.validate({ opts = { raw_opts, "table", true } })
   if msg then
     return msg
   end
@@ -61,7 +61,7 @@ function Command.start_multiple(raw_opts)
     old:close()
   end
 
-  local opts = vim.tbl_deep_extend("force", {matcher_opts = {name = "regex"}}, raw_opts or {})
+  local opts = vim.tbl_deep_extend("force", { matcher_opts = { name = "regex" } }, raw_opts or {})
   local matcher, err = Matcher.new(opts.matcher_opts.name)
   if err then
     return err
@@ -76,7 +76,7 @@ function Command.start_multiple(raw_opts)
 end
 
 function Command.again(extend_opts)
-  local msg = messagelib.validate({opts = {extend_opts, "table", true}})
+  local msg = messagelib.validate({ opts = { extend_opts, "table", true } })
   if msg then
     return msg
   end
@@ -94,7 +94,7 @@ function Command.again(extend_opts)
 end
 
 function Command.move_cursor(action_name)
-  vim.validate({action_name = {action_name, "string"}})
+  vim.validate({ action_name = { action_name, "string" } })
 
   local view, err = View.current()
   if err then
@@ -117,7 +117,7 @@ function Command.finish()
 end
 
 function Command.recall_history(offset)
-  vim.validate({offset = {offset, "number"}})
+  vim.validate({ offset = { offset, "number" } })
   local view, err = View.current()
   if err then
     return err
@@ -135,7 +135,7 @@ function Command.cancel()
 end
 
 function Command.close(id)
-  vim.validate({id = {id, "number"}})
+  vim.validate({ id = { id, "number" } })
   local view = View.get(id)
   if not view then
     return

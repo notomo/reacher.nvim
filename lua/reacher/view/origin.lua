@@ -92,14 +92,14 @@ function Origin.is_floating(self)
 end
 
 function Origin.copy_to_floating_win(self, bufnr)
-  local bufpos = {1, 0}
+  local bufpos = { 1, 0 }
   local row = self._row
   local first_row = vim.api.nvim_win_call(self.window_id, function()
     return vim.fn.line("w0")
   end)
   -- HACK: ?
   if first_row <= 2 then
-    bufpos = {first_row - 1, 0}
+    bufpos = { first_row - 1, 0 }
     row = row - 1
   end
 
@@ -170,8 +170,8 @@ function M._view_position(first_row, last_row, given_range)
 
   local saved = vim.fn.winsaveview()
 
-  local scrolloff = vim.api.nvim_get_option_value("scrolloff", {scope = "local"})
-  vim.api.nvim_set_option_value("scrolloff", 0, {scope = "local"})
+  local scrolloff = vim.api.nvim_get_option_value("scrolloff", { scope = "local" })
+  vim.api.nvim_set_option_value("scrolloff", 0, { scope = "local" })
 
   vim.cmd(("silent! noautocmd %d"):format(first_row))
   local win_first_row = vim.fn.winline()
@@ -179,7 +179,7 @@ function M._view_position(first_row, last_row, given_range)
 
   vim.cmd(("silent! noautocmd %d"):format(last_row))
   local win_last_row = vim.fn.winline()
-  vim.api.nvim_set_option_value("scrolloff", scrolloff, {scope = "local"})
+  vim.api.nvim_set_option_value("scrolloff", scrolloff, { scope = "local" })
   vim.fn.winrestview(saved)
 
   return win_first_row, win_last_row - win_first_row + 1

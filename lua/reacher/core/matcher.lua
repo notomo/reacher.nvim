@@ -8,14 +8,14 @@ Matcher.__index = Matcher
 M.Matcher = Matcher
 
 function Matcher.new(name)
-  vim.validate({name = {name, "string"}})
+  vim.validate({ name = { name, "string" } })
 
   local matcher = modulelib.find("reacher.matcher." .. name)
   if not matcher then
     return nil, "not found matcher: " .. name
   end
 
-  local tbl = {name = name, _matcher = matcher, smartcase = vim.o.smartcase}
+  local tbl = { name = name, _matcher = matcher, smartcase = vim.o.smartcase }
   return setmetatable(tbl, Matcher)
 end
 

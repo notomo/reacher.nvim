@@ -8,12 +8,12 @@ M.Folds = Folds
 
 function Folds.new(window_id, s, e, fillers)
   vim.validate({
-    window_id = {window_id, "number"},
-    s = {s, "number"},
-    e = {e, "number"},
-    fillers = {fillers, "table"},
+    window_id = { window_id, "number" },
+    s = { s, "number" },
+    e = { e, "number" },
+    fillers = { fillers, "table" },
   })
-  local tbl = {_folds = {}}
+  local tbl = { _folds = {} }
   local self = setmetatable(tbl, Folds)
 
   if not vim.wo[window_id].foldenable then
@@ -26,7 +26,7 @@ function Folds.new(window_id, s, e, fillers)
       local end_row = vim.fn.foldclosedend(row)
       if end_row ~= -1 then
         local offset = fillers:offset(row)
-        table.insert(self._folds, {row + offset - s + 1, end_row + offset - s + 1})
+        table.insert(self._folds, { row + offset - s + 1, end_row + offset - s + 1 })
         row = end_row + 1
       else
         row = row + 1

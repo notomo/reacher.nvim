@@ -26,7 +26,7 @@ nnoremap <buffer> j <Cmd>lua require("reacher").next()<CR>
 nnoremap <buffer> k <Cmd>lua require("reacher").previous()<CR>]]
 
 function Inputter.open(callback, default_input)
-  vim.validate({callback = {callback, "function"}, default_input = {default_input, "string", true}})
+  vim.validate({ callback = { callback, "function" }, default_input = { default_input, "string", true } })
   default_input = default_input or ""
 
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -42,7 +42,7 @@ function Inputter.open(callback, default_input)
   local name = "reacher://REACHER"
   local old = vim.fn.bufnr(("^%s$"):format(name))
   if old ~= -1 then
-    vim.api.nvim_buf_delete(old, {force = true})
+    vim.api.nvim_buf_delete(old, { force = true })
   end
   vim.api.nvim_echo({}, false, {}) -- NOTE: for clear command-line
   vim.api.nvim_exec(Inputter.key_mapping_script, false)
@@ -52,11 +52,15 @@ function Inputter.open(callback, default_input)
   vim.wo[window_id].winhighlight = "Normal:Normal,SignColumn:Normal"
   vim.wo[window_id].signcolumn = "yes:1"
 
-  vim.cmd(("autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout <buffer=%s> ++once lua require('reacher.command').Command.new('close', %s)"):format(bufnr, window_id))
+  vim.cmd(
+    (
+      "autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout <buffer=%s> ++once lua require('reacher.command').Command.new('close', %s)"
+    ):format(bufnr, window_id)
+  )
   vim.cmd(("autocmd InsertLeave <buffer=%s> lua require('reacher.view.inputter').on_insert_leave()"):format(bufnr))
   vim.cmd(("autocmd InsertEnter <buffer=%s> lua require('reacher.view.inputter').on_insert_enter()"):format(bufnr))
 
-  local tbl = {window_id = window_id, _bufnr = bufnr, _history_offset = 0}
+  local tbl = { window_id = window_id, _bufnr = bufnr, _history_offset = 0 }
   local self = setmetatable(tbl, Inputter)
 
   vim.api.nvim_buf_attach(bufnr, false, {
@@ -79,7 +83,7 @@ function Inputter.open(callback, default_input)
 end
 
 function Inputter._set_line(self, line)
-  vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, true, {vim.split(line, "\n", true)[1]})
+  vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, true, { vim.split(line, "\n", true)[1] })
 end
 
 function Inputter._get_line(self)
@@ -103,7 +107,7 @@ function Inputter.recall_history(self, offset)
 end
 
 function Inputter.save_history(self, include_register)
-  vim.validate({include_register = {include_register, "boolean", true}})
+  vim.validate({ include_register = { include_register, "boolean", true } })
   local input_line = self:_get_line()
   vim.fn.histadd("search", input_line)
   if include_register then
@@ -112,10 +116,10 @@ function Inputter.save_history(self, include_register)
 end
 
 function Inputter.close(self, is_cancel)
-  vim.validate({is_cancel = {is_cancel, "boolean", true}})
+  vim.validate({ is_cancel = { is_cancel, "boolean", true } })
 
   -- NOTICE: because sometimes the buffer is not deleted.
-  vim.api.nvim_buf_delete(self._bufnr, {force = true})
+  vim.api.nvim_buf_delete(self._bufnr, { force = true })
   windowlib.close(self.window_id)
 
   local insert_mode = vim.api.nvim_get_mode().mode == "i"
@@ -126,7 +130,7 @@ function Inputter.close(self, is_cancel)
 
   if is_cancel then
     local row, column = unpack(vim.api.nvim_win_get_cursor(0))
-    vim.api.nvim_win_set_cursor(0, {row, column + 1})
+    vim.api.nvim_win_set_cursor(0, { row, column + 1 })
   end
 end
 

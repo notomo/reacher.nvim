@@ -10,10 +10,10 @@ M.Translator = Translator
 
 function Translator.new(window_id, matcher, regex_matcher, number_sign_width)
   vim.validate({
-    window_id = {window_id, "number"},
-    matcher = {matcher, "table"},
-    regex_matcher = {regex_matcher, "table"},
-    number_sign_width = {number_sign_width, "number"},
+    window_id = { window_id, "number" },
+    matcher = { matcher, "table" },
+    regex_matcher = { regex_matcher, "table" },
+    number_sign_width = { number_sign_width, "number" },
   })
 
   local config = vim.api.nvim_win_get_config(window_id)
@@ -58,7 +58,7 @@ function Translator.to_targets_from_position(self, str, row, column)
     }
   end
   -- NOTE: for empty line
-  return {Target.new_virtual(self._window_id, row, 0, display_row, self._column, self._zindex, " ")}
+  return { Target.new_virtual(self._window_id, row, 0, display_row, self._column, self._zindex, " ") }
 end
 
 return M

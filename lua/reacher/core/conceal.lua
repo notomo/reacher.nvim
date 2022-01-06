@@ -12,7 +12,7 @@ function ConcealLine.new(window_id, row, disable)
   end)
 
   if disable then
-    local tbl = {str = line, _offsets = {}}
+    local tbl = { str = line, _offsets = {} }
     return setmetatable(tbl, ConcealLine)
   end
 
@@ -28,7 +28,7 @@ function ConcealLine.new(window_id, row, disable)
   local concealed_count = 0
   for i, conceal in ipairs(syn_conceals) do
     local next_conceal = syn_conceals[i + 1]
-    local is_edge = (next_conceal and conceal[3] ~= next_conceal[3]) or (not next_conceal)
+    local is_edge = (next_conceal and conceal[3] ~= next_conceal[3]) or not next_conceal
     local text = conceal[2]
 
     local concealed = conceal[1] == 1
@@ -49,7 +49,7 @@ function ConcealLine.new(window_id, row, disable)
   end
 
   local str = table.concat(chars, "")
-  local tbl = {str = str, _offsets = offsets}
+  local tbl = { str = str, _offsets = offsets }
   return setmetatable(tbl, ConcealLine)
 end
 
@@ -79,13 +79,13 @@ M.Conceals = Conceals
 
 function Conceals.new(bufnr, window_id, s, e, old_mode)
   vim.validate({
-    bufnr = {bufnr, "number"},
-    window_id = {window_id, "number"},
-    s = {s, "number"},
-    e = {e, "number"},
-    old_mode = {old_mode, "table"},
+    bufnr = { bufnr, "number" },
+    window_id = { window_id, "number" },
+    s = { s, "number" },
+    e = { e, "number" },
+    old_mode = { old_mode, "table" },
   })
-  local tbl = {_bufnr = bufnr, _conceals = {}, _lookup = {}, _first_row = s, _last_row = e}
+  local tbl = { _bufnr = bufnr, _conceals = {}, _lookup = {}, _first_row = s, _last_row = e }
   local self = setmetatable(tbl, Conceals)
 
   if vim.wo[window_id].conceallevel == 0 then

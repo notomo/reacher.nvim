@@ -10,11 +10,11 @@ M.Fillers = Fillers
 
 function Fillers.new(window_id, first_row, last_row)
   vim.validate({
-    window_id = {window_id, "number"},
-    first_row = {first_row, "number"},
-    last_row = {last_row, "number"},
+    window_id = { window_id, "number" },
+    first_row = { first_row, "number" },
+    last_row = { last_row, "number" },
   })
-  local tbl = {_fillers = {}, _first_row = first_row, _offsets = {}}
+  local tbl = { _fillers = {}, _first_row = first_row, _offsets = {} }
   local self = setmetatable(tbl, Fillers)
 
   if not vim.wo[window_id].diff then
@@ -26,7 +26,7 @@ function Fillers.new(window_id, first_row, last_row)
     for row = first_row + 1, last_row, 1 do
       local diff_count = vim.fn.diff_filler(row)
       if diff_count ~= 0 then
-        table.insert(self._fillers, {row = row, diff_count = diff_count})
+        table.insert(self._fillers, { row = row, diff_count = diff_count })
       end
     end
   end)

@@ -18,7 +18,7 @@ function FloatingMasks.new()
     end
   end
 
-  local tbl = {_masks = masks}
+  local tbl = { _masks = masks }
   return setmetatable(tbl, FloatingMasks)
 end
 
@@ -66,7 +66,12 @@ function FloatingMask.filter(self, raw_targets)
     if target.zindex == self._zindex and target.window_id > self._window_id then
       goto ok
     end
-    if self._start_row <= target.display_row and target.display_row <= self._end_row and self._start_col <= target.display_column and target.display_column <= self._end_col then
+    if
+      self._start_row <= target.display_row
+      and target.display_row <= self._end_row
+      and self._start_col <= target.display_column
+      and target.display_column <= self._end_col
+    then
       goto continue
     end
 

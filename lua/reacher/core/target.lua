@@ -10,13 +10,13 @@ M.Target = Target
 
 function Target.new(window_id, row, column, column_end, display_row, display_column, zindex, str, is_virtual)
   vim.validate({
-    window_id = {window_id, "number"},
-    str = {str, "string"},
-    zindex = {zindex, "number"},
-    column_end = {column_end, "number"},
-    display_row = {display_row, "number"},
-    display_column = {display_column, "number"},
-    is_virtual = {is_virtual, "boolean", true},
+    window_id = { window_id, "number" },
+    str = { str, "string" },
+    zindex = { zindex, "number" },
+    column_end = { column_end, "number" },
+    display_row = { display_row, "number" },
+    display_column = { display_column, "number" },
+    is_virtual = { is_virtual, "boolean", true },
   })
   local tbl = {
     window_id = window_id,
@@ -48,9 +48,9 @@ local Targets = {}
 M.Targets = Targets
 
 function Targets.new(targets, index)
-  vim.validate({targets = {targets, "table"}, index = {index, "number", true}})
+  vim.validate({ targets = { targets, "table" }, index = { index, "number", true } })
   index = index or 1
-  local tbl = {_targets = targets, _index = index}
+  local tbl = { _targets = targets, _index = index }
   return setmetatable(tbl, Targets)
 end
 
@@ -70,7 +70,10 @@ function Targets.first(self)
   local index = 1
   local first = self._targets[index]
   for i, target in ipairs(self._targets) do
-    if target.display_row < first.display_row or (target.display_row == first.display_row and target.display_column <= first.display_column) then
+    if
+      target.display_row < first.display_row
+      or (target.display_row == first.display_row and target.display_column <= first.display_column)
+    then
       first = target
       index = i
     end
@@ -86,8 +89,11 @@ function Targets.previous(self)
 
   local targets = {}
   for i, target in ipairs(self._targets) do
-    if target.display_row < current.display_row or (target.display_row == current.display_row and target.display_column < current.display_column) then
-      table.insert(targets, {index = i, target = target})
+    if
+      target.display_row < current.display_row
+      or (target.display_row == current.display_row and target.display_column < current.display_column)
+    then
+      table.insert(targets, { index = i, target = target })
     end
   end
 
@@ -112,8 +118,11 @@ function Targets.next(self)
 
   local targets = {}
   for i, target in ipairs(self._targets) do
-    if current.display_row < target.display_row or (current.display_row == target.display_row and current.display_column < target.display_column) then
-      table.insert(targets, {index = i, target = target})
+    if
+      current.display_row < target.display_row
+      or (current.display_row == target.display_row and current.display_column < target.display_column)
+    then
+      table.insert(targets, { index = i, target = target })
     end
   end
 
@@ -138,7 +147,10 @@ function Targets.last(self)
   local index = 1
   local last = self._targets[index]
   for i, target in ipairs(self._targets) do
-    if last.display_row < target.display_row or (last.display_row == target.display_row and last.display_column <= target.display_column) then
+    if
+      last.display_row < target.display_row
+      or (last.display_row == target.display_row and last.display_column <= target.display_column)
+    then
       last = target
       index = i
     end
@@ -153,7 +165,10 @@ function Targets.side_first(self)
   local index = 1
   local first = self._targets[index]
   for i, target in ipairs(self._targets) do
-    if target.display_column < first.display_column or (target.display_column == first.display_column and target.display_row <= first.display_row) then
+    if
+      target.display_column < first.display_column
+      or (target.display_column == first.display_column and target.display_row <= first.display_row)
+    then
       first = target
       index = i
     end
@@ -168,7 +183,10 @@ function Targets.side_last(self)
   local index = 1
   local last = self._targets[index]
   for i, target in ipairs(self._targets) do
-    if last.display_column < target.display_column or (last.display_column == target.display_column and last.display_row <= target.display_row) then
+    if
+      last.display_column < target.display_column
+      or (last.display_column == target.display_column and last.display_row <= target.display_row)
+    then
       last = target
       index = i
     end
@@ -184,8 +202,11 @@ function Targets.side_next(self)
 
   local targets = {}
   for i, target in ipairs(self._targets) do
-    if current.display_column < target.display_column or (current.display_column == target.display_column and current.display_row < target.display_row) then
-      table.insert(targets, {index = i, target = target})
+    if
+      current.display_column < target.display_column
+      or (current.display_column == target.display_column and current.display_row < target.display_row)
+    then
+      table.insert(targets, { index = i, target = target })
     end
   end
 
@@ -210,8 +231,11 @@ function Targets.side_previous(self)
 
   local targets = {}
   for i, target in ipairs(self._targets) do
-    if target.display_column < current.display_column or (target.display_column == current.display_column and target.display_row < current.display_row) then
-      table.insert(targets, {index = i, target = target})
+    if
+      target.display_column < current.display_column
+      or (target.display_column == current.display_column and target.display_row < current.display_row)
+    then
+      table.insert(targets, { index = i, target = target })
     end
   end
 

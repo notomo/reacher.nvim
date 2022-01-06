@@ -10,11 +10,11 @@ M.Collector = Collector
 
 function Collector.new(window_id, matcher, lines, number_sign_width, cursor)
   vim.validate({
-    window_id = {window_id, "number"},
-    matcher = {matcher, "table"},
-    lines = {lines, "table"},
-    number_sign_width = {number_sign_width, "number"},
-    cursor = {cursor, "table", true},
+    window_id = { window_id, "number" },
+    matcher = { matcher, "table" },
+    lines = { lines, "table" },
+    number_sign_width = { number_sign_width, "number" },
+    cursor = { cursor, "table", true },
   })
 
   local raw_lines = {}
@@ -46,7 +46,10 @@ function Collector.collect(self, input_line)
 
   local raw_targets = {}
   for row, line in ipairs(self._raw_lines) do
-    raw_targets = vim.list_extend(raw_targets, self._translator:to_targets_from_str(line.str, row, line.column_offset, input_line))
+    raw_targets = vim.list_extend(
+      raw_targets,
+      self._translator:to_targets_from_str(line.str, row, line.column_offset, input_line)
+    )
   end
   return raw_targets
 end

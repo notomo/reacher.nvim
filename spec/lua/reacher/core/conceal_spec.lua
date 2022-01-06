@@ -1,12 +1,11 @@
 local helper = require("reacher.lib.testlib.helper")
 
 describe("reacher.core.conceal", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
   for _, c in ipairs({
-    {expected = "", line = "", cmd = [[]], level = 3},
+    { expected = "", line = "", cmd = [[]], level = 3 },
     {
       expected = "",
       line = "|hoge|",
@@ -51,5 +50,4 @@ describe("reacher.core.conceal", function()
       assert.equals(c.expected, conceal_line.str)
     end)
   end
-
 end)

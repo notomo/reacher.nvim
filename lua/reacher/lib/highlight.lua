@@ -11,7 +11,7 @@ end
 
 function Highlighter.add_virtual(self, hl_group, row, start_col, _, str)
   vim.api.nvim_buf_set_extmark(self._bufnr, self._ns, row, start_col, {
-    virt_text = {{str, hl_group}},
+    virt_text = { { str, hl_group } },
     virt_text_pos = "overlay",
   })
 end
@@ -21,15 +21,15 @@ HighlighterFactory.__index = HighlighterFactory
 M.HighlighterFactory = HighlighterFactory
 
 function HighlighterFactory.new(key, bufnr)
-  vim.validate({key = {key, "string"}, bufnr = {bufnr, "number", true}})
+  vim.validate({ key = { key, "string" }, bufnr = { bufnr, "number", true } })
   local ns = vim.api.nvim_create_namespace(key)
-  local tbl = {_ns = ns, _bufnr = bufnr}
+  local tbl = { _ns = ns, _bufnr = bufnr }
   return setmetatable(tbl, HighlighterFactory)
 end
 
 function HighlighterFactory.create(self, bufnr)
   bufnr = bufnr or self._bufnr
-  local highlighter = {_bufnr = bufnr, _ns = self._ns}
+  local highlighter = { _bufnr = bufnr, _ns = self._ns }
   return setmetatable(highlighter, Highlighter)
 end
 

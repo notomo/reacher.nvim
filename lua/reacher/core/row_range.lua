@@ -6,9 +6,9 @@ M.RowRange = RowRange
 
 function RowRange.new(window_id, first_row, last_row)
   vim.validate({
-    window_id = {window_id, "number"},
-    first_row = {first_row, "number", true},
-    last_row = {last_row, "number", true},
+    window_id = { window_id, "number" },
+    first_row = { first_row, "number", true },
+    last_row = { last_row, "number", true },
   })
   local tbl = {
     _window_id = window_id,

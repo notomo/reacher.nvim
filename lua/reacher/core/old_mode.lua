@@ -9,15 +9,15 @@ M.OldMode = OldMode
 
 function OldMode.new(mode, range, was_visual_mode)
   vim.validate({
-    mode = {mode, "string"},
-    range = {range, "table", true},
-    was_visual_mode = {was_visual_mode, "boolean", true},
+    mode = { mode, "string" },
+    range = { range, "table", true },
+    was_visual_mode = { was_visual_mode, "boolean", true },
   })
 
-  range = range or {vim.fn.line("."), vim.fn.line(".")}
+  range = range or { vim.fn.line("."), vim.fn.line(".") }
   was_visual_mode = was_visual_mode or false
 
-  local tbl = {_mode = mode, _range = range, is_visual = was_visual_mode}
+  local tbl = { _mode = mode, _range = range, is_visual = was_visual_mode }
   return setmetatable(tbl, OldMode)
 end
 
@@ -28,7 +28,7 @@ function OldMode.to_normal_mode()
   if was_visual_mode then
     local s = vim.api.nvim_buf_get_mark(0, "<")
     local e = vim.api.nvim_buf_get_mark(0, ">")
-    range = {s[1], e[1]}
+    range = { s[1], e[1] }
   end
   return OldMode.new(mode, range, was_visual_mode)
 end
@@ -38,7 +38,7 @@ function OldMode.normal()
 end
 
 function OldMode.is_in(self, mode_chars)
-  vim.validate({mode_chars = {mode_chars, "string"}})
+  vim.validate({ mode_chars = { mode_chars, "string" } })
   if mode_chars:find("v") and self.is_visual then
     return true
   end

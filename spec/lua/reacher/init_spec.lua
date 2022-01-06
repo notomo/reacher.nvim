@@ -2,7 +2,6 @@ local helper = require("reacher.lib.testlib.helper")
 local reacher = helper.require("reacher")
 
 describe("reacher.next()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -13,7 +12,7 @@ describe("reacher.next()", function()
     hoge_c
 ]])
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.next()
     reacher.finish()
 
@@ -28,17 +27,15 @@ describe("reacher.next()", function()
 ]])
     helper.search("hoge_c")
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.next()
     reacher.finish()
 
     assert.cursor_word("hoge_a")
   end)
-
 end)
 
 describe("reacher.previous()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -50,7 +47,7 @@ describe("reacher.previous()", function()
 ]])
     helper.search("hoge_b")
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.previous()
     reacher.finish()
 
@@ -64,17 +61,15 @@ describe("reacher.previous()", function()
     hoge_c
 ]])
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.previous()
     reacher.finish()
 
     assert.cursor_word("hoge_c")
   end)
-
 end)
 
 describe("reacher.first()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -86,7 +81,7 @@ describe("reacher.first()", function()
 ]])
     helper.search("hoge_c")
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.first()
     reacher.finish()
 
@@ -97,11 +92,9 @@ describe("reacher.first()", function()
     reacher.first()
     assert.exists_message("is not started")
   end)
-
 end)
 
 describe("reacher.last()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -112,17 +105,15 @@ describe("reacher.last()", function()
     hoge_c
 ]])
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.last()
     reacher.finish()
 
     assert.cursor_word("hoge_c")
   end)
-
 end)
 
 describe("reacher.side_first()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -134,17 +125,15 @@ describe("reacher.side_first()", function()
       hoge_d
 ]])
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.side_first()
     reacher.finish()
 
     assert.cursor_word("hoge_c")
   end)
-
 end)
 
 describe("reacher.side_last()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -157,17 +146,15 @@ describe("reacher.side_last()", function()
       hoge_e
 ]])
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.side_last()
     reacher.finish()
 
     assert.cursor_word("hoge_c")
   end)
-
 end)
 
 describe("reacher.side_next()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -180,7 +167,7 @@ hoge_b
       hoge_e
 ]])
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.side_next()
     reacher.side_next()
     reacher.finish()
@@ -197,17 +184,15 @@ hoge_a
 ]])
     helper.search("hoge_b")
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.side_next()
     reacher.finish()
 
     assert.cursor_word("hoge_a")
   end)
-
 end)
 
 describe("reacher.side_previous()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -221,7 +206,7 @@ hoge_b
 ]])
     helper.search("hoge_d")
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.side_previous()
     reacher.side_previous()
     reacher.finish()
@@ -237,17 +222,15 @@ hoge_a
       hoge_d
 ]])
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.side_previous()
     reacher.finish()
 
     assert.cursor_word("hoge_b")
   end)
-
 end)
 
 describe("reacher.cancel()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -292,18 +275,16 @@ foo
 
     vim.cmd("normal! v")
     vim.cmd("normal! $")
-    reacher.start({input = "foo"})
+    reacher.start({ input = "foo" })
     reacher.cancel()
 
     assert.mode("v")
     assert.restored_visual(true)
     assert.current_line("hoge")
   end)
-
 end)
 
 describe("reacher.forward_history()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -331,11 +312,9 @@ bar
 
     assert.cursor_word("bar")
   end)
-
 end)
 
 describe("reacher.backward_history()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -364,11 +343,9 @@ foo
 
     assert.equals("recall_history", vim.fn.histget("/"))
   end)
-
 end)
 
 describe("reacher.finish()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -442,7 +419,7 @@ foo
   hoge
 ]])
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     reacher.finish()
 
     -- NOTE: no stopinsert offset
@@ -456,7 +433,7 @@ foo
 ]])
 
     vim.cmd("normal! V")
-    reacher.start({input = "foo"})
+    reacher.start({ input = "foo" })
     reacher.finish()
 
     assert.mode("V")
@@ -467,7 +444,7 @@ foo
   end)
 
   it("can go back to blockwise visual mode", function()
-    local ctrl_v = vim.api.nvim_eval("\"\\<C-v>\"")
+    local ctrl_v = vim.api.nvim_eval('"\\<C-v>"')
 
     helper.set_lines([[
 hoge
@@ -475,7 +452,7 @@ foo
 ]])
     helper.search("oge")
     vim.cmd("normal! " .. ctrl_v)
-    reacher.start({input = "oo"})
+    reacher.start({ input = "oo" })
     reacher.finish()
 
     assert.mode(ctrl_v)
@@ -484,11 +461,9 @@ foo
     vim.cmd("normal! d")
     assert.current_line("hge")
   end)
-
 end)
 
 describe("reacher.start()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -515,7 +490,7 @@ hoge_b
 bar
 ]])
 
-    reacher.start({first_row = vim.fn.line(".") + 1})
+    reacher.start({ first_row = vim.fn.line(".") + 1 })
     helper.input("hoge")
     reacher.finish()
 
@@ -529,7 +504,7 @@ hoge_a
 hoge_b
 ]])
 
-    reacher.start({input = "hoge"})
+    reacher.start({ input = "hoge" })
     helper.input("_b")
     reacher.finish()
 
@@ -559,7 +534,7 @@ foo hoge_a hoge_b
 hoge
 ]])
 
-    reacher.start({first_row = vim.fn.line("."), last_row = vim.fn.line(".")})
+    reacher.start({ first_row = vim.fn.line("."), last_row = vim.fn.line(".") })
     helper.input("ge")
     reacher.next()
     reacher.next()
@@ -570,7 +545,7 @@ hoge
   end)
 
   it("shows error if no matcher", function()
-    reacher.start({matcher_opts = {name = "invalid"}})
+    reacher.start({ matcher_opts = { name = "invalid" } })
     assert.exists_message("not found matcher: invalid")
   end)
 
@@ -579,7 +554,7 @@ hoge
 hoge
 ]])
 
-    reacher.start({last_row = -1})
+    reacher.start({ last_row = -1 })
     assert.exists_message("no range")
   end)
 
@@ -600,7 +575,7 @@ hogeb
   end)
 
   it("shows error if `rightleft`", function()
-    vim.api.nvim_set_option_value("rightleft", true, {scope = "local"})
+    vim.api.nvim_set_option_value("rightleft", true, { scope = "local" })
     reacher.start()
     assert.exists_message("`rightleft` is not supported")
   end)
@@ -609,11 +584,9 @@ hogeb
     reacher.start("invalid_opts")
     assert.exists_message([[opts: expected table, got string: "invalid_opts"]])
   end)
-
 end)
 
 describe("reacher.start_multiple()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -675,11 +648,9 @@ hoge
 
     assert.current_line("foo")
   end)
-
 end)
 
 describe("reacher.again()", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -689,7 +660,7 @@ hoge foo bar
 bar
 ]])
 
-    reacher.start({first_row = vim.fn.line("."), last_row = vim.fn.line(".")})
+    reacher.start({ first_row = vim.fn.line("."), last_row = vim.fn.line(".") })
     reacher.cancel()
 
     vim.cmd("normal! j")
@@ -720,11 +691,9 @@ foo
 
     assert.current_line("hoge")
   end)
-
 end)
 
 describe("reacher.nvim inputter", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -760,7 +729,7 @@ Hoge
     vim.o.ignorecase = true
     vim.o.smartcase = true
 
-    reacher.start({input = "Hoge"})
+    reacher.start({ input = "Hoge" })
     reacher.finish()
 
     assert.current_line("Hoge")
@@ -772,11 +741,9 @@ Hoge
 
     assert.window_count(1)
   end)
-
 end)
 
 describe("reacher.nvim view", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -935,8 +902,10 @@ foo |hoge| bar (hogehoge)
 
   it("can show with multibyte", function()
     vim.wo.wrap = false
-    helper.set_lines([[
-あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああhoge foo bar]])
+    helper.set_lines(
+      [[
+あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああhoge foo bar]]
+    )
     vim.cmd("normal! $")
 
     reacher.start()
@@ -946,6 +915,4 @@ foo |hoge| bar (hogehoge)
 
     assert.cursor_word("hoge")
   end)
-
 end)
-

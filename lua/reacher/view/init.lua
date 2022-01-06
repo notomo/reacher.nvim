@@ -48,7 +48,7 @@ function View.open_one(matcher, opts)
   if err then
     return err
   end
-  View.new(matcher, current_origin, {}, {[bufnr] = old_mode}, opts)
+  View.new(matcher, current_origin, {}, { [bufnr] = old_mode }, opts)
 end
 
 function View.open_multiple(matcher, opts)
@@ -56,7 +56,7 @@ function View.open_multiple(matcher, opts)
   local current_window_id = vim.api.nvim_get_current_win()
 
   local old_mode = OldMode.to_normal_mode()
-  local old_modes = {[current_bufnr] = old_mode}
+  local old_modes = { [current_bufnr] = old_mode }
   local normal_mode = OldMode.normal()
 
   local current_origin

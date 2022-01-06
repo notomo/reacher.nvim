@@ -15,9 +15,9 @@ M.Overlay = Overlay
 
 function Overlay.open(matcher, origin, for_current_window)
   vim.validate({
-    matcher = {matcher, "table"},
-    origin = {origin, "table"},
-    for_current_window = {for_current_window, "boolean"},
+    matcher = { matcher, "table" },
+    origin = { origin, "table" },
+    for_current_window = { for_current_window, "boolean" },
   })
 
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -101,7 +101,7 @@ function Overlays.open(matcher, current_origin, other_origins)
 
   local floating_masks = FloatingMasks.new()
   local current_overlay = Overlay.open(matcher, current_origin, true)
-  local overlays = {[current_origin.window_id] = current_overlay}
+  local overlays = { [current_origin.window_id] = current_overlay }
   for _, origin in ipairs(other_origins) do
     overlays[origin.window_id] = Overlay.open(matcher, origin, false)
   end
@@ -113,7 +113,10 @@ function Overlays.open(matcher, current_origin, other_origins)
     _current_overlay = current_overlay,
     _overlays = overlays,
     _targets = Targets.new({}),
-    _cursor = Position.new(current_origin.cursor.row + win_pos[1] + row_offset - 1, current_origin.cursor.column + win_pos[2] + col_offset),
+    _cursor = Position.new(
+      current_origin.cursor.row + win_pos[1] + row_offset - 1,
+      current_origin.cursor.column + win_pos[2] + col_offset
+    ),
     _floating_masks = floating_masks,
   }
   return setmetatable(tbl, Overlays)

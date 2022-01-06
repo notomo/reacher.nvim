@@ -14,12 +14,12 @@ function ColumnRange.new(str, virtual_s, virtual_e)
   end
   trimmed = str:sub(1, e)
 
-  local tbl = {str = trimmed, s = s}
+  local tbl = { str = trimmed, s = s }
   return setmetatable(tbl, ColumnRange)
 end
 
 function ColumnRange.new_default(str)
-  local tbl = {str = str, s = 0}
+  local tbl = { str = str, s = 0 }
   return setmetatable(tbl, ColumnRange)
 end
 
@@ -29,14 +29,14 @@ M.ColumnRanges = ColumnRanges
 
 function ColumnRanges.new(window_id, line_strs, virtual_s, virtual_e, wrap)
   vim.validate({
-    window_id = {window_id, "number"},
-    line_strs = {line_strs, "table"},
-    virtual_s = {virtual_s, "number"},
-    virtual_e = {virtual_e, "number"},
-    wrap = {wrap, "boolean"},
+    window_id = { window_id, "number" },
+    line_strs = { line_strs, "table" },
+    virtual_s = { virtual_s, "number" },
+    virtual_e = { virtual_e, "number" },
+    wrap = { wrap, "boolean" },
   })
 
-  local tbl = {_column_ranges = {}}
+  local tbl = { _column_ranges = {} }
   local self = setmetatable(tbl, ColumnRanges)
 
   local strs = vim.deepcopy(line_strs)
@@ -74,10 +74,10 @@ function M.calc_displayed_last_line()
   end
 
   local saved = vim.fn.winsaveview()
-  local scrolloff = vim.api.nvim_get_option_value("scrolloff", {scope = "local"})
-  vim.api.nvim_set_option_value("scrolloff", 0, {scope = "local"})
+  local scrolloff = vim.api.nvim_get_option_value("scrolloff", { scope = "local" })
+  vim.api.nvim_set_option_value("scrolloff", 0, { scope = "local" })
   local reset = function()
-    vim.api.nvim_set_option_value("scrolloff", scrolloff, {scope = "local"})
+    vim.api.nvim_set_option_value("scrolloff", scrolloff, { scope = "local" })
     vim.fn.winrestview(saved)
   end
 
