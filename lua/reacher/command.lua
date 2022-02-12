@@ -1,31 +1,12 @@
+local ReturnError = require("reacher.lib.error_handler").for_return_error()
 local View = require("reacher.view").View
 local Matcher = require("reacher.core.matcher").Matcher
 local messagelib = require("reacher.lib.message")
 local vim = vim
 
-local M = {}
+local last_call = nil
 
-local Command = {}
-Command.__index = Command
-M.Command = Command
-
-function Command.new(name, ...)
-  local args = { ... }
-  local f = function()
-    return Command[name](unpack(args))
-  end
-
-  local ok, msg = xpcall(f, debug.traceback)
-  if not ok then
-    return messagelib.error(msg)
-  elseif msg then
-    return messagelib.warn(msg)
-  end
-end
-
-Command.last_call = nil
-
-function Command.start_one(raw_opts)
+function ReturnError.start_one(raw_opts)
   local msg = messagelib.validate({ opts = { raw_opts, "table", true } })
   if msg then
     return msg
@@ -45,12 +26,12 @@ function Command.start_one(raw_opts)
   local call = function(extend_opts)
     return View.open_one(matcher, vim.tbl_deep_extend("force", opts, extend_opts or {}))
   end
-  Command.last_call = call
+  last_call = call
 
   return call()
 end
 
-function Command.start_multiple(raw_opts)
+function ReturnError.start_multiple(raw_opts)
   local msg = messagelib.validate({ opts = { raw_opts, "table", true } })
   if msg then
     return msg
@@ -70,12 +51,12 @@ function Command.start_multiple(raw_opts)
   local call = function(extend_opts)
     return View.open_multiple(matcher, vim.tbl_deep_extend("force", opts, extend_opts or {}))
   end
-  Command.last_call = call
+  last_call = call
 
   return call()
 end
 
-function Command.again(extend_opts)
+function ReturnError.again(extend_opts)
   local msg = messagelib.validate({ opts = { extend_opts, "table", true } })
   if msg then
     return msg
@@ -86,14 +67,14 @@ function Command.again(extend_opts)
     old:close()
   end
 
-  if not Command.last_call then
-    return Command.start_one(extend_opts)
+  if not last_call then
+    return ReturnError.start_one(extend_opts)
   end
 
-  return Command.last_call(extend_opts)
+  return last_call(extend_opts)
 end
 
-function Command.move_cursor(action_name)
+function ReturnError.move_cursor(action_name)
   vim.validate({ action_name = { action_name, "string" } })
 
   local view, err = View.current()
@@ -104,7 +85,7 @@ function Command.move_cursor(action_name)
   view:move_cursor(action_name)
 end
 
-function Command.finish()
+function ReturnError.finish()
   local view, err = View.current()
   if err then
     return err
@@ -116,7 +97,7 @@ function Command.finish()
   end
 end
 
-function Command.recall_history(offset)
+function ReturnError.recall_history(offset)
   vim.validate({ offset = { offset, "number" } })
   local view, err = View.current()
   if err then
@@ -125,7 +106,7 @@ function Command.recall_history(offset)
   view:recall_history(offset)
 end
 
-function Command.cancel()
+function ReturnError.cancel()
   local view, err = View.current()
   if err then
     return
@@ -134,7 +115,7 @@ function Command.cancel()
   messagelib.info("canceled")
 end
 
-function Command.close(id)
+function ReturnError.close(id)
   vim.validate({ id = { id, "number" } })
   local view = View.get(id)
   if not view then
@@ -143,4 +124,4 @@ function Command.close(id)
   view:cancel()
 end
 
-return M
+return ReturnError:methods()

@@ -54,7 +54,7 @@ function Inputter.open(callback, default_input)
 
   vim.cmd(
     (
-      "autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout <buffer=%s> ++once lua require('reacher.command').Command.new('close', %s)"
+      "autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout <buffer=%s> ++once lua require('reacher.command').close(%s)"
     ):format(bufnr, window_id)
   )
   vim.cmd(("autocmd InsertLeave <buffer=%s> lua require('reacher.view.inputter').on_insert_leave()"):format(bufnr))
