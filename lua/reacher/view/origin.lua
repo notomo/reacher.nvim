@@ -2,6 +2,7 @@ local Position = require("reacher.core.position").Position
 local Folds = require("reacher.core.fold").Folds
 local Fillers = require("reacher.core.diff_filler").Fillers
 local Conceals = require("reacher.core.conceal").Conceals
+local VirtLines = require("reacher.core.virt_lines").VirtLines
 local Lines = require("reacher.core.line").Lines
 local windowlib = require("reacher.lib.window")
 local vim = vim
@@ -21,7 +22,7 @@ function Origin.new(window_id, old_mode, bufnr, row_range)
   local last_row = row_range:last()
   local win_first_row, height
   vim.api.nvim_win_call(window_id, function()
-    win_first_row, height = M._view_position(first_row, last_row, row_range.given_range)
+    win_first_row, height = M._view_position(first_row, last_row)
   end)
   if height <= 0 or last_row - first_row < 0 then
     return nil, "no range"
@@ -63,7 +64,8 @@ function Origin.new(window_id, old_mode, bufnr, row_range)
   local fillers = Fillers.new(window_id, first_row, last_row)
   local folds = Folds.new(window_id, first_row, last_row, fillers)
   local conceals = Conceals.new(bufnr, window_id, first_row, last_row, old_mode)
-  local lines = Lines.new(window_id, first_column, last_column, conceals, folds, fillers, options.wrap)
+  local virt_lines = VirtLines.new(bufnr, first_row, last_row)
+  local lines = Lines.new(window_id, first_column, last_column, conceals, folds, fillers, virt_lines, options.wrap)
 
   local row_offset = first_row - 1
   local cursor_row = cursor.row + fillers:offset(cursor.row) - row_offset
@@ -163,11 +165,7 @@ function Origin.jump(self, row, column, mode)
 end
 
 -- HACK
-function M._view_position(first_row, last_row, given_range)
-  if not given_range and not vim.wo.diff then
-    return 1, vim.api.nvim_win_get_height(0)
-  end
-
+function M._view_position(first_row, last_row)
   local saved = vim.fn.winsaveview()
 
   local scrolloff = vim.api.nvim_get_option_value("scrolloff", { scope = "local" })

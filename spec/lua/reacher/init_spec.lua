@@ -915,4 +915,24 @@ foo |hoge| bar (hogehoge)
 
     assert.cursor_word("hoge")
   end)
+
+  it("can show with virt_lines", function()
+    helper.set_lines([[
+hoge_a
+hoge_b
+hoge_c]])
+    local bufnr = vim.api.nvim_get_current_buf()
+    local ns = vim.api.nvim_create_namespace("test")
+    vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {
+      virt_lines = vim.fn["repeat"]({ { { "virtual" } } }, vim.o.lines),
+    })
+    vim.cmd([[normal! G]])
+
+    reacher.start()
+
+    helper.input("hoge_b")
+    reacher.finish()
+
+    assert.cursor_word("hoge_b")
+  end)
 end)
