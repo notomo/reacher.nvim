@@ -1,7 +1,10 @@
-local usage_path = "./spec/lua/reacher/usage.vim"
 local util = require("genvdoc.util")
+local plugin_name = vim.env.PLUGIN_NAME
+local full_plugin_name = plugin_name .. ".nvim"
 
-require("genvdoc").generate("reacher.nvim", {
+local usage_path = ("./spec/lua/%s/usage.vim"):format(plugin_name)
+
+require("genvdoc").generate(full_plugin_name, {
   chapters = {
     {
       name = function(group)
@@ -38,7 +41,7 @@ local gen_readme = function()
   f:close()
 
   local content = ([[
-# reacher.nvim
+# %s
 
 This plugin introduces displayed range search buffer.
 (Required neovim nightly)
@@ -48,7 +51,7 @@ This plugin introduces displayed range search buffer.
 ## Usage
 
 ```vim
-%s```]]):format(body)
+%s```]]):format(full_plugin_name, body)
 
   local readme = io.open("README.md", "w")
   readme:write(content)
