@@ -10,21 +10,6 @@ local Inputter = {}
 Inputter.__index = Inputter
 M.Inputter = Inputter
 
-Inputter.key_mapping_script = [[
-inoremap <buffer> <CR> <Cmd>lua require("reacher").finish()<CR>
-inoremap <buffer> <ESC> <Cmd>lua require("reacher").cancel()<CR>
-inoremap <buffer> <Tab> <Cmd>lua require("reacher").next()<CR>
-inoremap <buffer> <S-Tab> <Cmd>lua require("reacher").previous()<CR>
-inoremap <buffer> <C-n> <Cmd>lua require("reacher").forward_history()<CR>
-inoremap <buffer> <C-p> <Cmd>lua require("reacher").backward_history()<CR>
-
-nnoremap <buffer> <CR> <Cmd>lua require("reacher").finish()<CR>
-nnoremap <nowait> <buffer> <ESC> <Cmd>lua require("reacher").cancel()<CR>
-nnoremap <buffer> gg <Cmd>lua require("reacher").first()<CR>
-nnoremap <buffer> G <Cmd>lua require("reacher").last()<CR>
-nnoremap <buffer> j <Cmd>lua require("reacher").next()<CR>
-nnoremap <buffer> k <Cmd>lua require("reacher").previous()<CR>]]
-
 function Inputter.open(callback, default_input)
   vim.validate({ callback = { callback, "function" }, default_input = { default_input, "string", true } })
   default_input = default_input or ""
@@ -45,7 +30,6 @@ function Inputter.open(callback, default_input)
     vim.api.nvim_buf_delete(old, { force = true })
   end
   vim.api.nvim_echo({}, false, {}) -- NOTE: for clear command-line
-  vim.api.nvim_exec(Inputter.key_mapping_script, false)
   vim.api.nvim_buf_set_name(bufnr, "reacher://REACHER")
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].filetype = "reacher"
@@ -61,11 +45,15 @@ function Inputter.open(callback, default_input)
   })
   vim.api.nvim_create_autocmd({ "InsertLeave" }, {
     buffer = bufnr,
-    callback = M.on_insert_leave,
+    callback = function()
+      highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchNormal", true)
+    end,
   })
   vim.api.nvim_create_autocmd({ "InsertEnter" }, {
     buffer = bufnr,
-    callback = M.on_insert_enter,
+    callback = function()
+      highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
+    end,
   })
 
   local tbl = { window_id = window_id, _bufnr = bufnr, _history_offset = 0 }
@@ -140,14 +128,6 @@ function Inputter.close(self, is_cancel)
     local row, column = unpack(vim.api.nvim_win_get_cursor(0))
     vim.api.nvim_win_set_cursor(0, { row, column + 1 })
   end
-end
-
-function M.on_insert_leave()
-  highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchNormal", true)
-end
-
-function M.on_insert_enter()
-  highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
 end
 
 return M

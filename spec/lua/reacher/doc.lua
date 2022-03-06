@@ -2,7 +2,8 @@ local util = require("genvdoc.util")
 local plugin_name = vim.env.PLUGIN_NAME
 local full_plugin_name = plugin_name .. ".nvim"
 
-local usage_path = ("./spec/lua/%s/usage.vim"):format(plugin_name)
+local example_path = ("./spec/lua/%s/example.lua"):format(plugin_name)
+dofile(example_path)
 
 require("genvdoc").generate(full_plugin_name, {
   chapters = {
@@ -18,26 +19,17 @@ require("genvdoc").generate(full_plugin_name, {
       end,
     },
     {
-      name = "USAGE",
+      name = "EXAMPLES",
       body = function()
-        local usage = util.help_code_block_from_file(usage_path)
-        local mappings = require("reacher.view.inputter").Inputter.key_mapping_script
-        local hl_groups = require("reacher.view.overlay").Overlay.hl_group_script
-        local body = usage:gsub([[    " {mappings}]], util.indent(mappings, 4))
-        body = body:gsub([[  " {hl_groups}]], util.indent(hl_groups, 2))
-        return body
+        return util.help_code_block_from_file(example_path)
       end,
     },
   },
 })
 
 local gen_readme = function()
-  local f = io.open(usage_path, "r")
-  local usage = f:read("*a")
-  local mappings = require("reacher.view.inputter").Inputter.key_mapping_script
-  local hl_groups = require("reacher.view.overlay").Overlay.hl_group_script
-  local body = usage:gsub([[  " {mappings}]], util.indent(mappings, 2))
-  body = body:gsub([[" {hl_groups}]], hl_groups)
+  local f = io.open(example_path, "r")
+  local exmaple = f:read("*a")
   f:close()
 
   local content = ([[
@@ -48,10 +40,10 @@ This plugin introduces displayed range search buffer.
 
 <img src="https://raw.github.com/wiki/notomo/reacher.nvim/image/demo4.gif" width="1280">
 
-## Usage
+## Example
 
-```vim
-%s```]]):format(full_plugin_name, body)
+```lua
+%s```]]):format(full_plugin_name, exmaple)
 
   local readme = io.open("README.md", "w")
   readme:write(content)

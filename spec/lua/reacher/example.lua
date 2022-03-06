@@ -1,13 +1,3 @@
-# reacher.nvim
-
-This plugin introduces displayed range search buffer.
-(Required neovim nightly)
-
-<img src="https://raw.github.com/wiki/notomo/reacher.nvim/image/demo4.gif" width="1280">
-
-## Example
-
-```lua
 -- search in the current window
 vim.keymap.set({ "n", "x" }, "gs", [[<Cmd>lua require("reacher").start()<CR>]])
 
@@ -42,4 +32,3 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     vim.keymap.set("i", "<C-p>", [[<Cmd>lua require("reacher").backward_history()<CR>]], { buffer = true })
   end,
 })
-```
