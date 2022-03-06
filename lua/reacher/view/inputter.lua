@@ -52,13 +52,21 @@ function Inputter.open(callback, default_input)
   vim.wo[window_id].winhighlight = "Normal:Normal,SignColumn:Normal"
   vim.wo[window_id].signcolumn = "yes:1"
 
-  vim.cmd(
-    (
-      "autocmd WinClosed,WinLeave,TabLeave,BufLeave,BufWipeout <buffer=%s> ++once lua require('reacher.command').close(%s)"
-    ):format(bufnr, window_id)
-  )
-  vim.cmd(("autocmd InsertLeave <buffer=%s> lua require('reacher.view.inputter').on_insert_leave()"):format(bufnr))
-  vim.cmd(("autocmd InsertEnter <buffer=%s> lua require('reacher.view.inputter').on_insert_enter()"):format(bufnr))
+  vim.api.nvim_create_autocmd({ "WinClosed", "WinLeave", "TabLeave", "BufLeave", "BufWipeout" }, {
+    once = true,
+    buffer = bufnr,
+    callback = function()
+      require("reacher.command").close(window_id)
+    end,
+  })
+  vim.api.nvim_create_autocmd({ "InsertLeave" }, {
+    buffer = bufnr,
+    callback = M.on_insert_leave,
+  })
+  vim.api.nvim_create_autocmd({ "InsertEnter" }, {
+    buffer = bufnr,
+    callback = M.on_insert_enter,
+  })
 
   local tbl = { window_id = window_id, _bufnr = bufnr, _history_offset = 0 }
   local self = setmetatable(tbl, Inputter)
