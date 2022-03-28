@@ -1,4 +1,3 @@
-local repository = require("reacher.lib.repository").Repository.new("view")
 local Overlays = require("reacher.view.overlay").Overlays
 local Inputter = require("reacher.view.inputter").Inputter
 local RowRange = require("reacher.core.row_range").RowRange
@@ -6,6 +5,8 @@ local Origin = require("reacher.view.origin").Origin
 local OldMode = require("reacher.core.old_mode").OldMode
 local modelib = require("reacher.lib.mode")
 local vim = vim
+
+local views = {}
 
 local M = {}
 
@@ -29,7 +30,7 @@ function View.new(matcher, current_origin, other_origins, old_visual_modes, opts
   }
   local self = setmetatable(tbl, View)
 
-  repository:set(inputter.window_id, self)
+  views[inputter.window_id] = self
 end
 
 function View._was_visual_mode(self, bufnr)
@@ -91,7 +92,7 @@ function View.close(self, is_cancel)
   self._inputter:close(is_cancel)
   self._overlays:close()
 
-  repository:delete(self._inputter.window_id)
+  views[self._inputter.window_id] = nil
 end
 
 function View.cancel(self)
@@ -130,7 +131,7 @@ function View.move_cursor(self, action_name)
 end
 
 function View.get(id)
-  return repository:get(id)
+  return views[id]
 end
 
 function View.current()
