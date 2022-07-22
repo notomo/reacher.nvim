@@ -3,7 +3,7 @@
 This plugin introduces displayed range search buffer.
 (Required neovim nightly)
 
-<img src="https://raw.github.com/wiki/notomo/reacher.nvim/image/demo4.gif" width="1280">
+<img src="https://raw.github.com/wiki/notomo/reacher.nvim/image/demo4.gif">
 
 ## Example
 
