@@ -273,8 +273,8 @@ hoge
 foo
 ]])
 
-    vim.cmd("normal! v")
-    vim.cmd("normal! $")
+    vim.cmd.normal({ args = { "v" }, bang = true })
+    vim.cmd.normal({ args = { "$" }, bang = true })
     reacher.start({ input = "foo" })
     reacher.cancel()
 
@@ -302,7 +302,7 @@ bar
     reacher.start()
     helper.input("bar")
     reacher.finish()
-    vim.cmd("normal! gg")
+    vim.cmd.normal({ args = { "gg" }, bang = true })
 
     reacher.start()
     reacher.backward_history()
@@ -327,7 +327,7 @@ foo
     reacher.start()
     helper.input("foo")
     reacher.finish()
-    vim.cmd("normal! gg")
+    vim.cmd.normal({ args = { "gg" }, bang = true })
 
     reacher.start()
     reacher.backward_history()
@@ -358,7 +358,7 @@ describe("reacher.finish()", function()
 
 hoge_c
 ]])
-    vim.cmd("normal! j")
+    vim.cmd.normal({ args = { "j" }, bang = true })
 
     reacher.start()
     helper.input("h")
@@ -385,7 +385,7 @@ register_b
     reacher.start()
     helper.input("register")
     reacher.finish()
-    vim.cmd("silent! normal! n")
+    vim.cmd.normal({ args = { "n" }, bang = true, mods = { silent = true, emsg_silent = true } })
 
     assert.cursor_word("register_b")
   end)
@@ -432,14 +432,14 @@ hoge
 foo
 ]])
 
-    vim.cmd("normal! V")
+    vim.cmd.normal({ args = { "V" }, bang = true })
     reacher.start({ input = "foo" })
     reacher.finish()
 
     assert.mode("V")
     assert.current_line("foo")
 
-    vim.cmd("normal! o")
+    vim.cmd.normal({ args = { "o" }, bang = true })
     assert.current_line("hoge")
   end)
 
@@ -451,14 +451,14 @@ hoge
 foo
 ]])
     helper.search("oge")
-    vim.cmd("normal! " .. ctrl_v)
+    vim.cmd.normal({ args = { ctrl_v }, bang = true })
     reacher.start({ input = "oo" })
     reacher.finish()
 
     assert.mode(ctrl_v)
     assert.current_line("foo")
 
-    vim.cmd("normal! d")
+    vim.cmd.normal({ args = { "d" }, bang = true })
     assert.current_line("hge")
   end)
 end)
@@ -473,7 +473,7 @@ foo
 hoge
 ]])
     helper.search("hoge")
-    vim.cmd("normal! $")
+    vim.cmd.normal({ args = { "$" }, bang = true })
 
     reacher.start()
     reacher.finish()
@@ -596,7 +596,7 @@ describe("reacher.start_multiple()", function()
 hoge
 ]])
 
-    vim.cmd("vnew")
+    vim.cmd.vnew()
     helper.set_lines([[
 foo
 ]])
@@ -614,12 +614,12 @@ foo
 hoge
 ]])
 
-    vim.cmd("vnew")
+    vim.cmd.vnew()
     helper.set_lines([[
 foo
 ]])
 
-    vim.cmd("normal! v")
+    vim.cmd.normal({ args = { "v" }, bang = true })
     reacher.start_multiple()
     helper.input("hoge")
     reacher.finish()
@@ -663,7 +663,7 @@ bar
     reacher.start({ first_row = vim.fn.line("."), last_row = vim.fn.line(".") })
     reacher.cancel()
 
-    vim.cmd("normal! j")
+    vim.cmd.normal({ args = { "j" }, bang = true })
     reacher.again()
     helper.input("bar")
     reacher.finish()
@@ -677,7 +677,7 @@ bar
 hoge
 ]])
 
-    vim.cmd("vnew")
+    vim.cmd.vnew()
     helper.set_lines([[
 foo
 ]])
@@ -737,7 +737,7 @@ Hoge
 
   it("is closed on leaving", function()
     reacher.start({})
-    vim.cmd("wincmd w")
+    vim.cmd.wincmd("w")
 
     assert.window_count(1)
   end)
@@ -755,7 +755,7 @@ hoge2
 hoge3
 hoge4
 ]])
-    vim.cmd("2,4fold")
+    vim.cmd.fold({ range = { 2, 4 } })
     vim.wo.foldenable = true
 
     reacher.start()
@@ -778,16 +778,16 @@ foo3
 bar
 ]])
     vim.bo.buftype = "nofile"
-    vim.cmd("diffthis")
+    vim.cmd.diffthis()
 
-    vim.cmd("vnew")
+    vim.cmd.vnew()
     helper.set_lines([[
 hoge
 foo
 bar
 ]])
     vim.bo.buftype = "nofile"
-    vim.cmd("diffthis")
+    vim.cmd.diffthis()
 
     reacher.start()
     helper.input("bar")
@@ -822,9 +822,9 @@ for_folded
 for_folded
 ]])
     vim.bo.buftype = "nofile"
-    vim.cmd("diffthis")
+    vim.cmd.diffthis()
 
-    vim.cmd("vnew")
+    vim.cmd.vnew()
     helper.set_lines([[
 hoge
 foo
@@ -845,7 +845,7 @@ for_folded
 buz
 ]])
     vim.bo.buftype = "nofile"
-    vim.cmd("diffthis")
+    vim.cmd.diffthis()
 
     reacher.start()
     helper.input("buz")
@@ -862,18 +862,18 @@ foo
 bar
 ]])
     vim.bo.buftype = "nofile"
-    vim.cmd("diffthis")
+    vim.cmd.diffthis()
 
-    vim.cmd("vnew")
+    vim.cmd.vnew()
     helper.set_lines([[
 hoge
 foo
 bar
 ]])
     vim.bo.buftype = "nofile"
-    vim.cmd("diffthis")
-    vim.cmd("normal! G")
-    vim.cmd("normal! gg")
+    vim.cmd.diffthis()
+    vim.cmd.normal({ args = { "G" }, bang = true })
+    vim.cmd.normal({ args = { "gg" }, bang = true })
 
     reacher.start()
     helper.input("bar")
@@ -885,8 +885,8 @@ bar
   it("shows concealed texts", function()
     vim.wo.conceallevel = 3
     vim.wo.concealcursor = "nvic"
-    vim.cmd([[syntax match testHoge "|hoge|" conceal]])
-    vim.cmd([[syntax match testHoge "(hogehoge)" conceal]])
+    vim.cmd.syntax({ args = { "match", "testHoge", '"|hoge|"', "conceal" } })
+    vim.cmd.syntax({ args = { "match", "testHoge", '"(hogehoge)"', "conceal" } })
 
     helper.set_lines([[
 foo |hoge| bar (hogehoge)
@@ -906,7 +906,7 @@ foo |hoge| bar (hogehoge)
       [[
 あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああああhoge foo bar]]
     )
-    vim.cmd("normal! $")
+    vim.cmd.normal({ args = { "$" }, bang = true })
 
     reacher.start()
 
@@ -926,7 +926,7 @@ hoge_c]])
     vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {
       virt_lines = vim.fn["repeat"]({ { { "virtual" } } }, vim.o.lines),
     })
-    vim.cmd([[normal! G]])
+    vim.cmd.normal({ args = { "G" }, bang = true })
 
     reacher.start()
 
