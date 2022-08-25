@@ -19,6 +19,10 @@ function View.new(matcher, current_origin, other_origins, old_visual_modes, opts
   local overlays = Overlays.open(matcher, current_origin, other_origins)
   local inputter = Inputter.open(function(input_line)
     overlays:update(input_line)
+  end, function()
+    overlays:change_to_insert_highlight()
+  end, function()
+    overlays:change_to_normal_highlight()
   end, opts.input)
 
   local tbl = {

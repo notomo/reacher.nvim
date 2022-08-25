@@ -13,6 +13,17 @@ local Overlay = {}
 Overlay.__index = Overlay
 M.Overlay = Overlay
 
+local matched_hl_group = "ReacherMatch"
+local insert_mode_hl_group = "ReacherCurrentMatchInsert"
+local normal_mode_hl_group = "ReacherCurrentMatchNormal"
+Overlay.hl_group_script = table.concat({
+  highlightlib.link(matched_hl_group, "Directory"),
+  highlightlib.link(insert_mode_hl_group, "IncSearch"),
+  highlightlib.link(normal_mode_hl_group, "Search"),
+}, "\n")
+
+local current_matched_hl_group = "ReacherCurrentMatch"
+
 function Overlay.open(matcher, origin, for_current_window)
   vim.validate({
     matcher = { matcher, "table" },
@@ -31,15 +42,19 @@ function Overlay.open(matcher, origin, for_current_window)
     fg_default = "#8d9eb2",
     bg_default = "#334152",
   })
-  vim.wo[window_id].winhighlight = ("Normal:%s,Search:None"):format(hl_group)
 
   local cursor
   if for_current_window then
     cursor = origin.cursor
   end
 
+  local base_highlight = ("Normal:%s,Search:None,%s:"):format(hl_group, current_matched_hl_group)
   local tbl = {
     _window_id = window_id,
+    _highlights = {
+      normal = base_highlight .. normal_mode_hl_group,
+      insert = base_highlight .. insert_mode_hl_group,
+    },
     _origin = origin,
     _match_highlight = HighlighterFactory.new("reacher", bufnr),
     _cursor_highlight = HighlighterFactory.new("reacher_cursor", bufnr),
@@ -70,12 +85,12 @@ end
 
 function Overlay.highlight_match(self, target)
   local highlighter = self._match_highlight:create()
-  target:highlight(highlighter, "ReacherMatch")
+  target:highlight(highlighter, matched_hl_group)
 end
 
 function Overlay.highlight_cursor(self, target)
   local highlighter = self._cursor_highlight:create()
-  target:highlight(highlighter, "ReacherCurrentMatch")
+  target:highlight(highlighter, current_matched_hl_group)
 end
 
 function Overlay.reset_match_highlight(self)
@@ -86,19 +101,15 @@ function Overlay.reset_cursor_highlight(self)
   self._cursor_highlight:reset()
 end
 
-Overlay.hl_group_script = table.concat({
-  highlightlib.link("ReacherMatch", "Directory"),
-  highlightlib.link("ReacherCurrentMatchInsert", "IncSearch"),
-  highlightlib.link("ReacherCurrentMatchNormal", "Search"),
-}, "\n")
+function Overlay.change_highlight(self, mode)
+  vim.wo[self._window_id].winhighlight = self._highlights[mode]
+end
 
 local Overlays = {}
 Overlays.__index = Overlays
 M.Overlays = Overlays
 
 function Overlays.open(matcher, current_origin, other_origins)
-  highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
-
   local floating_masks = FloatingMasks.new()
   local current_overlay = Overlay.open(matcher, current_origin, true)
   local overlays = { [current_origin.window_id] = current_overlay }
@@ -119,7 +130,9 @@ function Overlays.open(matcher, current_origin, other_origins)
     ),
     _floating_masks = floating_masks,
   }
-  return setmetatable(tbl, Overlays)
+  local self = setmetatable(tbl, Overlays)
+  self:change_to_insert_highlight()
+  return self
 end
 
 function Overlays.move_cursor(self, action_name)
@@ -131,6 +144,18 @@ function Overlays.close(self)
   self._current_overlay:enter_origin()
   for _, overlay in pairs(self._overlays) do
     overlay:close()
+  end
+end
+
+function Overlays.change_to_normal_highlight(self)
+  for _, overlay in pairs(self._overlays) do
+    overlay:change_highlight("normal")
+  end
+end
+
+function Overlays.change_to_insert_highlight(self)
+  for _, overlay in pairs(self._overlays) do
+    overlay:change_highlight("insert")
   end
 end
 

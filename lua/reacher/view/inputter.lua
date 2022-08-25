@@ -10,7 +10,7 @@ local Inputter = {}
 Inputter.__index = Inputter
 M.Inputter = Inputter
 
-function Inputter.open(callback, default_input)
+function Inputter.open(callback, on_insert_enter, on_insert_leave, default_input)
   vim.validate({ callback = { callback, "function" }, default_input = { default_input, "string", true } })
   default_input = default_input or ""
 
@@ -45,15 +45,11 @@ function Inputter.open(callback, default_input)
   })
   vim.api.nvim_create_autocmd({ "InsertLeave" }, {
     buffer = bufnr,
-    callback = function()
-      highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchNormal", true)
-    end,
+    callback = on_insert_leave,
   })
   vim.api.nvim_create_autocmd({ "InsertEnter" }, {
     buffer = bufnr,
-    callback = function()
-      highlightlib.link("ReacherCurrentMatch", "ReacherCurrentMatchInsert", true)
-    end,
+    callback = on_insert_enter,
   })
 
   local tbl = { window_id = window_id, _bufnr = bufnr, _history_offset = 0 }
