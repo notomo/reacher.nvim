@@ -54,12 +54,16 @@ function M.define_from_background(prefix, window_id, opts)
     bg_hl_group = winhighlight["Normal"] or "Normal"
   end
 
-  local guibg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(bg_hl_group)), "bg", "gui")
+  local guibg = vim.api.nvim_win_call(window_id, function()
+    return vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(bg_hl_group)), "bg", "gui")
+  end)
   if guibg == "" then
     guibg = opts.bg_default
   end
 
-  local guifg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(opts.fg_hl_group)), "fg", "gui")
+  local guifg = vim.api.nvim_win_call(window_id, function()
+    return vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(opts.fg_hl_group)), "fg", "gui")
+  end)
   if guifg == "" then
     guifg = opts.fg_default
   end
