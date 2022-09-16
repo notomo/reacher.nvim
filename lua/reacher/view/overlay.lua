@@ -16,11 +16,23 @@ M.Overlay = Overlay
 local matched_hl_group = "ReacherMatch"
 local insert_mode_hl_group = "ReacherCurrentMatchInsert"
 local normal_mode_hl_group = "ReacherCurrentMatchNormal"
-Overlay.hl_group_script = table.concat({
-  highlightlib.link(matched_hl_group, "Directory"),
-  highlightlib.link(insert_mode_hl_group, "IncSearch"),
-  highlightlib.link(normal_mode_hl_group, "Search"),
-}, "\n")
+
+local setup_highlight_groups = function()
+  return {
+    highlightlib.link(matched_hl_group, "Directory"),
+    highlightlib.link(insert_mode_hl_group, "IncSearch"),
+    highlightlib.link(normal_mode_hl_group, "Search"),
+  }
+end
+
+local group = vim.api.nvim_create_augroup("reacher", {})
+vim.api.nvim_create_autocmd({ "ColorScheme" }, {
+  group = group,
+  pattern = { "*" },
+  callback = setup_highlight_groups,
+})
+
+Overlay.hl_group_script = table.concat(setup_highlight_groups(), "\n")
 
 local current_matched_hl_group = "ReacherCurrentMatch"
 
