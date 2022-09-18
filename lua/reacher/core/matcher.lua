@@ -1,4 +1,4 @@
-local modulelib = require("reacher.lib.module")
+local modulelib = require("reacher.vendor.misclib.module")
 local vim = vim
 
 local M = {}
