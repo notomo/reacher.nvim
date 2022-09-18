@@ -2,44 +2,6 @@ local windowlib = require("reacher.lib.window")
 
 local M = {}
 
-local Highlighter = {}
-Highlighter.__index = Highlighter
-
-function Highlighter.add(self, hl_group, row, start_col, end_col)
-  vim.api.nvim_buf_add_highlight(self._bufnr, self._ns, hl_group, row, start_col, end_col)
-end
-
-function Highlighter.add_virtual(self, hl_group, row, start_col, _, str)
-  vim.api.nvim_buf_set_extmark(self._bufnr, self._ns, row, start_col, {
-    virt_text = { { str, hl_group } },
-    virt_text_pos = "overlay",
-  })
-end
-
-local HighlighterFactory = {}
-HighlighterFactory.__index = HighlighterFactory
-M.HighlighterFactory = HighlighterFactory
-
-function HighlighterFactory.new(key, bufnr)
-  vim.validate({ key = { key, "string" }, bufnr = { bufnr, "number", true } })
-  local ns = vim.api.nvim_create_namespace(key)
-  local tbl = { _ns = ns, _bufnr = bufnr }
-  return setmetatable(tbl, HighlighterFactory)
-end
-
-function HighlighterFactory.create(self, bufnr)
-  bufnr = bufnr or self._bufnr
-  local highlighter = { _bufnr = bufnr, _ns = self._ns }
-  return setmetatable(highlighter, Highlighter)
-end
-
-function HighlighterFactory.reset(self, bufnr)
-  bufnr = bufnr or self._bufnr
-  local highlighter = self:create(bufnr)
-  vim.api.nvim_buf_clear_namespace(bufnr, self._ns, 0, -1)
-  return highlighter
-end
-
 function M.define_from_background(prefix, window_id, opts)
   local winhighlight = {}
   for _, hl in ipairs(vim.split(vim.wo[window_id].winhighlight, ",", true)) do

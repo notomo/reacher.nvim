@@ -36,11 +36,13 @@ function Target.new_virtual(window_id, row, column, display_row, display_column,
   return Target.new(window_id, row, column, column + #str - 1, display_row, display_column, zindex, str, true)
 end
 
-function Target.highlight(self, highlighter, hl_group)
+function Target.highlight(self, decorator, hl_group)
   if not self._is_virtual then
-    highlighter:add(hl_group, self.row - 1, self.column, self.column_end)
+    decorator:highlight(hl_group, self.row - 1, self.column, self.column_end)
   else
-    highlighter:add_virtual(hl_group, self.row - 1, self.column, self.column_end - 1, self.str)
+    decorator:add_virtual_text(self.row - 1, self.column, { { self.str, hl_group } }, {
+      virt_text_pos = "overlay",
+    })
   end
 end
 

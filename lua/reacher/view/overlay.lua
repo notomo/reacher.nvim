@@ -1,6 +1,6 @@
 local windowlib = require("reacher.lib.window")
 local highlightlib = require("reacher.lib.highlight")
-local HighlighterFactory = require("reacher.lib.highlight").HighlighterFactory
+local Decorator = require("reacher.vendor.misclib.decorator")
 local Collector = require("reacher.core.collector").Collector
 local Position = require("reacher.core.position").Position
 local Targets = require("reacher.core.target").Targets
@@ -68,8 +68,8 @@ function Overlay.open(matcher, origin, for_current_window)
       insert = base_highlight .. insert_mode_hl_group,
     },
     _origin = origin,
-    _match_highlight = HighlighterFactory.new("reacher", bufnr),
-    _cursor_highlight = HighlighterFactory.new("reacher_cursor", bufnr),
+    _match_highlight = Decorator.factory("reacher", bufnr),
+    _cursor_highlight = Decorator.factory("reacher_cursor", bufnr),
     _collector = Collector.new(origin.window_id, matcher, origin.lines, origin.number_sign_width, cursor),
   }
   return setmetatable(tbl, Overlay), nil
@@ -96,13 +96,13 @@ function Overlay.close(self)
 end
 
 function Overlay.highlight_match(self, target)
-  local highlighter = self._match_highlight:create()
-  target:highlight(highlighter, matched_hl_group)
+  local decorator = self._match_highlight:create()
+  target:highlight(decorator, matched_hl_group)
 end
 
 function Overlay.highlight_cursor(self, target)
-  local highlighter = self._cursor_highlight:create()
-  target:highlight(highlighter, current_matched_hl_group)
+  local decorator = self._cursor_highlight:create()
+  target:highlight(decorator, current_matched_hl_group)
 end
 
 function Overlay.reset_match_highlight(self)
