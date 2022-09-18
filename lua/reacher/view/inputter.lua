@@ -1,5 +1,5 @@
 local windowlib = require("reacher.lib.window")
-local cursorlib = require("reacher.lib.cursor")
+local cursorlib = require("reacher.vendor.misclib.cursor")
 local wraplib = require("reacher.lib.wrap")
 local vim = vim
 
@@ -92,7 +92,7 @@ function Inputter.recall_history(self, offset)
 
   local history = vim.fn.histget("search", next_index)
   self:_set_line(history)
-  cursorlib.set_column(#history + 1)
+  cursorlib.set_column(#history)
 
   self._history_offset = next_index
 end
