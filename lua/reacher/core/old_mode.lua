@@ -1,4 +1,3 @@
-local modelib = require("reacher.lib.mode")
 local vim = vim
 
 local M = {}
@@ -22,7 +21,7 @@ function OldMode.new(mode, range, was_visual_mode)
 end
 
 function OldMode.to_normal_mode()
-  local was_visual_mode, mode = modelib.leave_visual_mode()
+  local was_visual_mode, mode = require("reacher.vendor.misclib.visual_mode").leave()
 
   local range
   if was_visual_mode then

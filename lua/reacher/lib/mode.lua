@@ -1,16 +1,5 @@
 local M = {}
 
-local CTRL_V = vim.api.nvim_eval('"\\<C-v>"')
-local ESC = vim.api.nvim_eval('"\\<ESC>"')
-function M.leave_visual_mode()
-  local mode = vim.api.nvim_get_mode().mode
-  if mode == "v" or mode == "V" or mode == CTRL_V then
-    vim.cmd("normal! " .. ESC)
-    return true, mode
-  end
-  return false, mode
-end
-
 function M.restore_visual_mode(is_cancel, mode)
   vim.validate({ is_cancel = { is_cancel, "boolean" }, mode = { mode, "string", true } })
   vim.cmd("silent! noautocmd normal! gv")
