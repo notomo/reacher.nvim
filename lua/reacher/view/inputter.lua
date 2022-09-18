@@ -68,7 +68,7 @@ function Inputter.open(callback, on_insert_enter, on_insert_leave, default_input
     end),
   })
   self:_set_line(default_input)
-  vim.cmd("startinsert!")
+  vim.cmd.startinsert({ bang = true })
 
   return self
 end
@@ -117,7 +117,7 @@ function Inputter.close(self, is_cancel)
   if not insert_mode then
     return
   end
-  vim.cmd("stopinsert")
+  vim.cmd.stopinsert()
 
   if is_cancel then
     local row, column = unpack(vim.api.nvim_win_get_cursor(0))

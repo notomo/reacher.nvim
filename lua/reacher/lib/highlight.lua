@@ -31,18 +31,19 @@ function M.define_from_background(prefix, window_id, opts)
   end
 
   local name = prefix .. bg_hl_group
-  vim.cmd(("highlight! %s guibg=%s guifg=%s"):format(name, guibg, guifg))
+  vim.api.nvim_set_hl(0, name, {
+    fg = guifg,
+    bg = guibg,
+  })
   return name
 end
 
-function M.link(from, to, force)
-  local hl = "highlight default"
-  if force then
-    hl = "highlight!"
-  end
-  local cmd = ("%s link %s %s"):format(hl, from, to)
-  vim.cmd(cmd)
-  return cmd
+function M.link(name, to, force)
+  vim.api.nvim_set_hl(0, name, {
+    link = to,
+    default = not force,
+  })
+  return name
 end
 
 return M

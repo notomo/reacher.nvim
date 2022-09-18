@@ -40,7 +40,7 @@ end
 function Folds.execute(self, window_id)
   vim.api.nvim_win_call(window_id, function()
     for _, range in ipairs(self._folds) do
-      vim.cmd(("%d,%dfold"):format(range[1], range[2]))
+      vim.cmd.fold({ range = range })
     end
   end)
 end

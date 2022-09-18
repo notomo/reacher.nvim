@@ -85,8 +85,8 @@ function M.calc_displayed_last_line()
   vim.cmd(("silent! noautocmd %d"):format(last_row))
   local rest_height = height - vim.fn.winline()
 
-  vim.cmd("silent! noautocmd normal! j")
-  vim.cmd("silent! noautocmd normal! g0")
+  vim.cmd.normal({ args = { "j" }, bang = true, mods = { silent = true, emsg_silent = true, noautocmd = true } })
+  vim.cmd.normal({ args = { "g0" }, bang = true, mods = { silent = true, emsg_silent = true, noautocmd = true } })
 
   if height - vim.fn.winline() <= 0 then
     return reset()
@@ -97,7 +97,7 @@ function M.calc_displayed_last_line()
   local line_length = #line
   local is_wrapped = false
   while true do
-    vim.cmd("silent! noautocmd normal! gj")
+    vim.cmd.normal({ args = { "gj" }, bang = true, mods = { silent = true, emsg_silent = true, noautocmd = true } })
     local r = vim.fn.line(".")
     local c = vim.fn.col(".")
     if r ~= row or (row == r and column == c) then
