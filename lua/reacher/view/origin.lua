@@ -146,7 +146,7 @@ function Origin.copy_to_floating_win(self, bufnr)
 end
 
 function Origin.enter(self)
-  windowlib.enter(self.window_id)
+  windowlib.safe_enter(self.window_id)
 end
 
 function Origin.jump(self, row, column, mode)

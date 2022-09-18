@@ -92,7 +92,7 @@ function Overlay.jump(self, target, mode)
 end
 
 function Overlay.close(self)
-  windowlib.close(self._window_id)
+  windowlib.safe_close(self._window_id)
 end
 
 function Overlay.highlight_match(self, target)

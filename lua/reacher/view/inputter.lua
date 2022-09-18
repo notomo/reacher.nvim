@@ -111,7 +111,7 @@ function Inputter.close(self, is_cancel)
 
   -- NOTICE: because sometimes the buffer is not deleted.
   vim.api.nvim_buf_delete(self._bufnr, { force = true })
-  windowlib.close(self.window_id)
+  windowlib.safe_close(self.window_id)
 
   local insert_mode = vim.api.nvim_get_mode().mode == "i"
   if not insert_mode then
