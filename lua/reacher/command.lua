@@ -1,5 +1,5 @@
 local ShowError = require("reacher.vendor.misclib.error_handler").for_show_error()
-local View = require("reacher.view").View
+local View = require("reacher.view")
 local Matcher = require("reacher.core.matcher")
 local messagelib = require("reacher.lib.message")
 local vim = vim

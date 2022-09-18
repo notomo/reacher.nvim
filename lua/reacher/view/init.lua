@@ -8,11 +8,8 @@ local vim = vim
 
 local views = {}
 
-local M = {}
-
 local View = {}
 View.__index = View
-M.View = View
 
 function View.new(matcher, current_origin, other_origins, old_visual_modes, opts)
   local bufnr = vim.api.nvim_get_current_buf()
@@ -154,4 +151,4 @@ function View._restore_visual_mode(_, ...)
   View._visual_mode = true
 end
 
-return M
+return View

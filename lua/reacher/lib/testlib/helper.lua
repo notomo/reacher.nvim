@@ -87,7 +87,7 @@ asserts.create("mode"):register_eq(function()
 end)
 
 asserts.create("restored_visual"):register_eq(function()
-  return require("reacher.view").View._visual_mode
+  return require("reacher.view")._visual_mode
 end)
 
 return helper
