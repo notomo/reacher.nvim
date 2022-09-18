@@ -3,11 +3,8 @@ local cursorlib = require("reacher.vendor.misclib.cursor")
 local wraplib = require("reacher.lib.wrap")
 local vim = vim
 
-local M = {}
-
 local Inputter = {}
 Inputter.__index = Inputter
-M.Inputter = Inputter
 
 function Inputter.open(callback, on_insert_enter, on_insert_leave, default_input)
   vim.validate({ callback = { callback, "function" }, default_input = { default_input, "string", true } })
@@ -125,4 +122,4 @@ function Inputter.close(self, is_cancel)
   end
 end
 
-return M
+return Inputter

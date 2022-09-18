@@ -1,10 +1,7 @@
 local vim = vim
 
-local M = {}
-
 local Folds = {}
 Folds.__index = Folds
-M.Folds = Folds
 
 function Folds.new(window_id, s, e, fillers)
   vim.validate({
@@ -66,4 +63,4 @@ function Folds._rows(self)
   return ipairs(rows)
 end
 
-return M
+return Folds

@@ -2,11 +2,8 @@ local Line = require("reacher.core.line").Line
 
 local vim = vim
 
-local M = {}
-
 local Fillers = {}
 Fillers.__index = Fillers
-M.Fillers = Fillers
 
 function Fillers.new(window_id, first_row, last_row)
   vim.validate({
@@ -70,4 +67,4 @@ function Fillers.add_to(self, lines)
   return lines
 end
 
-return M
+return Fillers

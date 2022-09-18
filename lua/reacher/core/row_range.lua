@@ -1,8 +1,5 @@
-local M = {}
-
 local RowRange = {}
 RowRange.__index = RowRange
-M.RowRange = RowRange
 
 function RowRange.new(window_id, first_row, last_row)
   vim.validate({
@@ -45,4 +42,4 @@ function RowRange.last(self)
   return self._last
 end
 
-return M
+return RowRange

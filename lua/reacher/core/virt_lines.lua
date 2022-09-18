@@ -1,8 +1,5 @@
-local M = {}
-
 local VirtLines = {}
 VirtLines.__index = VirtLines
-M.VirtLines = VirtLines
 
 function VirtLines.new(bufnr, first_row, last_row)
   vim.validate({
@@ -67,4 +64,4 @@ function VirtLines.set(self, bufnr)
   end
 end
 
-return M
+return VirtLines

@@ -1,10 +1,7 @@
 local vim = vim
 
-local M = {}
-
 local OldMode = {}
 OldMode.__index = OldMode
-M.OldMode = OldMode
 
 function OldMode.new(mode, range, was_visual_mode)
   vim.validate({
@@ -48,4 +45,4 @@ function OldMode.in_range(self, row)
   return self._range[1] <= row and row <= self._range[2]
 end
 
-return M
+return OldMode

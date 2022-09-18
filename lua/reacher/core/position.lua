@@ -1,10 +1,7 @@
 local vim = vim
 
-local M = {}
-
 local Position = {}
 Position.__index = Position
-M.Position = Position
 
 function Position.new(row, column)
   vim.validate({ row = { row, "number" }, column = { column, "number" } })
@@ -18,4 +15,4 @@ function Position.cursor(window_id)
   return Position.new(cursor[1], cursor[2])
 end
 
-return M
+return Position

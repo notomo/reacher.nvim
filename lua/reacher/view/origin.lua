@@ -1,17 +1,14 @@
-local Position = require("reacher.core.position").Position
-local Folds = require("reacher.core.fold").Folds
-local Fillers = require("reacher.core.diff_filler").Fillers
+local Position = require("reacher.core.position")
+local Folds = require("reacher.core.fold")
+local Fillers = require("reacher.core.diff_filler")
 local Conceals = require("reacher.core.conceal").Conceals
-local VirtLines = require("reacher.core.virt_lines").VirtLines
+local VirtLines = require("reacher.core.virt_lines")
 local Lines = require("reacher.core.line").Lines
 local windowlib = require("reacher.lib.window")
 local vim = vim
 
-local M = {}
-
 local Origin = {}
 Origin.__index = Origin
-M.Origin = Origin
 
 function Origin.new(window_id, old_mode, bufnr, row_range)
   if vim.wo[window_id].rightleft then
@@ -22,7 +19,7 @@ function Origin.new(window_id, old_mode, bufnr, row_range)
   local last_row = row_range:last()
   local win_first_row, height
   vim.api.nvim_win_call(window_id, function()
-    win_first_row, height = M._view_position(first_row, last_row)
+    win_first_row, height = Origin._view_position(first_row, last_row)
   end)
   if height <= 0 or last_row - first_row < 0 then
     return nil, "no range"
@@ -165,7 +162,7 @@ function Origin.jump(self, row, column, mode)
 end
 
 -- HACK
-function M._view_position(first_row, last_row)
+function Origin._view_position(first_row, last_row)
   local saved = vim.fn.winsaveview()
 
   local scrolloff = vim.api.nvim_get_option_value("scrolloff", { scope = "local" })
@@ -183,4 +180,4 @@ function M._view_position(first_row, last_row)
   return win_first_row, win_last_row - win_first_row + 1
 end
 
-return M
+return Origin

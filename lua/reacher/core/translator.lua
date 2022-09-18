@@ -2,11 +2,8 @@ local Target = require("reacher.core.target").Target
 local windowlib = require("reacher.lib.window")
 local vim = vim
 
-local M = {}
-
 local Translator = {}
 Translator.__index = Translator
-M.Translator = Translator
 
 function Translator.new(window_id, matcher, regex_matcher, number_sign_width)
   vim.validate({
@@ -61,4 +58,4 @@ function Translator.to_targets_from_position(self, str, row, column)
   return { Target.new_virtual(self._window_id, row, 0, display_row, self._column, self._zindex, " ") }
 end
 
-return M
+return Translator

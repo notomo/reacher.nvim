@@ -1,10 +1,10 @@
 local windowlib = require("reacher.lib.window")
 local highlightlib = require("reacher.lib.highlight")
 local Decorator = require("reacher.vendor.misclib.decorator")
-local Collector = require("reacher.core.collector").Collector
-local Position = require("reacher.core.position").Position
+local Collector = require("reacher.core.collector")
+local Position = require("reacher.core.position")
 local Targets = require("reacher.core.target").Targets
-local FloatingMasks = require("reacher.view.floating_mask").FloatingMasks
+local FloatingMasks = require("reacher.view.floating_mask")
 local vim = vim
 
 local M = {}

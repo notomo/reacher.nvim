@@ -1,10 +1,7 @@
 local windowlib = require("reacher.lib.window")
 
-local M = {}
-
 local FloatingMasks = {}
 FloatingMasks.__index = FloatingMasks
-M.FloatingMasks = FloatingMasks
 
 local FloatingMask = {}
 FloatingMask.__index = FloatingMask
@@ -83,4 +80,4 @@ function FloatingMask.filter(self, raw_targets)
   return targets
 end
 
-return M
+return FloatingMasks

@@ -1,11 +1,8 @@
 local modulelib = require("reacher.vendor.misclib.module")
 local vim = vim
 
-local M = {}
-
 local Matcher = {}
 Matcher.__index = Matcher
-M.Matcher = Matcher
 
 function Matcher.new(name)
   vim.validate({ name = { name, "string" } })
@@ -35,4 +32,4 @@ function Matcher.__index(self, k)
   return rawget(Matcher, k) or self._matcher[k]
 end
 
-return M
+return Matcher

@@ -1,12 +1,9 @@
-local Translator = require("reacher.core.translator").Translator
-local regex_matcher = require("reacher.core.matcher").Matcher.must("regex")
+local Translator = require("reacher.core.translator")
+local regex_matcher = require("reacher.core.matcher").must("regex")
 local vim = vim
-
-local M = {}
 
 local Collector = {}
 Collector.__index = Collector
-M.Collector = Collector
 
 function Collector.new(window_id, matcher, lines, number_sign_width, cursor)
   vim.validate({
@@ -54,4 +51,4 @@ function Collector.collect(self, input_line)
   return raw_targets
 end
 
-return M
+return Collector

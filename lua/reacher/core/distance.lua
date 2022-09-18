@@ -1,10 +1,7 @@
 local vim = vim
 
-local M = {}
-
 local Distance = {}
 Distance.__index = Distance
-M.Distance = Distance
 
 function Distance.new(p1, p2)
   vim.validate({ p1 = { p1, "table" }, p2 = { p2, "table" } })
@@ -24,4 +21,4 @@ function Distance.__le(a, b)
   return Distance.__lt(a, b) or Distance.__eq(a, b)
 end
 
-return M
+return Distance

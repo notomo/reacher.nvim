@@ -1,8 +1,8 @@
 local Overlays = require("reacher.view.overlay").Overlays
-local Inputter = require("reacher.view.inputter").Inputter
-local RowRange = require("reacher.core.row_range").RowRange
-local Origin = require("reacher.view.origin").Origin
-local OldMode = require("reacher.core.old_mode").OldMode
+local Inputter = require("reacher.view.inputter")
+local RowRange = require("reacher.core.row_range")
+local Origin = require("reacher.view.origin")
+local OldMode = require("reacher.core.old_mode")
 local modelib = require("reacher.lib.mode")
 local vim = vim
 
