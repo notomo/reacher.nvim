@@ -1,6 +1,5 @@
 local windowlib = require("reacher.lib.window")
 local cursorlib = require("reacher.vendor.misclib.cursor")
-local wraplib = require("reacher.lib.wrap")
 local vim = vim
 
 local Inputter = {}
@@ -52,7 +51,7 @@ function Inputter.open(callback, on_insert_enter, on_insert_leave, default_input
   local self = setmetatable(tbl, Inputter)
 
   vim.api.nvim_buf_attach(bufnr, false, {
-    on_lines = wraplib.traceback(function()
+    on_lines = function()
       local input_line = self:_get_line()
       callback(input_line)
 
@@ -62,7 +61,7 @@ function Inputter.open(callback, on_insert_enter, on_insert_leave, default_input
       vim.schedule(function()
         vim.api.nvim_buf_set_lines(bufnr, 1, -1, false, {})
       end)
-    end),
+    end,
   })
   self:_set_line(default_input)
   vim.cmd.startinsert({ bang = true })
