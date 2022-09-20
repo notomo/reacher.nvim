@@ -1,6 +1,6 @@
 local windowlib = require("reacher.lib.window")
 
-local M = {}
+local M = require("reacher.vendor.misclib.highlight")
 
 function M.define_from_background(prefix, window_id, opts)
   local winhighlight = {}
@@ -34,14 +34,6 @@ function M.define_from_background(prefix, window_id, opts)
   vim.api.nvim_set_hl(0, name, {
     fg = guifg,
     bg = guibg,
-  })
-  return name
-end
-
-function M.link(name, to, force)
-  vim.api.nvim_set_hl(0, name, {
-    link = to,
-    default = not force,
   })
   return name
 end
