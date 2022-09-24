@@ -423,7 +423,7 @@ foo
     reacher.finish()
 
     -- NOTE: no stopinsert offset
-    assert.exists_message("jumped to (2, 2)")
+    assert.exists_message("jumped to %(2, 2%)")
   end)
 
   it("can go back to linewise visual mode", function()
@@ -479,7 +479,7 @@ hoge
     reacher.finish()
 
     assert.current_line("hoge")
-    assert.column(4)
+    assert.cursor_column(4)
     assert.restored_visual(false)
   end)
 
@@ -897,7 +897,7 @@ foo |hoge| bar (hogehoge)
     reacher.finish()
 
     assert.cursor_word("bar")
-    assert.column(12)
+    assert.cursor_column(12)
   end)
 
   it("can show with multibyte", function()

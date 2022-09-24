@@ -32,59 +32,9 @@ function helper.search(pattern)
   return result
 end
 
-local vassert = require("vusted.assert")
-local asserts = vassert.asserts
-
-asserts.create("window_count"):register_eq(function()
-  return vim.fn.tabpagewinnr(vim.fn.tabpagenr(), "$")
-end)
-
-asserts.create("current_line"):register_eq(function()
-  return vim.fn.getline(".")
-end)
-
-asserts.create("cursor_word"):register_eq(function()
-  return vim.fn.expand("<cword>")
-end)
-
-asserts.create("error_message"):register(function(self)
-  return function(_, args)
-    local expected = args[1]
-    local f = args[2]
-    local ok, actual = pcall(f)
-    if ok then
-      self:set_positive("should be error")
-      self:set_negative("should be error")
-      return false
-    end
-    self:set_positive(("error message should end with '%s', but actual: '%s'"):format(expected, actual))
-    self:set_negative(("error message should not end with '%s', but actual: '%s'"):format(expected, actual))
-    return vim.endswith(actual, expected)
-  end
-end)
-
-asserts.create("exists_message"):register(function(self)
-  return function(_, args)
-    local expected = args[1]
-    self:set_positive(("`%s` not found message"):format(expected))
-    self:set_negative(("`%s` found message"):format(expected))
-    local messages = vim.split(vim.api.nvim_exec("messages", true), "\n")
-    for _, msg in ipairs(messages) do
-      if msg:find(expected, 1, true) then
-        return true
-      end
-    end
-    return false
-  end
-end)
-
-asserts.create("column"):register_eq(function()
-  return vim.fn.col(".")
-end)
-
-asserts.create("mode"):register_eq(function()
-  return vim.api.nvim_get_mode().mode
-end)
+local asserts = require("vusted.assert").asserts
+local asserters = require(plugin_name .. ".vendor.assertlib").list()
+require(plugin_name .. ".vendor.misclib.test.assert").register(asserts.create, asserters)
 
 asserts.create("restored_visual"):register_eq(function()
   return require("reacher.view")._visual_mode
