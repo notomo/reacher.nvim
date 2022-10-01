@@ -168,11 +168,19 @@ function Origin._view_position(first_row, last_row)
   local scrolloff = vim.api.nvim_get_option_value("scrolloff", { scope = "local" })
   vim.api.nvim_set_option_value("scrolloff", 0, { scope = "local" })
 
-  vim.cmd(("silent! noautocmd %d"):format(first_row))
+  vim.cmd.normal({
+    args = { tostring(first_row) .. "gg" },
+    bang = true,
+    mods = { silent = true, emsg_silent = true, noautocmd = true, keepjumps = true },
+  })
   local win_first_row = vim.fn.winline()
   vim.fn.winrestview(saved)
 
-  vim.cmd(("silent! noautocmd %d"):format(last_row))
+  vim.cmd.normal({
+    args = { tostring(last_row) .. "gg" },
+    bang = true,
+    mods = { silent = true, emsg_silent = true, noautocmd = true, keepjumps = true },
+  })
   local win_last_row = vim.fn.winline()
   vim.api.nvim_set_option_value("scrolloff", scrolloff, { scope = "local" })
   vim.fn.winrestview(saved)

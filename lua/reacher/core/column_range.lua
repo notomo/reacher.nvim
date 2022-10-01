@@ -82,7 +82,11 @@ function M.calc_displayed_last_line()
   end
 
   local last_row = vim.fn.line("w$")
-  vim.cmd(("silent! noautocmd %d"):format(last_row))
+  vim.cmd.normal({
+    args = { tostring(last_row) .. "gg" },
+    bang = true,
+    mods = { silent = true, emsg_silent = true, noautocmd = true, keepjumps = true },
+  })
   local rest_height = height - vim.fn.winline()
 
   vim.cmd.normal({ args = { "j" }, bang = true, mods = { silent = true, emsg_silent = true, noautocmd = true } })
