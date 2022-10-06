@@ -1,4 +1,4 @@
-local helper = require("reacher.lib.testlib.helper")
+local helper = require("reacher.test.helper")
 
 describe("reacher.matcher.regex", function()
   before_each(helper.before_each)

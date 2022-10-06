@@ -1,4 +1,4 @@
-local helper = require("reacher.lib.testlib.helper")
+local helper = require("reacher.test.helper")
 local reacher = helper.require("reacher")
 
 describe("reacher.next()", function()
