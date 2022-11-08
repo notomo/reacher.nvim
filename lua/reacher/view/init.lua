@@ -13,7 +13,10 @@ View.__index = View
 
 function View.new(matcher, current_origin, other_origins, old_visual_modes, opts)
   local bufnr = vim.api.nvim_get_current_buf()
-  local overlays = Overlays.open(matcher, current_origin, other_origins)
+  local overlays, err = Overlays.open(matcher, current_origin, other_origins)
+  if err then
+    return err
+  end
   local inputter = Inputter.open(function(input_line)
     overlays:update(input_line)
   end, function()
@@ -50,7 +53,7 @@ function View.open_one(matcher, opts)
   if err then
     return err
   end
-  View.new(matcher, current_origin, {}, { [bufnr] = old_mode }, opts)
+  return View.new(matcher, current_origin, {}, { [bufnr] = old_mode }, opts)
 end
 
 function View.open_multiple(matcher, opts)
@@ -76,7 +79,7 @@ function View.open_multiple(matcher, opts)
     end
   end
 
-  View.new(matcher, current_origin, other_origins, old_modes, opts)
+  return View.new(matcher, current_origin, other_origins, old_modes, opts)
 end
 
 function View.recall_history(self, offset)

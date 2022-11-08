@@ -49,6 +49,10 @@ function Overlay.open(matcher, origin, for_current_window)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].modifiable = false
 
+  if not vim.api.nvim_win_is_valid(origin.window_id) then
+    windowlib.safe_close(window_id)
+    return nil, "invalid window: " .. tostring(window_id)
+  end
   local hl_group = highlightlib.define_from_background("ReacherBackground", origin.window_id, {
     fg_hl_group = "Comment",
     fg_default = "#8d9eb2",
@@ -123,10 +127,17 @@ M.Overlays = Overlays
 
 function Overlays.open(matcher, current_origin, other_origins)
   local floating_masks = FloatingMasks.new()
-  local current_overlay = Overlay.open(matcher, current_origin, true)
+  local current_overlay, err = Overlay.open(matcher, current_origin, true)
+  if err then
+    return nil, err
+  end
   local overlays = { [current_origin.window_id] = current_overlay }
   for _, origin in ipairs(other_origins) do
-    overlays[origin.window_id] = Overlay.open(matcher, origin, false)
+    local overlay, open_err = Overlay.open(matcher, origin, false)
+    if open_err then
+      return nil, open_err
+    end
+    overlays[origin.window_id] = overlay
   end
 
   local win_pos = vim.api.nvim_win_get_position(current_origin.window_id)
