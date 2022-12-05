@@ -22,7 +22,7 @@ require("genvdoc").generate(full_plugin_name, {
     {
       name = "EXAMPLES",
       body = function()
-        return util.help_code_block_from_file(example_path)
+        return util.help_code_block_from_file(example_path, { language = "lua" })
       end,
     },
   },

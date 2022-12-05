@@ -60,7 +60,7 @@ cancel()                                                    *reacher.cancel()*
 ==============================================================================
 EXAMPLES                                               *reacher.nvim-EXAMPLES*
 
->
+>lua
   -- search in the current window
   vim.keymap.set({ "n", "x" }, "gs", [[<Cmd>lua require("reacher").start()<CR>]])
 
