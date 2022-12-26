@@ -7,19 +7,19 @@ start({opts})                                                *reacher.start()*
   Start reacher mode.
 
   Parameters: ~
-    {opts} (table) default {input = "", first_row = nil, last_row = nil}
+    {opts} (table|nil) default {input = "", first_row = nil, last_row = nil}
 
 start_multiple({opts})                              *reacher.start_multiple()*
   Start reacher mode for the multiple windows.
 
   Parameters: ~
-    {opts} (table) default {input = ""}
+    {opts} (table|nil) default {input = ""}
 
 again({opts})                                                *reacher.again()*
   Execute again the previous call: start() or start_multiple().
 
   Parameters: ~
-    {opts} (table) default {input = "", first_row = nil, last_row = nil}
+    {opts} (table|nil) default {input = "", first_row = nil, last_row = nil}
 
 first()                                                      *reacher.first()*
   Move cursor to the first target.

@@ -1,19 +1,19 @@
 local reacher = {}
 
 ---Start reacher mode.
----@param opts table: default {input = "", first_row = nil, last_row = nil}
+---@param opts table|nil: default {input = "", first_row = nil, last_row = nil}
 function reacher.start(opts)
   require("reacher.command").start_one(opts)
 end
 
 ---Start reacher mode for the multiple windows.
----@param opts table: default {input = ""}
+---@param opts table|nil: default {input = ""}
 function reacher.start_multiple(opts)
   require("reacher.command").start_multiple(opts)
 end
 
 ---Execute again the previous call: start() or start_multiple().
----@param opts table: default {input = "", first_row = nil, last_row = nil}
+---@param opts table|nil: default {input = "", first_row = nil, last_row = nil}
 function reacher.again(opts)
   require("reacher.command").again(opts)
 end
