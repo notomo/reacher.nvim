@@ -9,10 +9,10 @@ This plugin introduces displayed range search buffer.
 
 ```lua
 -- search in the current window
-vim.keymap.set({ "n", "x" }, "gs", [[<Cmd>lua require("reacher").start()<CR>]])
+vim.keymap.set({ "n", "x" }, "gs", [[<Cmd>lua require("reacher").start({})<CR>]])
 
 -- search in the all windows in the current tab
-vim.keymap.set({ "n", "x" }, "gS", [[<Cmd>lua require("reacher").start_multiple()<CR>]])
+vim.keymap.set({ "n", "x" }, "gS", [[<Cmd>lua require("reacher").start_multiple({})<CR>]])
 
 -- search in the current line
 vim.keymap.set({ "n", "x" }, "gl", function()
