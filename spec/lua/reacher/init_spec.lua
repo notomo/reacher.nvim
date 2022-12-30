@@ -89,8 +89,11 @@ describe("reacher.first()", function()
   end)
 
   it("shows error if it is not started on moving", function()
-    reacher.first()
-    assert.exists_message("is not started")
+    local ok, err = pcall(function()
+      reacher.first()
+    end)
+    assert.is_false(ok)
+    assert.match("is not started", err)
   end)
 end)
 
@@ -391,8 +394,11 @@ register_b
   end)
 
   it("shows error if it is not started", function()
-    reacher.finish()
-    assert.exists_message("is not started")
+    local ok, err = pcall(function()
+      reacher.finish()
+    end)
+    assert.is_false(ok)
+    assert.match("is not started", err)
   end)
 
   it("does nothing if there is no targets", function()
@@ -545,8 +551,11 @@ hoge
   end)
 
   it("shows error if no matcher", function()
-    reacher.start({ matcher_opts = { name = "invalid" } })
-    assert.exists_message("not found matcher: invalid")
+    local ok, err = pcall(function()
+      reacher.start({ matcher_opts = { name = "invalid" } })
+    end)
+    assert.is_false(ok)
+    assert.match("not found matcher: invalid", err)
   end)
 
   it("shows error if there is no range", function()
@@ -554,8 +563,11 @@ hoge
 hoge
 ]])
 
-    reacher.start({ last_row = -1 })
-    assert.exists_message("no range")
+    local ok, err = pcall(function()
+      reacher.start({ last_row = -1 })
+    end)
+    assert.is_false(ok)
+    assert.match("no range", err)
   end)
 
   it("does not start multiple", function()
@@ -576,13 +588,19 @@ hogeb
 
   it("shows error if `rightleft`", function()
     vim.api.nvim_set_option_value("rightleft", true, { scope = "local" })
-    reacher.start()
-    assert.exists_message("`rightleft` is not supported")
+    local ok, err = pcall(function()
+      reacher.start()
+    end)
+    assert.is_false(ok)
+    assert.match("`rightleft` is not supported", err)
   end)
 
   it("shows error if opts is invalid", function()
-    reacher.start("invalid_opts")
-    assert.exists_message([[opts: expected table, got string: "invalid_opts"]])
+    local ok, err = pcall(function()
+      reacher.start("invalid_opts")
+    end)
+    assert.is_false(ok)
+    assert.match([[opts: expected table, got string: "invalid_opts"]], err)
   end)
 end)
 

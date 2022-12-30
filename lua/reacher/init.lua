@@ -3,19 +3,28 @@ local reacher = {}
 ---Start reacher mode.
 ---@param opts table|nil: default {input = "", first_row = nil, last_row = nil}
 function reacher.start(opts)
-  require("reacher.command").start_one(opts)
+  local err = require("reacher.command").start_one(opts)
+  if err then
+    require("reacher.lib.message").error(err)
+  end
 end
 
 ---Start reacher mode for the multiple windows.
 ---@param opts table|nil: default {input = ""}
 function reacher.start_multiple(opts)
-  require("reacher.command").start_multiple(opts)
+  local err = require("reacher.command").start_multiple(opts)
+  if err then
+    require("reacher.lib.message").error(err)
+  end
 end
 
 ---Execute again the previous call: start() or start_multiple().
 ---@param opts table|nil: default {input = "", first_row = nil, last_row = nil}
 function reacher.again(opts)
-  require("reacher.command").again(opts)
+  local err = require("reacher.command").again(opts)
+  if err then
+    require("reacher.lib.message").error(err)
+  end
 end
 
 ---Move cursor to the first target.

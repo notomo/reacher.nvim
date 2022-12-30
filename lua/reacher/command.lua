@@ -1,12 +1,13 @@
-local ShowError = require("reacher.vendor.misclib.error_handler").for_show_error()
 local View = require("reacher.view")
 local Matcher = require("reacher.core.matcher")
 local messagelib = require("reacher.lib.message")
 local vim = vim
 
+local M = {}
+
 local last_call = nil
 
-function ShowError.start_one(raw_opts)
+function M.start_one(raw_opts)
   local msg = messagelib.validate({ opts = { raw_opts, "table", true } })
   if msg then
     return msg
@@ -31,7 +32,7 @@ function ShowError.start_one(raw_opts)
   return call()
 end
 
-function ShowError.start_multiple(raw_opts)
+function M.start_multiple(raw_opts)
   local msg = messagelib.validate({ opts = { raw_opts, "table", true } })
   if msg then
     return msg
@@ -56,7 +57,7 @@ function ShowError.start_multiple(raw_opts)
   return call()
 end
 
-function ShowError.again(extend_opts)
+function M.again(extend_opts)
   local msg = messagelib.validate({ opts = { extend_opts, "table", true } })
   if msg then
     return msg
@@ -68,27 +69,27 @@ function ShowError.again(extend_opts)
   end
 
   if not last_call then
-    return ShowError.start_one(extend_opts)
+    return M.start_one(extend_opts)
   end
 
   return last_call(extend_opts)
 end
 
-function ShowError.move_cursor(action_name)
+function M.move_cursor(action_name)
   vim.validate({ action_name = { action_name, "string" } })
 
   local view, err = View.current()
   if err then
-    return err
+    require("reacher.lib.message").error(err)
   end
 
   view:move_cursor(action_name)
 end
 
-function ShowError.finish()
+function M.finish()
   local view, err = View.current()
   if err then
-    return err
+    require("reacher.lib.message").error(err)
   end
 
   local row, column = view:finish()
@@ -97,16 +98,16 @@ function ShowError.finish()
   end
 end
 
-function ShowError.recall_history(offset)
+function M.recall_history(offset)
   vim.validate({ offset = { offset, "number" } })
   local view, err = View.current()
   if err then
-    return err
+    require("reacher.lib.message").error(err)
   end
   view:recall_history(offset)
 end
 
-function ShowError.cancel()
+function M.cancel()
   local view, err = View.current()
   if err then
     return
@@ -115,7 +116,7 @@ function ShowError.cancel()
   messagelib.info("canceled")
 end
 
-function ShowError.close(id)
+function M.close(id)
   vim.validate({ id = { id, "number" } })
   local view = View.get(id)
   if not view then
@@ -124,4 +125,4 @@ function ShowError.close(id)
   view:cancel()
 end
 
-return ShowError:methods()
+return M
