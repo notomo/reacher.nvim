@@ -16,7 +16,7 @@ function helper.set_lines(lines)
 end
 
 function helper.input(str)
-  local texts = vim.split(str, "\n", true)
+  local texts = vim.split(str, "\n", { plain = true })
   vim.api.nvim_put(texts, "", false, true)
 end
 

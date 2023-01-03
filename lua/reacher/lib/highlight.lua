@@ -4,8 +4,8 @@ local M = require("reacher.vendor.misclib.highlight")
 
 function M.define_from_background(prefix, window_id, opts)
   local winhighlight = {}
-  for _, hl in ipairs(vim.split(vim.wo[window_id].winhighlight, ",", true)) do
-    local k, v = unpack(vim.split(hl, ":", true))
+  for _, hl in ipairs(vim.split(vim.wo[window_id].winhighlight, ",", { plain = true })) do
+    local k, v = unpack(vim.split(hl, ":", { plain = true }))
     winhighlight[k] = v
   end
 
