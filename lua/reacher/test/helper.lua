@@ -8,7 +8,6 @@ function helper.before_each() end
 function helper.after_each()
   helper.cleanup()
   helper.cleanup_loaded_modules(plugin_name)
-  print(" ")
 end
 
 function helper.set_lines(lines)
