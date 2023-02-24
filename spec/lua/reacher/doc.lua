@@ -13,10 +13,19 @@ require("genvdoc").generate(full_plugin_name, {
         return "Lua module: " .. group
       end,
       group = function(node)
-        if not node.declaration then
+        if node.declaration == nil or node.declaration.type ~= "function" then
           return nil
         end
         return node.declaration.module
+      end,
+    },
+    {
+      name = "STRUCTURE",
+      group = function(node)
+        if node.declaration == nil or node.declaration.type ~= "class" then
+          return nil
+        end
+        return "STRUCTURE"
       end,
     },
     {
