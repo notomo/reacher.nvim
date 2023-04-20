@@ -34,22 +34,25 @@ function Decorator.highlight(self, hl_group, row, start_col, end_col, opts)
   api.nvim_buf_set_extmark(self._bufnr, self._ns, row, start_col, opts)
 end
 
-function Decorator.highlight_line(self, hl_group, row)
-  self:highlight(hl_group, row, 0, -1)
+function Decorator.highlight_line(self, hl_group, row, opts)
+  self:highlight(hl_group, row, 0, -1, opts)
 end
 
-function Decorator.highlight_range(self, hl_group, start_row, end_row, start_col, end_col)
+function Decorator.highlight_range(self, hl_group, start_row, end_row, start_col, end_col, opts)
+  opts = opts or {}
+
   end_row = end_row or start_row
   if end_col == -1 then
     end_col = nil
     end_row = end_row + 1
   end
-  api.nvim_buf_set_extmark(self._bufnr, self._ns, start_row, start_col, {
-    hl_group = hl_group,
-    end_row = end_row,
-    end_col = end_col,
-    ephemeral = self._is_ephemeral,
-  })
+
+  opts.end_row = end_row
+  opts.end_col = end_col
+  opts.hl_group = hl_group
+  opts.ephemeral = self._is_ephemeral
+
+  api.nvim_buf_set_extmark(self._bufnr, self._ns, start_row, start_col, opts)
 end
 
 function Decorator.add_virtual_text(self, row, start_col, virt_text, opts)
