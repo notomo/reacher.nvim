@@ -47,7 +47,15 @@ function Inputter.open(callback, on_insert_enter, on_insert_leave, default_input
     callback = on_insert_enter,
   })
 
-  local tbl = { window_id = window_id, _bufnr = bufnr, _history_offset = 0 }
+  local tbl = {
+    window_id = window_id,
+    _bufnr = bufnr,
+    _history_store = require("reacher.vendor.misclib.history").new("search", {
+      filter = function(history, before)
+        return history ~= "" and history ~= before
+      end,
+    }),
+  }
   local self = setmetatable(tbl, Inputter)
 
   vim.api.nvim_buf_attach(bufnr, false, {
@@ -78,27 +86,20 @@ function Inputter._get_line(self)
 end
 
 function Inputter.recall_history(self, offset)
-  if self._history_offset == 0 then
-    self:save_history()
+  local current_line = self:_get_line()
+  local history = self._history_store:recall(offset, current_line)
+  if history then
+    self:_set_line(history)
+    cursorlib.set_column(#history + 1)
   end
-
-  local next_index = self._history_offset + offset
-  next_index = math.min(next_index, 0)
-  next_index = math.max(next_index, -vim.fn.histnr("search"))
-
-  local history = vim.fn.histget("search", next_index)
-  self:_set_line(history)
-  cursorlib.set_column(#history)
-
-  self._history_offset = next_index
 end
 
 function Inputter.save_history(self, include_register)
   vim.validate({ include_register = { include_register, "boolean", true } })
-  local input_line = self:_get_line()
-  vim.fn.histadd("search", input_line)
+  local current_line = self:_get_line()
+  self._history_store:save(current_line)
   if include_register then
-    vim.fn.setreg("/", input_line)
+    vim.fn.setreg("/", current_line)
   end
 end
 
