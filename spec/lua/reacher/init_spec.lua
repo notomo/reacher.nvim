@@ -340,6 +340,8 @@ foo
   end)
 
   it("adds search history", function()
+    vim.fn.histadd("/", "already")
+
     reacher.start()
     helper.input("recall_history")
     reacher.backward_history()

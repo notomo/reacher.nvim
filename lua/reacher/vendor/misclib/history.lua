@@ -15,10 +15,11 @@ function M.new(key, opts)
   return setmetatable(tbl, M)
 end
 
-function M.recall(self, offset, before)
-  self:_save_if_first(before)
+function M.recall(self, offset, current)
+  local index = self:_index(self._current_history)
 
-  local index = self:_index()
+  local will_save = current and self._current_history ~= current
+  local will_delete = will_save and index == -1
 
   local max = 0
   local min = -vim.fn.histnr(self._key)
@@ -31,6 +32,12 @@ function M.recall(self, offset, before)
 
     local history = vim.fn.histget(self._key, index)
     if self._filter(history) then
+      if will_delete then
+        vim.fn.histdel(self._key, -1)
+      end
+      if will_save then
+        self:save(current)
+      end
       self._current_history = history
       return history
     end
@@ -45,22 +52,11 @@ function M.save(self, history)
   return true
 end
 
-function M._save_if_first(self, before)
-  if self._current_history or not before then
-    return
-  end
-  local saved = self:save(before)
-  if not saved then
-    return nil
-  end
-  self._current_history = before
-end
-
-function M._index(self)
+function M._index(self, target_history)
   local count = vim.fn.histnr(self._key)
   for index = -1, -count, -1 do
     local history = vim.fn.histget(self._key, index)
-    if history == self._current_history then
+    if history == target_history then
       return index
     end
   end
