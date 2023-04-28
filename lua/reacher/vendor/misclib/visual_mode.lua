@@ -12,13 +12,13 @@ function M.row_range()
   }
 end
 
-local CTRL_V = api.nvim_replace_termcodes("<C-v>", true, false, true)
+local CTRL_V = vim.keycode("<C-v>")
 local is_current = function()
   local mode = api.nvim_get_mode().mode
   return mode == "v" or mode == "V" or mode == CTRL_V, mode
 end
 
-local ESC = api.nvim_replace_termcodes("<ESC>", true, false, true)
+local ESC = vim.keycode("<ESC>")
 function M.leave()
   local ok, mode = is_current()
   if not ok then
