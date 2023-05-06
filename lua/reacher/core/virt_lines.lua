@@ -8,42 +8,25 @@ function VirtLines.new(bufnr, first_row, last_row)
     last_row = { last_row, "number" },
   })
 
-  local all_marks = {}
-
-  local nss = vim.api.nvim_get_namespaces()
-  for _, ns in pairs(nss) do
-    local ok, marks = pcall(
-      vim.api.nvim_buf_get_extmarks,
-      bufnr,
-      ns,
-      { 0, first_row - 1 },
-      { last_row + 1, -1 },
-      { details = true }
-    )
-    if not ok then
-      goto continue
-    end
-
-    marks = vim.tbl_map(function(mark)
-      local details = mark[4]
-      return {
-        row = mark[2],
-        column = mark[3],
-        virt_lines = details.virt_lines,
-        virt_lines_above = details.virt_lines_above,
-      }
-    end, marks)
-    marks = vim.tbl_filter(function(mark)
-      return mark.virt_lines ~= nil
-    end, marks)
-
-    vim.list_extend(all_marks, marks)
-
-    ::continue::
-  end
+  local marks = vim.api.nvim_buf_get_extmarks(
+    bufnr,
+    -1,
+    { 0, first_row - 1 },
+    { last_row + 1, -1 },
+    { details = true, type = "virt_lines" }
+  )
+  marks = vim.tbl_map(function(mark)
+    local details = mark[4]
+    return {
+      row = mark[2],
+      column = mark[3],
+      virt_lines = details.virt_lines,
+      virt_lines_above = details.virt_lines_above,
+    }
+  end, marks)
 
   local tbl = {
-    _marks = all_marks,
+    _marks = marks,
     _first_row = first_row,
   }
   return setmetatable(tbl, VirtLines)
