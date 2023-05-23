@@ -3,6 +3,7 @@ local Folds = require("reacher.core.fold")
 local Fillers = require("reacher.core.diff_filler")
 local Conceals = require("reacher.core.conceal").Conceals
 local VirtLines = require("reacher.core.virt_lines")
+local VirtTexts = require("reacher.core.virt_text")
 local Lines = require("reacher.core.line").Lines
 local windowlib = require("reacher.lib.window")
 local vim = vim
@@ -61,8 +62,10 @@ function Origin.new(window_id, old_mode, bufnr, row_range)
   local fillers = Fillers.new(window_id, first_row, last_row)
   local folds = Folds.new(window_id, first_row, last_row, fillers)
   local conceals = Conceals.new(bufnr, window_id, first_row, last_row, old_mode)
+  local virt_texts = VirtTexts.new(bufnr, first_row, last_row, first_column, last_column)
   local virt_lines = VirtLines.new(bufnr, first_row, last_row)
-  local lines = Lines.new(window_id, first_column, last_column, conceals, folds, fillers, virt_lines, options.wrap)
+  local lines =
+    Lines.new(window_id, first_column, last_column, conceals, folds, fillers, virt_lines, virt_texts, options.wrap)
 
   local row_offset = first_row - 1
   local cursor_row = cursor.row + fillers:offset(cursor.row) - row_offset

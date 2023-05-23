@@ -955,4 +955,25 @@ hoge_c]])
 
     assert.cursor_word("hoge_b")
   end)
+
+  it("(TODO) can show with inline virt_text", function()
+    helper.set_lines([[
+hoge_a
+hoge_b
+hoge_c]])
+    local bufnr = vim.api.nvim_get_current_buf()
+    local ns = vim.api.nvim_create_namespace("test")
+    vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {
+      virt_text = { { "virtual" } },
+      virt_text_pos = "inline",
+    })
+    vim.cmd.normal({ args = { "G" }, bang = true })
+
+    reacher.start()
+
+    helper.input("hoge_b")
+    reacher.finish()
+
+    assert.cursor_word("hoge_b")
+  end)
 end)

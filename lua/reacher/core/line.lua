@@ -17,7 +17,7 @@ end
 local Lines = {}
 M.Lines = Lines
 
-function Lines.new(window_id, first_column, last_column, conceals, folds, fillers, virt_lines, wrap)
+function Lines.new(window_id, first_column, last_column, conceals, folds, fillers, virt_lines, virt_texts, wrap)
   local lines = {}
 
   local column_ranges = ColumnRanges.new(window_id, conceals:lines(), first_column, last_column, wrap)
@@ -32,6 +32,7 @@ function Lines.new(window_id, first_column, last_column, conceals, folds, filler
     _folds = folds,
     _first_column = first_column,
     _virt_lines = virt_lines,
+    _virt_texts = virt_texts,
   }
   return setmetatable(tbl, Lines)
 end
@@ -54,6 +55,7 @@ function Lines.copy_to(self, bufnr, window_id)
       return line.str
     end, self._lines)
   )
+  self._virt_texts:set(bufnr)
   self._virt_lines:set(bufnr)
   self._folds:execute(window_id)
   vim.api.nvim_win_call(window_id, function()
