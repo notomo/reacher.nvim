@@ -34,17 +34,16 @@ end
 
 function VirtLines.set(self, bufnr)
   local ns = vim.api.nvim_create_namespace("reacher_virt_lines")
-  for _, mark in ipairs(self._marks) do
+  vim.iter(self._marks):each(function(mark)
     local row = mark.row - (self._first_row - 1)
     if row < 0 then
-      goto continue
+      return
     end
     vim.api.nvim_buf_set_extmark(bufnr, ns, row, mark.column, {
       virt_lines = mark.virt_lines,
       virt_lines_above = mark.virt_lines_above,
     })
-    ::continue::
-  end
+  end)
 end
 
 return VirtLines

@@ -53,15 +53,15 @@ end
 
 function FloatingMask.filter(self, raw_targets)
   local targets = {}
-  for _, target in ipairs(raw_targets) do
+  vim.iter(raw_targets):each(function(target)
     if target.window_id == self._window_id then
-      goto ok
+      table.insert(targets, target)
     end
     if target.zindex > self._zindex then
-      goto ok
+      table.insert(targets, target)
     end
     if target.zindex == self._zindex and target.window_id > self._window_id then
-      goto ok
+      table.insert(targets, target)
     end
     if
       self._start_row <= target.display_row
@@ -69,14 +69,11 @@ function FloatingMask.filter(self, raw_targets)
       and self._start_col <= target.display_column
       and target.display_column <= self._end_col
     then
-      goto continue
+      return
     end
 
-    ::ok::
     table.insert(targets, target)
-
-    ::continue::
-  end
+  end)
   return targets
 end
 
