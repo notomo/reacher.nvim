@@ -17,9 +17,9 @@ function Origin.new(window_id, old_mode, bufnr, row_range)
 
   local first_row = row_range:first()
   local last_row = row_range:last()
-  local win_first_row, height
+  local height
   vim.api.nvim_win_call(window_id, function()
-    win_first_row, height = Origin._view_position(first_row, last_row)
+    height = Origin._view_height(first_row, last_row)
   end)
   if height <= 0 or last_row - first_row < 0 then
     return nil, "no range"
@@ -47,7 +47,6 @@ function Origin.new(window_id, old_mode, bufnr, row_range)
 
   local width = vim.api.nvim_win_get_width(window_id) - number_sign_width
 
-  local row = win_first_row
   local column = 0
   if saved.leftcol > number_sign_width then
     column = number_sign_width + 2
@@ -73,7 +72,6 @@ function Origin.new(window_id, old_mode, bufnr, row_range)
     lines = lines,
     cursor = cursor_pos,
     number_sign_width = number_sign_width,
-    _row = row,
     _row_offset = row_offset,
     _column = column,
     _width = width,
@@ -82,6 +80,7 @@ function Origin.new(window_id, old_mode, bufnr, row_range)
     _conceals = conceals,
     _folds = folds,
     _fillers = fillers,
+    _first_row = first_row,
   }
   return setmetatable(tbl, Origin)
 end
@@ -91,17 +90,6 @@ function Origin.is_floating(self)
 end
 
 function Origin.copy_to_floating_win(self, bufnr)
-  local bufpos = { 1, 0 }
-  local row = self._row
-  local first_row = vim.api.nvim_win_call(self.window_id, function()
-    return vim.fn.line("w0")
-  end)
-  -- HACK: ?
-  if first_row <= 2 then
-    bufpos = { first_row - 1, 0 }
-    row = row - 1
-  end
-
   local zindex
   if not self:is_floating() then
     zindex = 49 -- == (default - 1)
@@ -112,9 +100,9 @@ function Origin.copy_to_floating_win(self, bufnr)
     height = self._height,
     relative = "win",
     win = self.window_id,
-    row = row,
+    row = 0,
     col = self._column,
-    bufpos = bufpos,
+    bufpos = { self._first_row - 1, 0 },
     external = false,
     style = "minimal",
     focusable = false,
@@ -162,7 +150,7 @@ function Origin.jump(self, row, column, mode)
 end
 
 -- HACK
-function Origin._view_position(first_row, last_row)
+function Origin._view_height(first_row, last_row)
   local saved = vim.fn.winsaveview()
 
   local scrolloff = vim.api.nvim_get_option_value("scrolloff", { scope = "local" })
@@ -185,7 +173,7 @@ function Origin._view_position(first_row, last_row)
   vim.api.nvim_set_option_value("scrolloff", scrolloff, { scope = "local" })
   vim.fn.winrestview(saved)
 
-  return win_first_row, win_last_row - win_first_row + 1
+  return win_last_row - win_first_row + 1
 end
 
 return Origin
