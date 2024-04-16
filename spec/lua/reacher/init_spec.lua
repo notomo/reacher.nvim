@@ -947,6 +947,7 @@ hoge_c]])
       virt_lines = vim.fn["repeat"]({ { { "virtual" } } }, vim.o.lines),
     })
     vim.cmd.normal({ args = { "G" }, bang = true })
+    vim.cmd.redraw() -- HACK
 
     reacher.start()
 
