@@ -122,9 +122,12 @@ function Origin.copy_to_floating_win(self, bufnr)
   vim.wo[window_id].linebreak = self._options.linebreak
   vim.wo[window_id].foldenable = self._folds:exists()
 
-  local listchars = vim.tbl_filter(function(v)
-    return not vim.startswith(v, "extends:") and not vim.startswith(v, "precedes:")
-  end, vim.fn.split(self._options.listchars, ",", true))
+  local listchars = vim
+    .iter(vim.fn.split(self._options.listchars, ",", true))
+    :filter(function(v)
+      return not vim.startswith(v, "extends:") and not vim.startswith(v, "precedes:")
+    end)
+    :totable()
   vim.wo[window_id].listchars = table.concat(listchars, ",")
 
   return window_id
