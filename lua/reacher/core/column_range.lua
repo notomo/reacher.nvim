@@ -41,9 +41,12 @@ function ColumnRanges.new(window_id, line_strs, virtual_s, virtual_e, wrap)
 
   local strs = vim.deepcopy(line_strs)
   if wrap then
-    self._column_ranges = vim.tbl_map(function(str)
-      return ColumnRange.new_default(str)
-    end, strs)
+    self._column_ranges = vim
+      .iter(strs)
+      :map(function(str)
+        return ColumnRange.new_default(str)
+      end)
+      :totable()
     local last_line = vim.api.nvim_win_call(window_id, function()
       return M.calc_displayed_last_line()
     end)

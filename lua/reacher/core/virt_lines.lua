@@ -15,15 +15,18 @@ function VirtLines.new(bufnr, first_row, last_row)
     { last_row + 1, -1 },
     { details = true, type = "virt_lines" }
   )
-  marks = vim.tbl_map(function(mark)
-    local details = mark[4]
-    return {
-      row = mark[2],
-      column = mark[3],
-      virt_lines = details.virt_lines,
-      virt_lines_above = details.virt_lines_above,
-    }
-  end, marks)
+  marks = vim
+    .iter(marks)
+    :map(function(mark)
+      local details = mark[4]
+      return {
+        row = mark[2],
+        column = mark[3],
+        virt_lines = details.virt_lines,
+        virt_lines_above = details.virt_lines_above,
+      }
+    end)
+    :totable()
 
   local tbl = {
     _marks = marks,

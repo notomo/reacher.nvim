@@ -50,9 +50,12 @@ function Lines.copy_to(self, bufnr, window_id)
     0,
     -1,
     true,
-    vim.tbl_map(function(line)
-      return line.str
-    end, self._lines)
+    vim
+      .iter(self._lines)
+      :map(function(line)
+        return line.str
+      end)
+      :totable()
   )
   self._virt_lines:set(bufnr)
   self._folds:execute(window_id)

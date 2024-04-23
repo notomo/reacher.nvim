@@ -18,9 +18,12 @@ function ConcealLine.new(window_id, row, disable)
 
   local syn_conceals
   vim.api.nvim_win_call(window_id, function()
-    syn_conceals = vim.tbl_map(function(col)
-      return vim.fn.synconcealed(row, col)
-    end, vim.fn.range(1, #line))
+    syn_conceals = vim
+      .iter(vim.fn.range(1, #line))
+      :map(function(col)
+        return vim.fn.synconcealed(row, col)
+      end)
+      :totable()
   end)
 
   local chars = {}
@@ -108,9 +111,12 @@ function Conceals.lines(self)
   if #self._conceals == 0 then
     return vim.api.nvim_buf_get_lines(self._bufnr, self._first_row - 1, self._last_row, true)
   end
-  return vim.tbl_map(function(conceal)
-    return conceal.str
-  end, self._conceals)
+  return vim
+    .iter(self._conceals)
+    :map(function(conceal)
+      return conceal.str
+    end)
+    :totable()
 end
 
 function Conceals.offset(self, row, column)
