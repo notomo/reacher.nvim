@@ -38,9 +38,7 @@ require("genvdoc").generate(full_plugin_name, {
 })
 
 local gen_readme = function()
-  local f = io.open(example_path, "r")
-  local exmaple = f:read("*a")
-  f:close()
+  local exmaple = util.read_all(example_path)
 
   local content = ([[
 # %s
@@ -55,8 +53,6 @@ This plugin introduces displayed range search buffer.
 ```lua
 %s```]]):format(full_plugin_name, exmaple)
 
-  local readme = io.open("README.md", "w")
-  readme:write(content)
-  readme:close()
+  util.write("README.md", content)
 end
 gen_readme()
