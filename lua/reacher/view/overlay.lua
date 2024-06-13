@@ -29,7 +29,9 @@ local group = vim.api.nvim_create_augroup("reacher", {})
 vim.api.nvim_create_autocmd({ "ColorScheme" }, {
   group = group,
   pattern = { "*" },
-  callback = setup_highlight_groups,
+  callback = function()
+    setup_highlight_groups()
+  end,
 })
 
 Overlay.hl_group_script = table.concat(setup_highlight_groups(), "\n")
