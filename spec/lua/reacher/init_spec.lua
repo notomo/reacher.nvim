@@ -1,5 +1,6 @@
 local helper = require("reacher.test.helper")
 local reacher = helper.require("reacher")
+local assert = helper.typed_assert(assert)
 
 describe("reacher.next()", function()
   before_each(helper.before_each)
@@ -267,7 +268,7 @@ hoge
     helper.input("cancel_history")
     reacher.cancel()
 
-    assert.equals("cancel_history", vim.fn.histget("/"))
+    assert.equal("cancel_history", vim.fn.histget("/"))
   end)
 
   it("can go back to visual mode", function()
@@ -346,7 +347,7 @@ foo
     helper.input("recall_history")
     reacher.backward_history()
 
-    assert.equals("recall_history", vim.fn.histget("/"))
+    assert.equal("recall_history", vim.fn.histget("/"))
   end)
 end)
 
@@ -377,7 +378,7 @@ hoge_c
     helper.input("finish_history")
     reacher.finish()
 
-    assert.equals("finish_history", vim.fn.histget("/"))
+    assert.equal("finish_history", vim.fn.histget("/"))
   end)
 
   it("sets search register", function()

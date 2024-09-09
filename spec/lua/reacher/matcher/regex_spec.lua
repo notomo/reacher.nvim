@@ -1,4 +1,5 @@
 local helper = require("reacher.test.helper")
+local assert = helper.typed_assert(assert)
 
 describe("reacher.matcher.regex", function()
   before_each(helper.before_each)
@@ -18,7 +19,7 @@ describe("reacher.matcher.regex", function()
   }) do
     it(("has_uppercase('%s') == %s"):format(c.str, c.expected), function()
       local actual = require("reacher.matcher.regex"):has_uppercase(c.str)
-      assert.equals(c.expected, actual)
+      assert.equal(c.expected, actual)
     end)
   end
 
@@ -35,7 +36,7 @@ describe("reacher.matcher.regex", function()
       local matcher = require("reacher.matcher.regex")
       matcher.smartcase = c.smartcase
       local actual = matcher:adjust_case(c.str)
-      assert.equals(c.expected, actual)
+      assert.equal(c.expected, actual)
     end)
   end
 end)

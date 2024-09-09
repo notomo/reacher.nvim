@@ -1,4 +1,5 @@
 local helper = require("reacher.test.helper")
+local assert = helper.typed_assert(assert)
 
 describe("reacher.core.column_range.calc_displayed_last_line()", function()
   before_each(helper.before_each)
@@ -76,7 +77,7 @@ hidden]],
 
       local line = require("reacher.core.column_range").calc_displayed_last_line()
 
-      assert.equals(c.expected, line)
+      assert.equal(c.expected, line)
     end)
   end
 end)
