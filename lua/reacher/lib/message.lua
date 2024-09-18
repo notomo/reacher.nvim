@@ -5,7 +5,7 @@ function M.validate(tbl)
   for key, value in pairs(tbl) do
     local ok, result = pcall(vim.validate, { [key] = value })
     if not ok then
-      local msg_head = vim.split(result, "\n")[1]
+      local msg_head = vim.split(tostring(result), "\n")[1]
       table.insert(errs, ("%s: %s"):format(msg_head, vim.inspect(value[1])))
     end
   end

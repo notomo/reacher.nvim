@@ -14,7 +14,7 @@ function M.start_one(raw_opts)
   end
 
   local old = View.current()
-  if old then
+  if type(old) == "table" then
     old:close()
   end
 
@@ -39,7 +39,7 @@ function M.start_multiple(raw_opts)
   end
 
   local old = View.current()
-  if old then
+  if type(old) == "table" then
     old:close()
   end
 
@@ -64,7 +64,7 @@ function M.again(extend_opts)
   end
 
   local old = View.current()
-  if old then
+  if type(old) == "table" then
     old:close()
   end
 
@@ -78,18 +78,22 @@ end
 function M.move_cursor(action_name)
   vim.validate({ action_name = { action_name, "string" } })
 
-  local view, err = View.current()
-  if err then
+  local view = View.current()
+  if type(view) == "string" then
+    local err = view
     require("reacher.lib.message").error(err)
+    return
   end
 
   view:move_cursor(action_name)
 end
 
 function M.finish()
-  local view, err = View.current()
-  if err then
+  local view = View.current()
+  if type(view) == "string" then
+    local err = view
     require("reacher.lib.message").error(err)
+    return
   end
 
   local row, column = view:finish()
@@ -108,10 +112,13 @@ function M.recall_history(offset)
 end
 
 function M.cancel()
-  local view, err = View.current()
-  if err then
+  local view = View.current()
+  if type(view) == "string" then
+    local err = view
+    require("reacher.lib.message").error(err)
     return
   end
+
   view:cancel()
   messagelib.info("canceled")
 end

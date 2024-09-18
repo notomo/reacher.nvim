@@ -13,8 +13,9 @@ View.__index = View
 
 function View.new(matcher, current_origin, other_origins, old_visual_modes, opts)
   local bufnr = vim.api.nvim_get_current_buf()
-  local overlays, err = Overlays.open(matcher, current_origin, other_origins)
-  if err then
+  local overlays = Overlays.open(matcher, current_origin, other_origins)
+  if type(overlays) == "string" then
+    local err = overlays
     return err
   end
   local inputter = Inputter.open(function(input_line)
@@ -142,9 +143,9 @@ function View.current()
   local id = vim.api.nvim_get_current_win()
   local view = View.get(id)
   if not view then
-    return nil, "is not started"
+    return "is not started"
   end
-  return view, nil
+  return view
 end
 
 -- HACK: for testing

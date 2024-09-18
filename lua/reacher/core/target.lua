@@ -8,6 +8,7 @@ local Target = setmetatable({}, Position)
 Target.__index = Target
 M.Target = Target
 
+---@diagnostic disable-next-line: duplicate-set-field
 function Target.new(window_id, row, column, column_end, display_row, display_column, zindex, str, is_virtual)
   vim.validate({
     window_id = { window_id, "number" },

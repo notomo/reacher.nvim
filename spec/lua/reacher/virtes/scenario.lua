@@ -21,7 +21,7 @@ hoge
 hoge
 ]],
       "\n",
-      true
+      { plain = true }
     )
   )
 

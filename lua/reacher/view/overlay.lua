@@ -131,13 +131,13 @@ function Overlays.open(matcher, current_origin, other_origins)
   local floating_masks = FloatingMasks.new()
   local current_overlay, err = Overlay.open(matcher, current_origin, true)
   if err then
-    return nil, err
+    return err
   end
   local overlays = { [current_origin.window_id] = current_overlay }
   for _, origin in ipairs(other_origins) do
     local overlay, open_err = Overlay.open(matcher, origin, false)
     if open_err then
-      return nil, open_err
+      return open_err
     end
     overlays[origin.window_id] = overlay
   end
