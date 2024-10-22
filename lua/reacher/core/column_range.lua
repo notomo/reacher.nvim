@@ -27,15 +27,12 @@ local ColumnRanges = {}
 ColumnRanges.__index = ColumnRanges
 M.ColumnRanges = ColumnRanges
 
+--- @param window_id integer
+--- @param line_strs string[]
+--- @param virtual_s integer
+--- @param virtual_e integer
+--- @param wrap boolean
 function ColumnRanges.new(window_id, line_strs, virtual_s, virtual_e, wrap)
-  vim.validate({
-    window_id = { window_id, "number" },
-    line_strs = { line_strs, "table" },
-    virtual_s = { virtual_s, "number" },
-    virtual_e = { virtual_e, "number" },
-    wrap = { wrap, "boolean" },
-  })
-
   local tbl = { _column_ranges = {} }
   local self = setmetatable(tbl, ColumnRanges)
 

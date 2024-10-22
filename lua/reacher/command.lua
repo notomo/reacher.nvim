@@ -75,9 +75,8 @@ function M.again(extend_opts)
   return last_call(extend_opts)
 end
 
+--- @param action_name string
 function M.move_cursor(action_name)
-  vim.validate({ action_name = { action_name, "string" } })
-
   local view = View.current()
   if type(view) == "string" then
     local err = view
@@ -102,8 +101,8 @@ function M.finish()
   end
 end
 
+--- @param offset integer
 function M.recall_history(offset)
-  vim.validate({ offset = { offset, "number" } })
   local view, err = View.current()
   if err then
     require("reacher.lib.message").error(err)
@@ -123,8 +122,8 @@ function M.cancel()
   messagelib.info("canceled")
 end
 
+--- @param id integer
 function M.close(id)
-  vim.validate({ id = { id, "number" } })
   local view = View.get(id)
   if not view then
     return

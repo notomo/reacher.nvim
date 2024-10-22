@@ -1,7 +1,8 @@
 local M = {}
 
+--- @param is_cancel boolean
+--- @param mode string?
 function M.restore_visual_mode(is_cancel, mode)
-  vim.validate({ is_cancel = { is_cancel, "boolean" }, mode = { mode, "string", true } })
   vim.cmd.normal({ args = { "gv" }, bang = true, mods = { silent = true, emsg_silent = true, noautocmd = true } })
   if mode ~= "i" then
     return

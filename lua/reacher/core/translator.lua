@@ -5,14 +5,11 @@ local vim = vim
 local Translator = {}
 Translator.__index = Translator
 
+--- @param window_id integer
+--- @param matcher table
+--- @param regex_matcher table
+--- @param number_sign_width integer
 function Translator.new(window_id, matcher, regex_matcher, number_sign_width)
-  vim.validate({
-    window_id = { window_id, "number" },
-    matcher = { matcher, "table" },
-    regex_matcher = { regex_matcher, "table" },
-    number_sign_width = { number_sign_width, "number" },
-  })
-
   local config = vim.api.nvim_win_get_config(window_id)
   local row_offset, col_offset = windowlib.one_side_border_offsets(config)
 

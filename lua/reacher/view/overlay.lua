@@ -38,13 +38,10 @@ Overlay.hl_group_script = table.concat(setup_highlight_groups(), "\n")
 
 local current_matched_hl_group = "ReacherCurrentMatch"
 
+--- @param matcher table
+--- @param origin table
+--- @param for_current_window boolean
 function Overlay.open(matcher, origin, for_current_window)
-  vim.validate({
-    matcher = { matcher, "table" },
-    origin = { origin, "table" },
-    for_current_window = { for_current_window, "boolean" },
-  })
-
   local bufnr = vim.api.nvim_create_buf(false, true)
   local window_id = origin:copy_to_floating_win(bufnr)
 

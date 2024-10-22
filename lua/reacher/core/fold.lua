@@ -3,13 +3,11 @@ local vim = vim
 local Folds = {}
 Folds.__index = Folds
 
+--- @param window_id integer
+--- @param s integer
+--- @param e integer
+--- @param fillers table
 function Folds.new(window_id, s, e, fillers)
-  vim.validate({
-    window_id = { window_id, "number" },
-    s = { s, "number" },
-    e = { e, "number" },
-    fillers = { fillers, "table" },
-  })
   local tbl = { _folds = {} }
   local self = setmetatable(tbl, Folds)
 

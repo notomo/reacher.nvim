@@ -5,12 +5,10 @@ local vim = vim
 local Fillers = {}
 Fillers.__index = Fillers
 
+--- @param window_id integer
+--- @param first_row integer
+--- @param last_row integer
 function Fillers.new(window_id, first_row, last_row)
-  vim.validate({
-    window_id = { window_id, "number" },
-    first_row = { first_row, "number" },
-    last_row = { last_row, "number" },
-  })
   local tbl = { _fillers = {}, _first_row = first_row, _offsets = {} }
   local self = setmetatable(tbl, Fillers)
 

@@ -1,13 +1,10 @@
 local VirtLines = {}
 VirtLines.__index = VirtLines
 
+--- @param bufnr integer
+--- @param first_row integer
+--- @param last_row integer
 function VirtLines.new(bufnr, first_row, last_row)
-  vim.validate({
-    bufnr = { bufnr, "number" },
-    first_row = { first_row, "number" },
-    last_row = { last_row, "number" },
-  })
-
   local marks = vim.api.nvim_buf_get_extmarks(
     bufnr,
     -1,

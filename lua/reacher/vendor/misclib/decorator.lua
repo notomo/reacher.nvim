@@ -4,12 +4,10 @@ local api = vim.api
 local Decorator = {}
 Decorator.__index = Decorator
 
+--- @param ns integer
+--- @param bufnr integer
+--- @param is_ephemeral boolean
 function Decorator.new(ns, bufnr, is_ephemeral)
-  vim.validate({
-    ns = { ns, "number" },
-    bufnr = { bufnr, "number" },
-    is_ephemeral = { is_ephemeral, "boolean" },
-  })
   local tbl = {
     _ns = ns,
     _bufnr = bufnr,
@@ -69,8 +67,9 @@ end
 local DecoratorFactory = {}
 DecoratorFactory.__index = DecoratorFactory
 
+--- @param key string
+--- @param bufnr integer?
 function Decorator.factory(key, bufnr)
-  vim.validate({ key = { key, "string" }, bufnr = { bufnr, "number", true } })
   local ns = api.nvim_create_namespace(key)
   local tbl = {
     _ns = ns,

@@ -8,8 +8,9 @@ local Line = {}
 Line.__index = Line
 M.Line = Line
 
+--- @param str string
+--- @param column_offset integer
 function Line.new(str, column_offset)
-  vim.validate({ str = { str, "string" }, column_offset = { column_offset, "number" } })
   local tbl = { str = str, column_offset = column_offset }
   return setmetatable(tbl, Line)
 end

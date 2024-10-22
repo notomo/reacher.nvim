@@ -3,13 +3,10 @@ local vim = vim
 local OldMode = {}
 OldMode.__index = OldMode
 
+--- @param mode string
+--- @param range table?
+--- @param was_visual_mode boolean?
 function OldMode.new(mode, range, was_visual_mode)
-  vim.validate({
-    mode = { mode, "string" },
-    range = { range, "table", true },
-    was_visual_mode = { was_visual_mode, "boolean", true },
-  })
-
   range = range or { vim.fn.line("."), vim.fn.line(".") }
   was_visual_mode = was_visual_mode or false
 
@@ -33,8 +30,8 @@ function OldMode.normal()
   return OldMode.new("n")
 end
 
+--- @param mode_chars string
 function OldMode.is_in(self, mode_chars)
-  vim.validate({ mode_chars = { mode_chars, "string" } })
   if mode_chars:find("v") and self.is_visual then
     return true
   end

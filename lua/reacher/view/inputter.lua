@@ -5,8 +5,11 @@ local vim = vim
 local Inputter = {}
 Inputter.__index = Inputter
 
+--- @param callback function
+--- @param on_insert_enter fun()
+--- @param on_insert_leave fun()
+--- @param default_input string?
 function Inputter.open(callback, on_insert_enter, on_insert_leave, default_input)
-  vim.validate({ callback = { callback, "function" }, default_input = { default_input, "string", true } })
   default_input = default_input or ""
 
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -94,8 +97,8 @@ function Inputter.recall_history(self, offset)
   end
 end
 
+--- @param include_register boolean?
 function Inputter.save_history(self, include_register)
-  vim.validate({ include_register = { include_register, "boolean", true } })
   local current_line = self:_get_line()
   self._history_store:save(current_line)
   if include_register then
@@ -103,9 +106,8 @@ function Inputter.save_history(self, include_register)
   end
 end
 
+--- @param is_cancel boolean?
 function Inputter.close(self, is_cancel)
-  vim.validate({ is_cancel = { is_cancel, "boolean", true } })
-
   -- NOTICE: because sometimes the buffer is not deleted.
   vim.api.nvim_buf_delete(self._bufnr, { force = true })
   windowlib.safe_close(self.window_id)

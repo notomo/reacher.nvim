@@ -80,14 +80,12 @@ local Conceals = {}
 Conceals.__index = Conceals
 M.Conceals = Conceals
 
+--- @param bufnr integer
+--- @param window_id integer
+--- @param s integer
+--- @param e integer
+--- @param old_mode table
 function Conceals.new(bufnr, window_id, s, e, old_mode)
-  vim.validate({
-    bufnr = { bufnr, "number" },
-    window_id = { window_id, "number" },
-    s = { s, "number" },
-    e = { e, "number" },
-    old_mode = { old_mode, "table" },
-  })
   local tbl = { _bufnr = bufnr, _conceals = {}, _lookup = {}, _first_row = s, _last_row = e }
   local self = setmetatable(tbl, Conceals)
 

@@ -4,9 +4,8 @@ local vim = vim
 local Matcher = {}
 Matcher.__index = Matcher
 
+--- @param name string
 function Matcher.new(name)
-  vim.validate({ name = { name, "string" } })
-
   local matcher = modulelib.find("reacher.matcher." .. name)
   if not matcher then
     return nil, "not found matcher: " .. name

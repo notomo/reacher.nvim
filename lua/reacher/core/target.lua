@@ -8,17 +8,17 @@ local Target = setmetatable({}, Position)
 Target.__index = Target
 M.Target = Target
 
+--- @param window_id integer
+--- @param row integer
+--- @param column integer
+--- @param column_end integer
+--- @param display_row integer
+--- @param display_column integer
+--- @param zindex integer
+--- @param str string
+--- @param is_virtual boolean?
 ---@diagnostic disable-next-line: duplicate-set-field
 function Target.new(window_id, row, column, column_end, display_row, display_column, zindex, str, is_virtual)
-  vim.validate({
-    window_id = { window_id, "number" },
-    str = { str, "string" },
-    zindex = { zindex, "number" },
-    column_end = { column_end, "number" },
-    display_row = { display_row, "number" },
-    display_column = { display_column, "number" },
-    is_virtual = { is_virtual, "boolean", true },
-  })
   local tbl = {
     window_id = window_id,
     str = str,
@@ -50,8 +50,9 @@ end
 local Targets = {}
 M.Targets = Targets
 
+--- @param targets table[]
+--- @param index integer?
 function Targets.new(targets, index)
-  vim.validate({ targets = { targets, "table" }, index = { index, "number", true } })
   index = index or 1
   local tbl = { _targets = targets, _index = index }
   return setmetatable(tbl, Targets)

@@ -5,15 +5,12 @@ local vim = vim
 local Collector = {}
 Collector.__index = Collector
 
+--- @param window_id integer
+--- @param matcher table
+--- @param lines table
+--- @param number_sign_width integer
+--- @param cursor table?
 function Collector.new(window_id, matcher, lines, number_sign_width, cursor)
-  vim.validate({
-    window_id = { window_id, "number" },
-    matcher = { matcher, "table" },
-    lines = { lines, "table" },
-    number_sign_width = { number_sign_width, "number" },
-    cursor = { cursor, "table", true },
-  })
-
   local raw_lines = {}
   for _, line in lines:iter() do
     table.insert(raw_lines, line)
