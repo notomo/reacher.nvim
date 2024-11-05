@@ -19,8 +19,9 @@ function M.start_one(raw_opts)
   end
 
   local opts = vim.tbl_deep_extend("force", { matcher_opts = { name = "regex" } }, raw_opts or {})
-  local matcher, err = Matcher.new(opts.matcher_opts.name)
-  if err then
+  local matcher = Matcher.new(opts.matcher_opts.name)
+  if type(matcher) == "string" then
+    local err = matcher
     return err
   end
 
@@ -44,8 +45,9 @@ function M.start_multiple(raw_opts)
   end
 
   local opts = vim.tbl_deep_extend("force", { matcher_opts = { name = "regex" } }, raw_opts or {})
-  local matcher, err = Matcher.new(opts.matcher_opts.name)
-  if err then
+  local matcher = Matcher.new(opts.matcher_opts.name)
+  if type(matcher) == "string" then
+    local err = matcher
     return err
   end
 

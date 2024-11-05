@@ -8,7 +8,7 @@ Matcher.__index = Matcher
 function Matcher.new(name)
   local matcher = modulelib.find("reacher.matcher." .. name)
   if not matcher then
-    return nil, "not found matcher: " .. name
+    return "not found matcher: " .. name
   end
 
   local tbl = { name = name, _matcher = matcher, smartcase = vim.o.smartcase }
@@ -16,8 +16,9 @@ function Matcher.new(name)
 end
 
 function Matcher.must(name)
-  local matcher, err = Matcher.new(name)
-  if err then
+  local matcher = Matcher.new(name)
+  if type(matcher) == "string" then
+    local err = matcher
     error(err)
   end
   return matcher

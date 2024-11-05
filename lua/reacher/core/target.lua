@@ -1,6 +1,5 @@
 local Position = require("reacher.core.position")
 local Distance = require("reacher.core.distance")
-local vim = vim
 
 local M = {}
 
