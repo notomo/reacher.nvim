@@ -1,6 +1,5 @@
 local View = require("reacher.view")
 local Matcher = require("reacher.core.matcher")
-local messagelib = require("reacher.lib.message")
 local vim = vim
 
 local M = {}
@@ -8,7 +7,7 @@ local M = {}
 local last_call = nil
 
 function M.start_one(raw_opts)
-  local msg = messagelib.validate({ opts = { raw_opts, "table", true } })
+  local msg = require("reacher.lib.message").validate({ opts = { raw_opts, "table", true } })
   if msg then
     return msg
   end
@@ -34,7 +33,7 @@ function M.start_one(raw_opts)
 end
 
 function M.start_multiple(raw_opts)
-  local msg = messagelib.validate({ opts = { raw_opts, "table", true } })
+  local msg = require("reacher.lib.message").validate({ opts = { raw_opts, "table", true } })
   if msg then
     return msg
   end
@@ -60,7 +59,7 @@ function M.start_multiple(raw_opts)
 end
 
 function M.again(extend_opts)
-  local msg = messagelib.validate({ opts = { extend_opts, "table", true } })
+  local msg = require("reacher.lib.message").validate({ opts = { extend_opts, "table", true } })
   if msg then
     return msg
   end
@@ -82,8 +81,7 @@ function M.move_cursor(action_name)
   local view = View.current()
   if type(view) == "string" then
     local err = view
-    require("reacher.lib.message").error(err)
-    return
+    error("[reacher] " .. err, 0)
   end
 
   view:move_cursor(action_name)
@@ -93,21 +91,21 @@ function M.finish()
   local view = View.current()
   if type(view) == "string" then
     local err = view
-    require("reacher.lib.message").error(err)
-    return
+    error("[reacher] " .. err, 0)
   end
 
   local row, column = view:finish()
   if row then
-    messagelib.info(("jumped to (%d, %d)"):format(row, column))
+    vim.notify(("[reacher] jumped to (%d, %d)"):format(row, column))
   end
 end
 
 --- @param offset integer
 function M.recall_history(offset)
-  local view, err = View.current()
-  if err then
-    require("reacher.lib.message").error(err)
+  local view = View.current()
+  if type(view) == "string" then
+    local err = view
+    error("[reacher] " .. err, 0)
   end
   view:recall_history(offset)
 end
@@ -116,12 +114,11 @@ function M.cancel()
   local view = View.current()
   if type(view) == "string" then
     local err = view
-    require("reacher.lib.message").error(err)
-    return
+    error("[reacher] " .. err, 0)
   end
 
   view:cancel()
-  messagelib.info("canceled")
+  vim.notify("[reacher] canceled")
 end
 
 --- @param id integer

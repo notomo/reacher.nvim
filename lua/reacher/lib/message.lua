@@ -1,4 +1,4 @@
-local M = require("reacher.vendor.misclib.message")
+local M = {}
 
 function M.validate(tbl)
   local errs = {}

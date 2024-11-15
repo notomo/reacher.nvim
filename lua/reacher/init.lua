@@ -10,7 +10,7 @@ local reacher = {}
 function reacher.start(opts)
   local err = require("reacher.command").start_one(opts)
   if err then
-    require("reacher.lib.message").error(err)
+    error("[reacher] " .. err, 0)
   end
 end
 
@@ -22,7 +22,7 @@ end
 function reacher.start_multiple(opts)
   local err = require("reacher.command").start_multiple(opts)
   if err then
-    require("reacher.lib.message").error(err)
+    error("[reacher] " .. err, 0)
   end
 end
 
@@ -31,7 +31,7 @@ end
 function reacher.again(opts)
   local err = require("reacher.command").again(opts)
   if err then
-    require("reacher.lib.message").error(err)
+    error("[reacher] " .. err, 0)
   end
 end
 
